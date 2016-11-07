@@ -25,6 +25,7 @@ class supervisionSignup extends frontControllerApplication
 			'lengths' => array (30 => '30 minutes', 45 => '45 minutes', 60 => '1 hour', 90 => 'Hour and a half', 120 => 'Two hours', ),
 			'lengthDefault' => 60,
 			'yearGroups' => array ('Part IA', 'Part IB', 'Part II'),
+			'organisationDescription' => 'the Department',
 		);
 		
 		# Return the defaults
@@ -137,9 +138,19 @@ class supervisionSignup extends frontControllerApplication
 	# Additional initialisation
 	public function main ()
 	{
-		# Determine if the user is staff
+		# Determine the year group of the user
 		$userYeargroupCallbackFunction = $this->settings['userYeargroupCallback'];
 		$this->userYeargroup = ($this->user ? $userYeargroupCallbackFunction ($this->user) : false);
+		
+		# Ensure the user is current student or staff (or admin)
+		if (!$this->userYeargroup && !$this->userIsStaff && !$this->userIsAdministrator) {
+			if ($this->action != 'feedback') {		// Unless on feedback page
+				$html  = "\n<p>This system is only available to current students and staff of " . htmlspecialchars ($this->settings['organisationDescription']) . '.</p>';
+				$html .= "\n<p>If you think you should have access, please <a href=\"{$this->baseUrl}/feedback.html\">contact us</a>.</p>";
+				echo $html;
+				return false;
+			}
+		}
 		
 	}
 	
