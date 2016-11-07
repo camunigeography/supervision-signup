@@ -133,7 +133,7 @@ class supervisionSignup extends frontControllerApplication
 	
 	
 	# Supervision editing form
-	private function supervisionForm ()
+	private function supervisionForm ($supervision = array ())
 	{
 		# Start the HTML
 		$html = '';
@@ -157,6 +157,7 @@ class supervisionSignup extends frontControllerApplication
 		$form->dataBinding (array (
 			'database' => $this->settings['database'],
 			'table' => $this->settings['table'],
+			'data' => $supervision,
 			'intelligence' => true,
 			'exclude' => array ('username', 'courseName'),		// Fixed data fields, handled below
 			'attributes' => array (
@@ -169,12 +170,16 @@ class supervisionSignup extends frontControllerApplication
 			'title' => 'Timeslots (start time of each available supervision)',
 			'expandable' => "\n",
 			'required' => true,
+			'default' => ($supervision ? implode ("\n", $supervision['timeslots']) : false),
 		));
 		if ($result = $form->process ($html)) {
 			
 			# Add in fixed data
 			$result['username'] = $this->user;
 			$result['updatedAt'] = 'NOW()';
+			if ($supervision) {
+				$result['id'] = $supervision['id'];
+			}
 			
 			# Add in the course name so that this not dependent on a live feed which may change from year to year
 			$coursesFlattened = application::flattenMultidimensionalArray ($courses);
@@ -185,14 +190,16 @@ class supervisionSignup extends frontControllerApplication
 			unset ($result['timeslots']);
 			
 			# Insert the new supervision into the database
-			if (!$this->databaseConnection->insert ($this->settings['database'], $this->settings['table'], $result)) {
-				$this->throwError ('There was a problem creating the new supervision signup sheet.', false, application::dumpData ($this->databaseConnection->error (), false, true));
+			$databaseAction = ($supervision ? 'update' : 'insert');
+			$parameter4 = ($supervision ? array ('id' => $supervision['id']) : false);
+			if (!$this->databaseConnection->{$databaseAction} ($this->settings['database'], $this->settings['table'], $result, $parameter4)) {
+				$this->throwError ('There was a problem ' . ($supervision ? 'updating' : 'creating') . ' the new supervision signup sheet.', false, application::dumpData ($this->databaseConnection->error (), false, true));
 				echo $html;
 				return false;
 			}
 			
 			# Get the supervision ID just inserted
-			$supervisionId = $this->databaseConnection->getLatestId ();
+			$supervisionId = ($supervision ? $supervision['id'] : $this->databaseConnection->getLatestId ());
 			
 			# Unique the list of timeslots
 			$timeslots = array_unique ($timeslots);
@@ -204,6 +211,14 @@ class supervisionSignup extends frontControllerApplication
 					'supervisionId' => $supervisionId,
 					'startTime' => $timeslot,
 				);
+			}
+			
+			# If editing, clear out any timeslots that are no longer wanted
+			if ($supervision) {
+				if (!$this->databaseConnection->delete ($this->settings['database'], 'timeslots', array ('supervisionId' => $supervisionId))) {
+					$html .= '<p class="warning">There was a problem clearing out timeslots that are no longer wanted.</p>';
+					return false;
+				}
 			}
 			
 			# Insert the new timeslots
@@ -242,6 +257,36 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Add title
 		$html .= "\n<h2>Sign up to a supervision</h2>";
+		
+		# Enable editing by staff
+		if ($this->userIsStaff) {
+			
+			# Determine if editing is requested
+			$editingActions = array (
+				'edit'		=> 'Edit supervision details',
+				'clone'		=> 'Clone to new supervision',
+				'delete'	=> 'Delete supervision details',
+			);
+			$do = (isSet ($_GET['do']) ? $_GET['do'] : false);
+			if ($do) {
+				
+				# Validate
+				if (!isSet ($editingActions[$do])) {
+					$this->page404 ();
+					return false;
+				}
+				
+				# Perform editing action, restarting the HTML
+				$function = $do . 'Supervision';	// e.g. editSupervision
+				$html  = "\n<h2>{$editingActions[$do]}</h2>";
+				$html .= $this->{$function} ($supervision);
+				echo $html;
+				return true;
+			}
+			
+			# Show the edit button
+			$html .= "\n<p><a href=\"{$this->baseUrl}/{$id}/edit.html\" class=\"actions right\"><img src=\"/images/icons/pencil.png\" alt=\"Edit\" border=\"0\" /> Edit</a></p>";
+		}
 		
 		# Extract the timeslots
 		$timeslots = $supervision['timeslots'];
@@ -299,6 +344,17 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Show the HTML
 		echo $html;
+	}
+	
+	
+	# Function to edit a supervision
+	private function editSupervision ($supervision)
+	{
+		# Run the form in editing mode
+		$html = $this->supervisionForm ($supervision);
+		
+		# Return the HTML
+		return $html;
 	}
 	
 	
