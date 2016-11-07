@@ -34,6 +34,12 @@ class supervisionSignup extends frontControllerApplication
 	{
 		# Specify additional actions
 		$actions = array (
+			'supervision' => array (
+				'description' => false,
+				'url' => '',
+				'tab' => 'Sign up to a supervision',
+				'icon' => 'pencil',
+			),
 			'add' => array (
 				'description' => 'Create a new supervision',
 				'url' => 'add/',
@@ -181,12 +187,113 @@ class supervisionSignup extends frontControllerApplication
 				$html .= '<p class="warning">There was a problem creating the new supervision signup sheet.</p>';
 				return false;
 			}
+			
+			# Redirect the user
+			$redirectTo = $this->baseUrl . '/' . $supervisionId . '/';
+			$html .= application::sendHeader (302, $redirectTo, true);
 		}
 		
 		# Return the HTML
 		return $html;
 	}
 	
+	
+	# Supervision page
+	public function supervision ($id)
+	{
+		# Start the HTML
+		$html = '';
+		
+		# Ensure the ID is present
+		if (!$id) {
+			$this->page404 ();
+			return;
+		}
+		
+		# Obtain this supervision or end
+		if (!$supervision = $this->getSupervision ($id)) {
+			$this->page404 ();
+			return;
+		}
+		
+		# Add title
+		$html .= "\n<h2>Sign up to a supervision</h2>";
+		
+		# Extract the timeslots
+		$timeslots = $supervision['timeslots'];
+		unset ($supervision['timeslots']);
+		
+		# Get the person name
+		$userLookupData = camUniData::getLookupData ($supervision['username']);
+		
+		# Create the supervision page
+		$headings = $this->databaseConnection->getHeadings ($this->settings['database'], $this->settings['table']);
+		
+		$html .= "\n<h3>" . htmlspecialchars ($supervision['title']) . '</h3>';
+		$html .= "\n<p>With: <strong>" . htmlspecialchars ($userLookupData['name']) . '</strong></p>';
+		$html .= "\n<br />";
+		$html .= "\n<h4>Description:</h4>";
+		$html .= "\n<div class=\"graybox\">";
+		$html .= "\n" . $supervision['descriptionHtml'];
+		$html .= "\n</div>";
+		if ($supervision['readingListHtml']) {
+			$html .= "\n<h4>Reading list:</h4>";
+			$html .= "\n<div class=\"graybox\">";
+			$html .= "\n" . $supervision['readingListHtml'];
+			$html .= "\n</div>";
+		}
+		$html .= "\n</div>";
+		$html .= "\n<br />";
+		$html .= "\n<h4>Time slots:</h4>";
+		
+		# Determine the posted slot
+		if (isSet ($_POST['timeslot']) && is_array ($_POST['timeslot']) && count ($_POST['timeslot']) == 1) {
+			$submittedId = key ($_POST['timeslot']);
+			if (in_array ($submittedId, $timeslots)) {
+				echo $submittedId;
+			}
+		}
+		
+		# Arrange timeslots by date
+		$timeslotsByDate = array ();
+		foreach ($timeslots as $id => $startTime) {
+			$dateFormatted = date ('jS F Y', strtotime ($startTime));
+			$timeFormatted = date ('H:i', strtotime ($startTime)) . ' - ' . date ('H:i', strtotime ($startTime) + ($supervision['length'] * 60));
+			$timeslotsByDate[$dateFormatted][$id] = $timeFormatted;
+		}
+		
+		# Create the timeslot buttons
+		$html .= "\n<form name=\"timeslot\" action=\"\" method=\"post\">";
+		foreach ($timeslotsByDate as $dateFormatted => $timeslotsForDate) {
+			$html .= "\n<h5>{$dateFormatted}</h5>";
+			foreach ($timeslotsForDate as $id => $timeFormatted) {
+				$indexValue = $timeslots[$id];
+				$html .= "\n<input type=\"submit\" name=\"timeslot[{$indexValue}]\" value=\"{$timeFormatted}\" />";		// See multiple button solution using [] at: http://stackoverflow.com/a/34915274/180733
+			}
+		}
+		$html .= "\n</form>";
+		
+		# Show the HTML
+		echo $html;
+	}
+	
+	
+	# Function to get data for a single supervision
+	private function getSupervision ($id)
+	{
+		# Obtain the supervision data or end
+		if (!$supervision = $this->databaseConnection->selectOne ($this->settings['database'], $this->settings['table'], array ('id' => $id))) {
+			return false;
+		}
+		
+		# Add the timeslot data or end
+		if (!$supervision['timeslots'] = $this->databaseConnection->selectPairs ($this->settings['database'], 'timeslots', array ('supervisionId' => $id), array ('id', 'startTime'), true, $orderBy = 'startTime')) {
+			return false;
+		}
+		
+		# Return the collection
+		return $supervision;
+	}
 }
 
 ?>
