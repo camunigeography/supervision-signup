@@ -396,15 +396,24 @@ class supervisionSignup extends frontControllerApplication
 				}
 				$html .= "\n\t\t\t<td>{$timeFormatted}:</td>";
 				$startTime = $supervision['timeslots'][$id];
+				$showButton = true;
 				for ($i = 0; $i < $supervision['studentsPerTimeslot']; $i++) {
 					$html .= "\n\t\t\t\t<td>";
 					$slotTaken = (isSet ($signups[$startTime]) && isSet ($signups[$startTime][$i]));
 					if ($slotTaken) {
 						$signup = $signups[$startTime][$i];
 						$html .= "<div class=\"timeslot" . ($signup['userId'] == $this->user ? ' me' : '') . "\"><p>{$signup['userName']}<br /><span>{$signup['userId']}</span></p></div>";
+						if ($signup['userId'] == $this->user) {
+							$showButton = false;
+						}
 					} else {
-						$label = ($userHasSignedUp ? 'Change to here' : 'Sign up');
-						$html .= "<input type=\"submit\" name=\"timeslot[{$indexValue}]\" value=\"{$label}\" />";		// See multiple button solution using [] at: http://stackoverflow.com/a/34915274/180733
+						if ($showButton) {
+							$label = ($userHasSignedUp ? 'Change to here' : 'Sign up');
+							$html .= "<input type=\"submit\" name=\"timeslot[{$indexValue}]\" value=\"{$label}\" />";		// See multiple button solution using [] at: http://stackoverflow.com/a/34915274/180733
+							$showButton = false;	// Only first in row show be clickable, so they fill up from the left
+						} else {
+							$html .= "<div class=\"timeslot available\"><p>Available</p></div>";
+						}
 					}
 					$html .= '</td>';
 				}
