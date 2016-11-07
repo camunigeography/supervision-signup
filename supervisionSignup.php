@@ -19,6 +19,7 @@ class supervisionSignup extends frontControllerApplication
 			'emailDomain' => 'cam.ac.uk',
 			'administrators' => true,
 			'authentication' => true,
+			'databaseStrictWhere' => true,
 		);
 		
 		# Return the defaults
