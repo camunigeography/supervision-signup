@@ -278,7 +278,7 @@ class supervisionSignup extends frontControllerApplication
 			'title' => 'Timeslots (start time of each available supervision)',
 			'expandable' => "\n",
 			'required' => true,
-			'default' => ($supervision ? implode ("\n", $supervision['timeslots']) : false),
+			'default' => ($supervision ? implode ("\n", $supervision['timeslots']) : date ('Y-m-d H:00:00', strtotime ('+1 day'))),
 			'placeholder' => 'YYYY-MM-DD hh:mm:ss',
 		));
 		if ($result = $form->process ($html)) {
