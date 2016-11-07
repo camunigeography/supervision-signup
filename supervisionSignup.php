@@ -98,6 +98,7 @@ class supervisionSignup extends frontControllerApplication
 			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Automatic key',
 			  `supervisionId` int(11) NOT NULL COMMENT 'Supervision ID',
 			  `userId` varchar(50) COLLATE utf8_unicode_ci NOT NULL COMMENT 'User ID',
+			  `userName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'User name',
 			  `startTime` datetime NOT NULL COMMENT 'Start datetime',
 			  PRIMARY KEY (`id`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table of timeslots';
@@ -292,7 +293,6 @@ class supervisionSignup extends frontControllerApplication
 			$this->page404 ();
 			return;
 		}
-		// application::dumpData ($supervision);
 		
 		# Add title
 		$html .= "\n<h2>Sign up to a supervision</h2>";
@@ -357,7 +357,7 @@ class supervisionSignup extends frontControllerApplication
 		if (isSet ($_POST['timeslot']) && is_array ($_POST['timeslot']) && count ($_POST['timeslot']) == 1) {
 			$submittedId = key ($_POST['timeslot']);
 			if (in_array ($submittedId, $timeslots)) {
-				if (!$this->addSignup ($supervision['id'], $this->user, $submittedId)) {
+				if (!$this->addSignup ($supervision['id'], $this->user, $this->userName, $submittedId)) {
 					$html .= "\n" . '<p class="warning">There was a problem registering the signup.</p>';
 					echo $html;
 					return false;
@@ -433,7 +433,9 @@ class supervisionSignup extends frontControllerApplication
 		}
 		
 		# Add the student signup data (which may be empty)
-		$supervision['signups'] = $this->databaseConnection->selectPairs ($this->settings['database'], 'signups', array ('supervisionId' => $id), array ('userId', 'startTime'), true, $orderBy = 'startTime');
+		$supervision['signups'] = $this->databaseConnection->select ($this->settings['database'], 'signups', array ('supervisionId' => $id), array ('id', 'userId', 'userName', 'startTime'), true, $orderBy = 'startTime');
+		
+		// application::dumpData ($supervision);
 		
 		# Return the collection
 		return $supervision;
@@ -457,9 +459,9 @@ class supervisionSignup extends frontControllerApplication
 	
 	
 	# Model function to sign up a student
-	private function addSignup ($supervisionId, $userId, $startTime)
+	private function addSignup ($supervisionId, $userId, $userName, $startTime)
 	{
-		# Assemble the data
+		# Assemble the data identity
 		$entry = array (
 			'supervisionId' => $supervisionId,
 			'userId' => $this->user,
@@ -468,7 +470,8 @@ class supervisionSignup extends frontControllerApplication
 		# Clear any existing entry for this user
 		$this->databaseConnection->delete ($this->settings['database'], 'signups', $entry);
 		
-		# Add the new time
+		# Add attributes
+		$entry['userName'] = $userName;
 		$entry['startTime'] = $startTime;
 		
 		# Insert the row
