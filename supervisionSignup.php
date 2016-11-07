@@ -327,16 +327,17 @@ class supervisionSignup extends frontControllerApplication
 			$html .= "\n<p><a href=\"{$this->baseUrl}/{$id}/edit.html\" class=\"actions right\"><img src=\"/images/icons/pencil.png\" alt=\"Edit\" border=\"0\" /> Edit</a></p>";
 		}
 		
-		# Extract the timeslots
-		$timeslots = $supervision['timeslots'];
-		unset ($supervision['timeslots']);
+		# Arrange signups by timeslot
+		$signups = array ();
+		foreach ($supervision['signups'] as $id => $signup) {
+			$startTime = $signup['startTime'];
+			$signups[$startTime][] = $signup;	// Indexed from 0
+		}
 		
 		# Get the person name
 		$userLookupData = camUniData::getLookupData ($supervision['username']);
 		
 		# Create the supervision page
-		$headings = $this->databaseConnection->getHeadings ($this->settings['database'], $this->settings['table']);
-		
 		$html .= "\n<h3>" . htmlspecialchars ($supervision['title']) . '</h3>';
 		$html .= "\n<p>With: <strong>" . htmlspecialchars ($userLookupData['name']) . '</strong></p>';
 		$html .= "\n<br />";
@@ -356,7 +357,7 @@ class supervisionSignup extends frontControllerApplication
 		# Determine the posted slot
 		if (isSet ($_POST['timeslot']) && is_array ($_POST['timeslot']) && count ($_POST['timeslot']) == 1) {
 			$submittedId = key ($_POST['timeslot']);
-			if (in_array ($submittedId, $timeslots)) {
+			if (in_array ($submittedId, $supervision['timeslots'])) {
 				if (!$this->addSignup ($supervision['id'], $this->user, $this->userName, $submittedId)) {
 					$html .= "\n" . '<p class="warning">There was a problem registering the signup.</p>';
 					echo $html;
@@ -372,7 +373,7 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Arrange timeslots by date
 		$timeslotsByDate = array ();
-		foreach ($timeslots as $id => $startTime) {
+		foreach ($supervision['timeslots'] as $id => $startTime) {
 			$dateFormatted = date ('jS F Y', strtotime ($startTime));
 			$timeFormatted = date ('H:i', strtotime ($startTime)) . ' - ' . date ('H:i', strtotime ($startTime) + ($supervision['length'] * 60));
 			$timeslotsByDate[$dateFormatted][$id] = $timeFormatted;
@@ -385,7 +386,7 @@ class supervisionSignup extends frontControllerApplication
 			$totalThisDate = count ($timeslotsForDate);
 			$first = true;
 			foreach ($timeslotsForDate as $id => $timeFormatted) {
-				$indexValue = $timeslots[$id];
+				$indexValue = $supervision['timeslots'][$id];
 				$html .= "\n\t\t<tr>";
 				if ($first) {
 					$html .= "\n\t\t\t<td rowspan=\"{$totalThisDate}\"><strong>{$dateFormatted}:</strong></h5>";
@@ -394,8 +395,17 @@ class supervisionSignup extends frontControllerApplication
 					$html .= "\n\t\t\t";
 				}
 				$html .= "\n\t\t\t<td>{$timeFormatted}:</td>";
+				$startTime = $supervision['timeslots'][$id];
 				for ($i = 0; $i < $supervision['studentsPerTimeslot']; $i++) {
-					$html .= "\n\t\t\t\t<td><input type=\"submit\" name=\"timeslot[{$indexValue}]\" value=\"{$timeFormatted}\" /></td>";		// See multiple button solution using [] at: http://stackoverflow.com/a/34915274/180733
+					$html .= "\n\t\t\t\t<td>";
+					$slotTaken = (isSet ($signups[$startTime]) && isSet ($signups[$startTime][$i]));
+					if ($slotTaken) {
+						$signup = $signups[$startTime][$i];
+						$html .= "<div class=\"taken\">{$signup['userName']}<br /><span>{$signup['userId']}</span></div>";
+					} else {
+						$html .= "<input type=\"submit\" name=\"timeslot[{$indexValue}]\" value=\"Sign up\" />";		// See multiple button solution using [] at: http://stackoverflow.com/a/34915274/180733
+					}
+					$html .= '</td>';
 				}
 				$html .= "\n\t\t</tr>";
 			}
