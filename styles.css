@@ -1,0 +1,5 @@
+#supervisionsignup div.taken {border: 1px solid #ddd; padding: 2px 5px;}
+#supervisionsignup div.taken.me {background-color: #fdebd0;}
+#supervisionsignup div.taken span {font-size: 0.83em; color: #666;}
+
+
