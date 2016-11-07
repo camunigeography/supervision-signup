@@ -83,11 +83,35 @@ class supervisionSignup extends frontControllerApplication
 		# Start the HTML
 		$html = '';
 		
+		# List of supervisions
+		$html .= "\n<h2>Sign up to a supervision</h2>";
+		$html .= "\n<p>You can sign up to the following supervisions online:</p>";
+		$html .= $this->supervisionsList ();
+		
 		# Give link for staff
 		if ($this->userIsStaff) {
+			$html .= "\n<br />";
 			$html .= "\n<h2>Create supervision signup sheet</h2>";
 			$html .= "\n<p>As a member of staff, you can <a href=\"{$this->baseUrl}/add/\" class=\"actions\"><img src=\"/images/icons/add.png\" alt=\"Add\" border=\"0\" /> create a supervision signup sheet</a>.</p>";
 		}
+		
+		# Return the HTML
+		echo $html;
+	}
+	
+	
+	# Function to list supervisions
+	private function supervisionsList ()
+	{
+		# Get the supervisions
+		$supervisions = $this->getSupervisions ();
+		
+		# Convert to HTML list
+		$list = array ();
+		foreach ($supervisions as $id => $supervision) {
+			$list[$id] = "<a href=\"{$supervision['href']}\">" . htmlspecialchars ($supervision['courseName'] . ': ' . $supervision['title'] . ' (' . $supervision['username'] . ')') . '</a>';
+		}
+		$html = application::htmlUl ($list);
 		
 		# Return the HTML
 		echo $html;
@@ -294,6 +318,23 @@ class supervisionSignup extends frontControllerApplication
 		# Return the collection
 		return $supervision;
 	}
+	
+	
+	# Model function to get supervisions
+	private function getSupervisions ()
+	{
+		# Obtain the supervision data
+		$supervisions = $this->databaseConnection->select ($this->settings['database'], $this->settings['table']);
+		
+		# Add link to each
+		foreach ($supervisions as $id => $supervision) {
+			$supervisions[$id]['href'] = $this->baseUrl . '/' . $id . '/';
+		}
+		
+		# Return the data
+		return $supervisions;
+	}
+	
 }
 
 ?>
