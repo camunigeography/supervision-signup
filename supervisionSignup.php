@@ -18,6 +18,7 @@ class supervisionSignup extends frontControllerApplication
 			'useCamUniLookup' => true,
 			'emailDomain' => 'cam.ac.uk',
 			'administrators' => true,
+			'userIsStaffCallback' => 'userIsStaffCallback',		// Callback function
 			'authentication' => true,
 			'databaseStrictWhere' => true,
 		);
@@ -49,6 +50,16 @@ class supervisionSignup extends frontControllerApplication
 			  `privilege` enum('Administrator','Restricted administrator') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Administrator' COMMENT 'Administrator level'
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='System administrators';
 		";
+	}
+	
+	
+	# Additional initialisation, pre-actions
+	public function mainPreActions ()
+	{
+		# Determine if the user is staff
+		$userIsStaffCallbackFunction = $this->settings['userIsStaffCallback'];
+		$this->userIsStaff = ($this->user ? $userIsStaffCallbackFunction ($this->user) : false);
+		
 	}
 	
 	

@@ -5,7 +5,14 @@ $settings = array (
 	'hostname' => 'localhost',
 	'username' => 'the_username',
 	'password' => 'the_password',
+	'userIsStaffCallback' => 'userIsStaffCallback',
 );
+
+# Callback function to determine if the user is a member of staff; this function will only be called if a user is signed in
+function userIsStaffCallback ($username)
+{
+	// Function returning bool true or false
+}
 
 # Run the application with the specified settings
 require_once ('supervision-signup/supervisionSignup.php');
