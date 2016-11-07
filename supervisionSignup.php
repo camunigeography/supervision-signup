@@ -213,6 +213,41 @@ class supervisionSignup extends frontControllerApplication
 				);
 			}
 			
+/*
+			# Create the timeslot placeholders for an SQL IN() clause
+			$preparedStatementValues = array ();
+			$timeslotPlaceholders = array ();
+			$i = 0;
+			foreach ($timeslotInserts as $timeslot => $timeslotInsert) {
+				$placeholderName = 'timeslot' . $i;
+				$preparedStatementValues[$placeholderName] = $timeslot;
+				$timeslotPlaceholders[] = ':' . $placeholderName;
+				$i++;
+			}
+			
+			# If editing, clear out any timeslots that are no longer wanted
+			if ($supervision) {
+				
+				# Compile the prepared statement values for the delete
+				$preparedStatementValuesDelete = $preparedStatementValues;
+				$preparedStatementValuesDelete['supervisionId'] = $supervisionId;
+				
+				# Compile the query and execute
+				#!# The NOT IN statement will need to be replaced by a `SELECT FROM chosenSlots WHERE timeslot IN (...)` -style query
+				$query = "DELETE FROM
+					{$this->settings['database']}.timeslots
+					WHERE
+					    supervisionId = :supervisionId
+					AND startTime NOT IN(" . implode (', ', $timeslotPlaceholders) . ")
+					AND bookedByUser IS NULL
+				;";
+				if (!$this->databaseConnection->query ($query, $preparedStatementValuesDelete)) {
+					$this->throwError ('There was a problem clearing out timeslots that are no longer wanted.', false, application::dumpData ($this->databaseConnection->error (), false, true));
+					return false;
+				}
+			}
+*/
+			
 			# If editing, clear out any timeslots that are no longer wanted
 			if ($supervision) {
 				if (!$this->databaseConnection->delete ($this->settings['database'], 'timeslots', array ('supervisionId' => $supervisionId))) {
