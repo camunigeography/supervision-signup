@@ -19,6 +19,7 @@ class supervisionSignup extends frontControllerApplication
 			'emailDomain' => 'cam.ac.uk',
 			'administrators' => true,
 			'userIsStaffCallback' => 'userIsStaffCallback',		// Callback function
+			'coursesCallback' => 'coursesCallback',				// Callback function
 			'authentication' => true,
 			'databaseStrictWhere' => true,
 		);

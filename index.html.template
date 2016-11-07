@@ -6,12 +6,25 @@ $settings = array (
 	'username' => 'the_username',
 	'password' => 'the_password',
 	'userIsStaffCallback' => 'userIsStaffCallback',
+	'coursesCallback' => 'coursesCallback',
 );
 
 # Callback function to determine if the user is a member of staff; this function will only be called if a user is signed in
 function userIsStaffCallback ($username)
 {
 	// Function returning bool true or false
+}
+
+# Callback function to return the list of courses; this can be either a simple array of id=>label, or a multidimensional array with entries nested in a yeargroup
+function coursesCallback ()
+{
+	# Obtain the list of courses
+	$courses = array (
+		// List of courses as key=>value
+	);
+	
+	# Return the list
+	return $courses;
 }
 
 # Run the application with the specified settings
