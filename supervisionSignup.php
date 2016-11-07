@@ -55,7 +55,7 @@ class supervisionSignup extends frontControllerApplication
 				'url' => 'courses/',
 				'tab' => 'Courses',
 				'icon' => 'page_white_stack',
-				'enableIf' => $this->userIsAdministrator,
+				'administrator' => true,
 			),
 		);
 		
