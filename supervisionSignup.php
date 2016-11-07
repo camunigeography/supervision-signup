@@ -223,9 +223,8 @@ class supervisionSignup extends frontControllerApplication
 			$databaseAction = ($supervision ? 'update' : 'insert');
 			$parameter4 = ($supervision ? array ('id' => $supervision['id']) : false);
 			if (!$this->databaseConnection->{$databaseAction} ($this->settings['database'], $this->settings['table'], $result, $parameter4)) {
-				$this->throwError ('There was a problem ' . ($supervision ? 'updating' : 'creating') . ' the new supervision signup sheet.', false, application::dumpData ($this->databaseConnection->error (), false, true));
-				echo $html;
-				return false;
+				$html .= '<p class="warning">There was a problem ' . ($supervision ? 'updating' : 'creating') . ' the new supervision signup sheet.</p>';
+				return $html;
 			}
 			
 			# Get the supervision ID just inserted
@@ -247,14 +246,14 @@ class supervisionSignup extends frontControllerApplication
 			if ($supervision) {
 				if (!$this->databaseConnection->delete ($this->settings['database'], 'timeslots', array ('supervisionId' => $supervisionId))) {
 					$html .= '<p class="warning">There was a problem clearing out timeslots that are no longer wanted.</p>';
-					return false;
+					return $html;
 				}
 			}
 			
 			# Insert the new timeslots
 			if (!$this->databaseConnection->insertMany ($this->settings['database'], 'timeslots', $timeslotInserts)) {
 				$html .= '<p class="warning">There was a problem creating the new supervision signup sheet.</p>';
-				return false;
+				return $html;
 			}
 			
 			# Redirect the user
@@ -341,7 +340,6 @@ class supervisionSignup extends frontControllerApplication
 			$html .= "\n" . $supervision['readingListHtml'];
 			$html .= "\n</div>";
 		}
-		$html .= "\n</div>";
 		$html .= "\n<br />";
 		$html .= "\n<h4>Time slots:</h4>";
 		
