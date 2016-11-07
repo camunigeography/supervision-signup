@@ -92,6 +92,15 @@ class supervisionSignup extends frontControllerApplication
 			  `startTime` datetime NOT NULL COMMENT 'Start datetime',
 			  PRIMARY KEY (`id`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table of timeslots';
+			
+			-- Signups
+			CREATE TABLE `signups` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Automatic key',
+			  `supervisionId` int(11) NOT NULL COMMENT 'Supervision ID',
+			  `userId` varchar(50) COLLATE utf8_unicode_ci NOT NULL COMMENT 'User ID',
+			  `startTime` datetime NOT NULL COMMENT 'Start datetime',
+			  PRIMARY KEY (`id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table of timeslots';
 		";
 	}
 	
@@ -223,7 +232,7 @@ class supervisionSignup extends frontControllerApplication
 			$databaseAction = ($supervision ? 'update' : 'insert');
 			$parameter4 = ($supervision ? array ('id' => $supervision['id']) : false);
 			if (!$this->databaseConnection->{$databaseAction} ($this->settings['database'], $this->settings['table'], $result, $parameter4)) {
-				$html .= '<p class="warning">There was a problem ' . ($supervision ? 'updating' : 'creating') . ' the new supervision signup sheet.</p>';
+				$html .= "\n" . '<p class="warning">There was a problem ' . ($supervision ? 'updating' : 'creating') . ' the new supervision signup sheet.</p>';
 				return $html;
 			}
 			
@@ -245,14 +254,14 @@ class supervisionSignup extends frontControllerApplication
 			# If editing, clear out any timeslots that are no longer wanted
 			if ($supervision) {
 				if (!$this->databaseConnection->delete ($this->settings['database'], 'timeslots', array ('supervisionId' => $supervisionId))) {
-					$html .= '<p class="warning">There was a problem clearing out timeslots that are no longer wanted.</p>';
+					$html .= "\n" . '<p class="warning">There was a problem clearing out timeslots that are no longer wanted.</p>';
 					return $html;
 				}
 			}
 			
 			# Insert the new timeslots
 			if (!$this->databaseConnection->insertMany ($this->settings['database'], 'timeslots', $timeslotInserts)) {
-				$html .= '<p class="warning">There was a problem creating the new supervision signup sheet.</p>';
+				$html .= "\n" . '<p class="warning">There was a problem creating the new supervision signup sheet.</p>';
 				return $html;
 			}
 			
@@ -283,6 +292,7 @@ class supervisionSignup extends frontControllerApplication
 			$this->page404 ();
 			return;
 		}
+		// application::dumpData ($supervision);
 		
 		# Add title
 		$html .= "\n<h2>Sign up to a supervision</h2>";
@@ -347,7 +357,16 @@ class supervisionSignup extends frontControllerApplication
 		if (isSet ($_POST['timeslot']) && is_array ($_POST['timeslot']) && count ($_POST['timeslot']) == 1) {
 			$submittedId = key ($_POST['timeslot']);
 			if (in_array ($submittedId, $timeslots)) {
-				echo $submittedId;
+				if (!$this->addSignup ($supervision['id'], $this->user, $submittedId)) {
+					$html .= "\n" . '<p class="warning">There was a problem registering the signup.</p>';
+					echo $html;
+					return false;
+				}
+				
+				# Refresh the page
+				$html .= application::sendHeader ('refresh', false, $redirectMessage = true);
+				echo $html;
+				return;
 			}
 		}
 		
@@ -413,6 +432,9 @@ class supervisionSignup extends frontControllerApplication
 			return false;
 		}
 		
+		# Add the student signup data (which may be empty)
+		$supervision['signups'] = $this->databaseConnection->selectPairs ($this->settings['database'], 'signups', array ('supervisionId' => $id), array ('userId', 'startTime'), true, $orderBy = 'startTime');
+		
 		# Return the collection
 		return $supervision;
 	}
@@ -433,6 +455,25 @@ class supervisionSignup extends frontControllerApplication
 		return $supervisions;
 	}
 	
+	
+	# Model function to sign up a student
+	private function addSignup ($supervisionId, $userId, $startTime)
+	{
+		# Assemble the data
+		$entry = array (
+			'supervisionId' => $supervisionId,
+			'userId' => $this->user,
+		);
+		
+		# Clear any existing entry for this user
+		$this->databaseConnection->delete ($this->settings['database'], 'signups', $entry);
+		
+		# Add the new time
+		$entry['startTime'] = $startTime;
+		
+		# Insert the row
+		return $this->databaseConnection->insert ($this->settings['database'], 'signups', $entry);
+	}
 }
 
 ?>
