@@ -77,7 +77,7 @@ class supervisionSignup extends frontControllerApplication
 			  `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Supervision title',
 			  `descriptionHtml` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Description',
 			  `readingListHtml` text COLLATE utf8_unicode_ci COMMENT 'Reading list (optional)',
-			  `studentsPerTimeslot` int(2) NOT NULL COMMENT 'Students per timeslot',
+			  `studentsPerTimeslot` ENUM('1','2','3','4','5','6') CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '3' COMMENT 'Students per timeslot',
 			  `location` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Location(s)',
 			  `length` int(11) NOT NULL COMMENT 'Length of time',
 			  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Automatic timestamp',
@@ -201,7 +201,7 @@ class supervisionSignup extends frontControllerApplication
 			'exclude' => array ('username', 'courseName'),		// Fixed data fields, handled below
 			'attributes' => array (
 				'courseId' => array ('heading' => array (3 => 'Supervision details'), 'type' => 'select', 'values' => $courses, ),
-				'studentsPerTimeslot' => array ('heading' => array (3 => 'Dates, times and locations'), 'type' => 'number', ),	#!# Shouldn't need to specify type - is an ultimateForm bug
+				'studentsPerTimeslot' => array ('heading' => array (3 => 'Dates, times and locations'), ),
 				'length' => array ('type' => 'select', 'values' => $this->settings['lengths'], 'default' => ($supervision ? $supervision['length'] : $this->settings['lengthDefault']), ),
 			),
 		));
