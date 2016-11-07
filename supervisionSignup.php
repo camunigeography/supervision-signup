@@ -402,7 +402,7 @@ class supervisionSignup extends frontControllerApplication
 					$slotTaken = (isSet ($signups[$startTime]) && isSet ($signups[$startTime][$i]));
 					if ($slotTaken) {
 						$signup = $signups[$startTime][$i];
-						$html .= "<div class=\"timeslot" . ($signup['userId'] == $this->user ? ' me' : '') . "\"><p>{$signup['userName']}<br /><span>{$signup['userId']}</span></p></div>";
+						$html .= "<div class=\"timeslot " . ($signup['userId'] == $this->user ? 'me' : 'taken') . "\"><p>{$signup['userName']}<br /><span>{$signup['userId']}</span></p></div>";
 						if ($signup['userId'] == $this->user) {
 							$showButton = false;
 						}
