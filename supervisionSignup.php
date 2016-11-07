@@ -168,15 +168,15 @@ class supervisionSignup extends frontControllerApplication
 	
 	
 	# Function to list supervisions
-	private function supervisionsList ()
+	private function supervisionsList ($userYeargroup)
 	{
 		# Get the supervisions
-		$supervisions = $this->getSupervisions ();
+		if (!$supervisions = $this->getSupervisions ($userYeargroup)) {return false;}
 		
 		# Convert to HTML list
 		$list = array ();
 		foreach ($supervisions as $id => $supervision) {
-			$list[$id] = "<a href=\"{$supervision['href']}\">" . htmlspecialchars ($supervision['courseName'] . ': ' . $supervision['title'] . ' (' . $supervision['username'] . ')') . '</a>';
+			$list[$id] = "<a href=\"{$supervision['href']}\">" . htmlspecialchars (($supervision['courseNumber'] ? 'Paper ' . $supervision['courseNumber'] . ': ' : '') . $supervision['courseName'] . ' (' . $supervision['username'] . ')') . '</a>';
 		}
 		$html = application::htmlUl ($list);
 		
@@ -526,10 +526,27 @@ class supervisionSignup extends frontControllerApplication
 	
 	
 	# Model function to get supervisions
-	private function getSupervisions ()
+	private function getSupervisions ($yeargroup)
 	{
+		# Add constraints if required
+		$preparedStatementValues = array ();
+		if ($yeargroup) {
+			$preparedStatementValues['yearGroup'] = $yeargroup;
+		}
+		
 		# Obtain the supervision data
-		$supervisions = $this->databaseConnection->select ($this->settings['database'], $this->settings['table']);
+		#!# Need to join to timeslots to get startDate
+		$query = "SELECT
+				{$this->settings['table']}.id,
+				username,
+				courses.yearGroup,
+				courses.courseNumber,
+				courses.courseName
+			FROM {$this->settings['database']}.{$this->settings['table']}
+			JOIN courses ON {$this->settings['table']}.courseId = courses.id
+			" . ($yeargroup ? 'WHERE yearGroup = :yearGroup' : '') . "
+		;";
+		$supervisions = $this->databaseConnection->getData ($query, "{$this->settings['database']}.{$this->settings['table']}", true, $preparedStatementValues);
 		
 		# Add link to each
 		foreach ($supervisions as $id => $supervision) {
