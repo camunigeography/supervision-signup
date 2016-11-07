@@ -19,7 +19,6 @@ class supervisionSignup extends frontControllerApplication
 			'emailDomain' => 'cam.ac.uk',
 			'administrators' => true,
 			'userIsStaffCallback' => 'userIsStaffCallback',		// Callback function
-			'coursesCallback' => 'coursesCallback',				// Callback function
 			'authentication' => true,
 			'databaseStrictWhere' => true,
 			'lengths' => array (30 => '30 minutes', 45 => '45 minutes', 60 => '1 hour', 90 => 'Hour and a half', 120 => 'Two hours', ),
@@ -171,7 +170,7 @@ class supervisionSignup extends frontControllerApplication
 		$html = application::htmlUl ($list);
 		
 		# Return the HTML
-		echo $html;
+		return $html;
 	}
 	
 	
@@ -214,9 +213,8 @@ class supervisionSignup extends frontControllerApplication
 		# Start the HTML
 		$html = '';
 		
-		# Get the courses from the callback
-		$coursesCallback = $this->settings['coursesCallback'];
-		$courses = $coursesCallback ();
+		# Get the courses
+		$courses = $this->getCourses ();
 		
 		# Databind a form
 		$form = new form (array (
@@ -550,6 +548,31 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Insert the row
 		return $this->databaseConnection->insert ($this->settings['database'], 'signups', $entry);
+	}
+	
+	
+	# Model function to get the courses
+	private function getCourses ()
+	{
+		# Get the courses
+		$data = $this->databaseConnection->select ($this->settings['database'], 'courses', array ('available' => '1'), array (), true, $orderBy = 'yearGroup, courseNumber, courseName');
+		
+		# Regroup as nested set
+		$courses = array ();
+		foreach ($data as $id => $course) {
+			$yearGroup = $course['yearGroup'] . ':';
+			$id = $course['id'];
+			$courses[$yearGroup][$id] = ($course['courseNumber'] ? $course['courseNumber'] . ': ' : '') . $course['courseName'];
+		}
+		
+		# Natsort each set
+		foreach ($courses as $yearGroup => $set) {
+			natsort ($set);
+			$courses[$yearGroup] = $set;
+		}
+		
+		# Return the courses
+		return $courses;
 	}
 }
 
