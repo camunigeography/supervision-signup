@@ -211,6 +211,7 @@ class supervisionSignup extends frontControllerApplication
 			'expandable' => "\n",
 			'required' => true,
 			'default' => ($supervision ? implode ("\n", $supervision['timeslots']) : false),
+			'placeholder' => 'YYYY-MM-DD hh:mm:ss',
 		));
 		if ($result = $form->process ($html)) {
 			
