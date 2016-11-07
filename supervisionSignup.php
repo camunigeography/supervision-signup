@@ -24,6 +24,7 @@ class supervisionSignup extends frontControllerApplication
 			'databaseStrictWhere' => true,
 			'lengths' => array (30 => '30 minutes', 45 => '45 minutes', 60 => '1 hour', 90 => 'Hour and a half', 120 => 'Two hours', ),
 			'lengthDefault' => 60,
+			'yearGroups' => array ('Part IA', 'Part IB', 'Part II'),
 		);
 		
 		# Return the defaults
@@ -48,6 +49,13 @@ class supervisionSignup extends frontControllerApplication
 				'tab' => 'Create a new supervision',
 				'icon' => 'add',
 				'enableIf' => $this->userIsStaff,
+			),
+			'courses' => array (
+				'description' => 'Courses',
+				'url' => 'courses/',
+				'tab' => 'Courses',
+				'icon' => 'page_white_stack',
+				'enableIf' => $this->userIsAdministrator,
 			),
 		);
 		
@@ -102,6 +110,16 @@ class supervisionSignup extends frontControllerApplication
 			  `startTime` datetime NOT NULL COMMENT 'Start datetime',
 			  PRIMARY KEY (`id`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table of timeslots';
+			
+			-- Courses
+			CREATE TABLE `courses` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Automatic key',
+			  `yearGroup` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Year group',
+			  `courseNumber` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Course number',
+			  `courseName` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Course name',
+			  `available` int(1) NOT NULL DEFAULT '1' COMMENT 'Currently available?',
+			  PRIMARY KEY (`id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Courses';
 		";
 	}
 	
@@ -168,6 +186,25 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Return the HTML
 		echo $html;
+	}
+	
+	
+	# Courses editing section, substantially delegated to the sinenomine editing component
+	public function courses ($attributes = array (), $deny = false)
+	{
+		# Get the databinding attributes
+		$dataBindingAttributes = array (
+			'yearGroup' => array ('type' => 'select', 'values' => $this->settings['yearGroups'], ),
+		);
+		
+		# Define general sinenomine settings
+		$sinenomineExtraSettings = array (
+			'submitButtonPosition' => 'bottom',
+			'int1ToCheckbox' => true,
+		);
+		
+		# Delegate to the standard function for editing
+		echo $this->editingTable ('courses', $dataBindingAttributes, 'ultimateform', false, $sinenomineExtraSettings);
 	}
 	
 	
