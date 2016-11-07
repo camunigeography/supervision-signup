@@ -19,6 +19,7 @@ class supervisionSignup extends frontControllerApplication
 			'emailDomain' => 'cam.ac.uk',
 			'administrators' => true,
 			'userIsStaffCallback' => 'userIsStaffCallback',		// Callback function
+			'userYeargroupCallback' => 'userYeargroupCallback',	// Callback function
 			'authentication' => true,
 			'databaseStrictWhere' => true,
 			'lengths' => array (30 => '30 minutes', 45 => '45 minutes', 60 => '1 hour', 90 => 'Hour and a half', 120 => 'Two hours', ),
@@ -133,6 +134,16 @@ class supervisionSignup extends frontControllerApplication
 	}
 	
 	
+	# Additional initialisation
+	public function main ()
+	{
+		# Determine if the user is staff
+		$userYeargroupCallbackFunction = $this->settings['userYeargroupCallback'];
+		$this->userYeargroup = ($this->user ? $userYeargroupCallbackFunction ($this->user) : false);
+		
+	}
+	
+	
 	# Welcome screen
 	public function home ()
 	{
@@ -193,7 +204,7 @@ class supervisionSignup extends frontControllerApplication
 	{
 		# Get the databinding attributes
 		$dataBindingAttributes = array (
-			'yearGroup' => array ('type' => 'select', 'values' => $this->settings['yearGroups'], ),
+			'yearGroup' => array ('type' => 'select', 'values' => $this->settings['yearGroups'], ),		// NB: Strings must match response from userYeargroupCallback
 		);
 		
 		# Define general sinenomine settings

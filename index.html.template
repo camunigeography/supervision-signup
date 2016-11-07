@@ -6,10 +6,17 @@ $settings = array (
 	'username' => 'the_username',
 	'password' => 'the_password',
 	'userIsStaffCallback' => 'userIsStaffCallback',
+	'userYeargroupCallback' => 'userYeargroupCallback',
 );
 
 # Callback function to determine if the user is a member of staff; this function will only be called if a user is signed in
 function userIsStaffCallback ($username)
+{
+	// Function returning bool true or false
+}
+
+# Callback function to get the yeargroup of a user; this function will only be called if a user is signed in
+function userYeargroupCallback ($username)
 {
 	// Function returning bool true or false
 }
