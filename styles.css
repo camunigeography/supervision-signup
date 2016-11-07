@@ -1,5 +1,8 @@
-#supervisionsignup div.taken {border: 1px solid #ddd; padding: 2px 5px;}
-#supervisionsignup div.taken.me {background-color: #fdebd0;}
-#supervisionsignup div.taken span {font-size: 0.83em; color: #666;}
 
+#supervisionsignup div.timeslot, #supervisionsignup form.timeslots input[type=submit] {padding: 3px 8px; background-color: #ddd; border: 0 none; text-align: left; height: 3em; width: 15em; max-width: 15em; margin-right: 10px; line-height: 1.2em;}
+#supervisionsignup form.timeslots input[type=submit] {cursor: pointer;}
+
+#supervisionsignup div.timeslot.me {background-color: #fdebd0;}
+#supervisionsignup div.timeslot p {margin: 0; padding:}
+#supervisionsignup div.timeslot span {font-size: 0.83em; color: #666;}
 
