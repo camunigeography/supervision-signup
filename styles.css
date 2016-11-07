@@ -1,10 +1,11 @@
 
-#supervisionsignup div.timeslot, #supervisionsignup form.timeslots input[type=submit] {padding: 3px 8px; background-color: #ddd; border: 0 none; text-align: left; height: 3em; width: 15em; max-width: 15em; margin-right: 10px; line-height: 1.2em;}
+#supervisionsignup div.timeslot, #supervisionsignup form.timeslots input[type=submit] {background-color: #ddd; border: 0 none; text-align: left; height: 3.5em; width: 15em; max-width: 15em; margin-right: 10px;}
+#supervisionsignup div.timeslot {padding: 5px 8px; width: calc(15em - 16px); height: calc(3.5em - 10px);}
 #supervisionsignup form.timeslots input[type=submit] {cursor: pointer;}
 
 #supervisionsignup div.timeslot.taken {background-color: #f5cba7;}
 #supervisionsignup div.timeslot.me {background-color: #f8c471;}
 #supervisionsignup div.timeslot.available {background-color: #f9f9f9; color: gray;}
-#supervisionsignup div.timeslot p {margin: 0; padding:}
+#supervisionsignup div.timeslot p {margin: 0; padding: 0; line-height: 1.3em;}
 #supervisionsignup div.timeslot span {font-size: 0.83em; color: #666;}
 
