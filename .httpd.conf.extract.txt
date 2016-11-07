@@ -15,5 +15,9 @@
 	
 	Use MacroFrontControllerApplication "$applicationBaseUrl/" "$description"
 	
+	RewriteEngine on
+	RewriteRule ^$applicationBaseUrl/(add)/$ $applicationBaseUrl/index.html?action=$1 [L]
+	RewriteRule ^$applicationBaseUrl/(add)$ $applicationBaseUrl/$1/ [R]
+	
 	
 </Macro>
