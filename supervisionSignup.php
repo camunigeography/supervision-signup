@@ -374,7 +374,7 @@ class supervisionSignup extends frontControllerApplication
 		# Arrange timeslots by date
 		$timeslotsByDate = array ();
 		foreach ($supervision['timeslots'] as $id => $startTime) {
-			$dateFormatted = date ('jS F Y', strtotime ($startTime));
+			$dateFormatted = nl2br (date ("l,\njS F Y", strtotime ($startTime)));
 			$timeFormatted = date ('H:i', strtotime ($startTime)) . ' - ' . date ('H:i', strtotime ($startTime) + ($supervision['length'] * 60));
 			$timeslotsByDate[$dateFormatted][$id] = $timeFormatted;
 		}
