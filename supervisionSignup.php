@@ -341,7 +341,7 @@ class supervisionSignup extends frontControllerApplication
 			$html .= "\n</div>";
 		}
 		$html .= "\n<br />";
-		$html .= "\n<h4>Time slots:</h4>";
+		$html .= "\n<h3>Time slots:</h3>";
 		
 		# Determine the posted slot
 		if (isSet ($_POST['timeslot']) && is_array ($_POST['timeslot']) && count ($_POST['timeslot']) == 1) {
@@ -360,15 +360,29 @@ class supervisionSignup extends frontControllerApplication
 		}
 		
 		# Create the timeslot buttons
-		$html .= "\n<form name=\"timeslot\" action=\"\" method=\"post\">";
+		$html .= "\n\n<form name=\"timeslot\" action=\"\" method=\"post\">";
+		$html .= "\n\n\t<table class=\"lines\">";
 		foreach ($timeslotsByDate as $dateFormatted => $timeslotsForDate) {
-			$html .= "\n<h5>{$dateFormatted}</h5>";
+			$totalThisDate = count ($timeslotsForDate);
+			$first = true;
 			foreach ($timeslotsForDate as $id => $timeFormatted) {
 				$indexValue = $timeslots[$id];
-				$html .= "\n<input type=\"submit\" name=\"timeslot[{$indexValue}]\" value=\"{$timeFormatted}\" />";		// See multiple button solution using [] at: http://stackoverflow.com/a/34915274/180733
+				$html .= "\n\t\t<tr>";
+				if ($first) {
+					$html .= "\n\t\t\t<td rowspan=\"{$totalThisDate}\"><strong>{$dateFormatted}:</strong></h5>";
+					$first = false;
+				} else {
+					$html .= "\n\t\t\t";
+				}
+				$html .= "\n\t\t\t<td>{$timeFormatted}:</td>";
+				for ($i = 0; $i < $supervision['studentsPerTimeslot']; $i++) {
+					$html .= "\n\t\t\t\t<td><input type=\"submit\" name=\"timeslot[{$indexValue}]\" value=\"{$timeFormatted}\" /></td>";		// See multiple button solution using [] at: http://stackoverflow.com/a/34915274/180733
+				}
+				$html .= "\n\t\t</tr>";
 			}
 		}
-		$html .= "\n</form>";
+		$html .= "\n\t</table>";
+		$html .= "\n\n</form>";
 		
 		# Show the HTML
 		echo $html;
