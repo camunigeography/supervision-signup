@@ -394,6 +394,7 @@ class supervisionSignup extends frontControllerApplication
 		# Create the timeslot buttons
 		$html .= "\n\n<form class=\"timeslots\" name=\"timeslot\" action=\"\" method=\"post\">";
 		$html .= "\n\n\t<table class=\"lines\">";
+		$userSlotPassed = false;
 		foreach ($timeslotsByDate as $date => $timeslotsForDate) {
 			$editable = ($date > $today);
 			$totalThisDate = count ($timeslotsForDate);
@@ -419,9 +420,10 @@ class supervisionSignup extends frontControllerApplication
 						$html .= "<div class=\"timeslot " . ($signup['userId'] == $this->user ? 'me' : 'taken') . "\"><p>{$signup['userName']}<br /><span>{$signup['userId']}</span></p></div>";
 						if ($signup['userId'] == $this->user) {
 							$showButton = false;
+							if (!$editable) {$userSlotPassed = true;}
 						}
 					} else {
-						if ($showButton) {
+						if ($showButton && !$userSlotPassed) {
 							$label = ($userHasSignedUp ? 'Change to here' : 'Sign up');
 							$html .= "<input type=\"submit\" name=\"timeslot[{$indexValue}]\" value=\"{$label}\" />";		// See multiple button solution using [] at: http://stackoverflow.com/a/34915274/180733
 							$showButton = false;	// Only first in row show be clickable, so they fill up from the left
