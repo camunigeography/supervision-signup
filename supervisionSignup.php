@@ -152,8 +152,12 @@ class supervisionSignup extends frontControllerApplication
 		
 		# List of supervisions
 		$html .= "\n<h2>Sign up to a supervision</h2>";
-		$html .= "\n<p>You can sign up to the following supervisions online:</p>";
-		$html .= $this->supervisionsList ();
+		if ($supervisionsList = $this->supervisionsList ($this->userYeargroup)) {
+			$html .= "\n<p>You can sign up to the following supervisions online:</p>";
+			$html .= $supervisionsList;
+		} else {
+			$html .= "\n<p>There are no supervisions available to sign up to yet.</p>";
+		}
 		
 		# Give link for staff
 		if ($this->userIsStaff) {
