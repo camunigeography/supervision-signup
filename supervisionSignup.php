@@ -22,6 +22,8 @@ class supervisionSignup extends frontControllerApplication
 			'coursesCallback' => 'coursesCallback',				// Callback function
 			'authentication' => true,
 			'databaseStrictWhere' => true,
+			'lengths' => array (30 => '30 minutes', 45 => '45 minutes', 60 => '1 hour', 90 => 'Hour and a half', 120 => 'Two hours', ),
+			'lengthDefault' => 60,
 		);
 		
 		# Return the defaults
@@ -77,7 +79,7 @@ class supervisionSignup extends frontControllerApplication
 			  `readingListHtml` text COLLATE utf8_unicode_ci COMMENT 'Reading list (optional)',
 			  `studentsPerTimeslot` int(2) NOT NULL COMMENT 'Students per timeslot',
 			  `location` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Location(s)',
-			  `length` int(11) NOT NULL COMMENT 'Length of time in minutes',
+			  `length` int(11) NOT NULL COMMENT 'Length of time',
 			  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Automatic timestamp',
 			  `updatedAt` datetime NOT NULL COMMENT 'Updated at',
 			  PRIMARY KEY (`id`)
@@ -190,6 +192,7 @@ class supervisionSignup extends frontControllerApplication
 			'attributes' => array (
 				'courseId' => array ('heading' => array (3 => 'Supervision details'), 'type' => 'select', 'values' => $courses, ),
 				'studentsPerTimeslot' => array ('heading' => array (3 => 'Dates, times and locations'), 'type' => 'number', ),	#!# Shouldn't need to specify type - is an ultimateForm bug
+				'length' => array ('type' => 'select', 'values' => $this->settings['lengths'], 'default' => ($supervision ? $supervision['length'] : $this->settings['lengthDefault']), ),
 			),
 		));
 		$form->input (array (
