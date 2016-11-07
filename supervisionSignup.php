@@ -334,6 +334,15 @@ class supervisionSignup extends frontControllerApplication
 			$signups[$startTime][] = $signup;	// Indexed from 0
 		}
 		
+		# Determine if the user has signed-up already
+		$userHasSignedUp = false;
+		foreach ($supervision['signups'] as $id => $signup) {
+			if ($signup['userId'] == $this->user) {
+				$userHasSignedUp = true;
+				break;
+			}
+		}
+		
 		# Get the person name
 		$userLookupData = camUniData::getLookupData ($supervision['username']);
 		
