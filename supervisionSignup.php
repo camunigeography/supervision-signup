@@ -175,14 +175,21 @@ class supervisionSignup extends frontControllerApplication
 	private function supervisionsList ($userYeargroup)
 	{
 		# Get the supervisions
-		if (!$supervisions = $this->getSupervisions ($userYeargroup)) {return false;}
+		if (!$data = $this->getSupervisions ($userYeargroup)) {return false;}
+		
+		# Regroup by year group
+		$supervisionsByYeargroup = application::regroup ($data, 'yearGroup');
 		
 		# Convert to HTML list
-		$list = array ();
-		foreach ($supervisions as $id => $supervision) {
-			$list[$id] = "<a href=\"{$supervision['href']}\">" . htmlspecialchars (($supervision['courseNumber'] ? 'Paper ' . $supervision['courseNumber'] . ': ' : '') . $supervision['courseName'] . ' (' . $supervision['username'] . ')') . '</a>';
+		$html = '';
+		foreach ($supervisionsByYeargroup as $yeargroup => $supervisions) {
+			$html .= "<h3>{$yeargroup}:</h3>";
+			$list = array ();
+			foreach ($supervisions as $id => $supervision) {
+				$list[$id] = "<a href=\"{$supervision['href']}\">" . htmlspecialchars (($supervision['courseNumber'] ? 'Paper ' . $supervision['courseNumber'] . ': ' : '') . $supervision['courseName'] . ' (' . $supervision['username'] . ')') . '</a>';
+			}
+			$html .= application::htmlUl ($list);
 		}
-		$html = application::htmlUl ($list);
 		
 		# Return the HTML
 		return $html;
