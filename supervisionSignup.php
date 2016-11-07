@@ -403,7 +403,8 @@ class supervisionSignup extends frontControllerApplication
 						$signup = $signups[$startTime][$i];
 						$html .= "<div class=\"taken" . ($signup['userId'] == $this->user ? ' me' : '') . "\">{$signup['userName']}<br /><span>{$signup['userId']}</span></div>";
 					} else {
-						$html .= "<input type=\"submit\" name=\"timeslot[{$indexValue}]\" value=\"Sign up\" />";		// See multiple button solution using [] at: http://stackoverflow.com/a/34915274/180733
+						$label = ($userHasSignedUp ? 'Change to here' : 'Sign up');
+						$html .= "<input type=\"submit\" name=\"timeslot[{$indexValue}]\" value=\"{$label}\" />";		// See multiple button solution using [] at: http://stackoverflow.com/a/34915274/180733
 					}
 					$html .= '</td>';
 				}
