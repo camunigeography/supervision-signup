@@ -383,22 +383,26 @@ class supervisionSignup extends frontControllerApplication
 		# Arrange timeslots by date
 		$timeslotsByDate = array ();
 		foreach ($supervision['timeslots'] as $id => $startTime) {
-			$dateFormatted = nl2br (date ("l,\njS F Y", strtotime ($startTime)));
+			$date = date ('Y-m-d', strtotime ($startTime));
 			$timeFormatted = date ('H:i', strtotime ($startTime)) . ' - ' . date ('H:i', strtotime ($startTime) + ($supervision['length'] * 60));
-			$timeslotsByDate[$dateFormatted][$id] = $timeFormatted;
+			$timeslotsByDate[$date][$id] = $timeFormatted;
 		}
+		
+		# Determine today
+		$today = date ('Y-m-d');
 		
 		# Create the timeslot buttons
 		$html .= "\n\n<form class=\"timeslots\" name=\"timeslot\" action=\"\" method=\"post\">";
 		$html .= "\n\n\t<table class=\"lines\">";
-		foreach ($timeslotsByDate as $dateFormatted => $timeslotsForDate) {
+		foreach ($timeslotsByDate as $date => $timeslotsForDate) {
+			$editable = ($date > $today);
 			$totalThisDate = count ($timeslotsForDate);
 			$first = true;
 			foreach ($timeslotsForDate as $id => $timeFormatted) {
 				$indexValue = $supervision['timeslots'][$id];
-				$html .= "\n\t\t<tr>";
+				$html .= "\n\t\t<tr" . ($editable ? '' : ' class="uneditable"') . '>';
 				if ($first) {
-					$html .= "\n\t\t\t<td rowspan=\"{$totalThisDate}\"><strong>{$dateFormatted}:</strong></h5>";
+					$html .= "\n\t\t\t<td rowspan=\"{$totalThisDate}\"><strong>" . nl2br (date ("l,\njS F Y", strtotime ($date . ' 12:00:00'))) . ":</strong></h5>";
 					$first = false;
 				} else {
 					$html .= "\n\t\t\t";
@@ -406,6 +410,7 @@ class supervisionSignup extends frontControllerApplication
 				$html .= "\n\t\t\t<td>{$timeFormatted}:</td>";
 				$startTime = $supervision['timeslots'][$id];
 				$showButton = true;
+				if (!$editable) {$showButton = false;}
 				for ($i = 0; $i < $supervision['studentsPerTimeslot']; $i++) {
 					$html .= "\n\t\t\t\t<td>";
 					$slotTaken = (isSet ($signups[$startTime]) && isSet ($signups[$startTime][$i]));
@@ -421,7 +426,7 @@ class supervisionSignup extends frontControllerApplication
 							$html .= "<input type=\"submit\" name=\"timeslot[{$indexValue}]\" value=\"{$label}\" />";		// See multiple button solution using [] at: http://stackoverflow.com/a/34915274/180733
 							$showButton = false;	// Only first in row show be clickable, so they fill up from the left
 						} else {
-							$html .= "<div class=\"timeslot available\"><p>Available</p></div>";
+							$html .= "<div class=\"timeslot available\"><p>" . ($editable ? 'Available' : '-') . '</p></div>';
 						}
 					}
 					$html .= '</td>';

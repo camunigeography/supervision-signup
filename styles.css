@@ -3,6 +3,8 @@
 #supervisionsignup div.timeslot {padding: 5px 8px; width: calc(15em - 16px); height: calc(3.5em - 10px);}
 #supervisionsignup form.timeslots input[type=submit] {cursor: pointer;}
 
+#supervisionsignup form.timeslots tr.uneditable {opacity: 0.4;}
+
 #supervisionsignup div.timeslot.taken {background-color: #f5cba7;}
 #supervisionsignup div.timeslot.me {background-color: #f8c471;}
 #supervisionsignup div.timeslot.available {background-color: #f9f9f9; color: gray;}
