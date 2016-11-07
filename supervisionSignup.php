@@ -58,11 +58,38 @@ class supervisionSignup extends frontControllerApplication
 	public function databaseStructure ()
 	{
 		return "
+			
+			-- Administrators
 			CREATE TABLE IF NOT EXISTS `administrators` (
 			  `username` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Username' PRIMARY KEY,
 			  `active` enum('','Yes','No') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Yes' COMMENT 'Currently active?',
 			  `privilege` enum('Administrator','Restricted administrator') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Administrator' COMMENT 'Administrator level'
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='System administrators';
+			
+			-- Supervisions
+			CREATE TABLE `supervisions` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Supervision ID #',
+			  `username` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Username',
+			  `courseId` int(11) NOT NULL COMMENT 'Course',
+			  `courseName` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Course name',
+			  `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Supervision title',
+			  `descriptionHtml` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Description',
+			  `readingListHtml` text COLLATE utf8_unicode_ci COMMENT 'Reading list (optional)',
+			  `studentsPerTimeslot` int(2) NOT NULL COMMENT 'Students per timeslot',
+			  `location` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Location(s)',
+			  `length` int(11) NOT NULL COMMENT 'Length of time in minutes',
+			  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Automatic timestamp',
+			  `updatedAt` datetime NOT NULL COMMENT 'Updated at',
+			  PRIMARY KEY (`id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table of supervisions';
+			
+			-- Timeslots
+			CREATE TABLE `timeslots` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Automatic key',
+			  `supervisionId` INT(11) NOT NULL COMMENT 'Supervision ID',
+			  `startTime` datetime NOT NULL COMMENT 'Start datetime',
+			  PRIMARY KEY (`id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table of timeslots';
 		";
 	}
 	
