@@ -1,0 +1,19 @@
+# Apache httpd.conf extract providing URL routing and other directives
+
+#   Example usage in httpd.conf:
+#   
+#   # Assessments
+#   Include /path/to/supervision-signup/.httpd.conf.extract.txt
+#   Use MacroSupervisionSignup "/supervisions" "Supervision signup" "/path/to/supervision-signup/:/path/to/php/libraries/"
+
+
+<Macro MacroSupervisionSignup $applicationBaseUrl $description $includePath>
+	
+	<Location $applicationBaseUrl>
+		php_value include_path "$includePath"
+	</Location>
+	
+	Use MacroFrontControllerApplication "$applicationBaseUrl/" "$description"
+	
+	
+</Macro>

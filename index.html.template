@@ -1,0 +1,14 @@
+<?php
+
+# Define the settings
+$settings = array (
+	'hostname' => 'localhost',
+	'username' => 'the_username',
+	'password' => 'the_password',
+);
+
+# Run the application with the specified settings
+require_once ('supervision-signup/supervisionSignup.php');
+new supervisionSignup ($settings);
+
+?>
