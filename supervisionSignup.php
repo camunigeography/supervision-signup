@@ -526,11 +526,13 @@ class supervisionSignup extends frontControllerApplication
 		# Extract the times list as an array
 		$times = application::textareaToList ($times);
 		
+		# Create a date description, for use in the event of an error message
+		$dateDescription = date ($dateTextFormat, strtotime ($date . ' 12:00:00'));
+		
 		# Parse string to SQL time format
 		foreach ($times as $index => $time) {
 			if (!$parsedTime = timedate::parseTime ($time)) {		// e.g. 02:30:00
-				$dateDescription = date ($dateTextFormat, strtotime ($date . ' 12:00:00'));
-				$errorHtml = "In the timeslot field for {$dateDescription}, the time '<em>" . htmlspecialchars ($time) . "</em>' appears to be invalid.";
+				$errorHtml = "In the timeslots field for {$dateDescription}, the time '<em>" . htmlspecialchars ($time) . "</em>' appears to be invalid.";
 				return false;
 			}
 			$times[$index] = $parsedTime;
@@ -548,6 +550,13 @@ class supervisionSignup extends frontControllerApplication
 			if ($hours < $this->settings['morningFirstHour']) {
 				$startTimes[$index] = date ('Y-m-d H:i:s', strtotime ($startTimes[$index] . ' + 12 hours'));
 			}
+		}
+		
+		# Ensure there are no duplicate values
+		$startTimes = array_unique ($startTimes);
+		if (count ($times) != count ($startTimes)) {
+			$errorHtml = "In the timeslots field for {$dateDescription}, the list of times is not unique.";
+			return false;
 		}
 		
 		# Return the list
