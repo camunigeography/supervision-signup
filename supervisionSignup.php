@@ -714,12 +714,12 @@ class supervisionSignup extends frontControllerApplication
 		$html .= "\n<br />";
 		$html .= "\n<h3 id=\"timeslots\">Time slots:</h3>";
 		
-		# Determine the posted slot
+		# Add signup if posted, by determining the posted slot
 		if (isSet ($_POST['timeslot']) && is_array ($_POST['timeslot']) && count ($_POST['timeslot']) == 1) {
 			$submittedId = key ($_POST['timeslot']);
 			if (in_array ($submittedId, $supervision['timeslots'])) {
-				if (!$this->addSignup ($supervision['id'], $this->user, $this->userName, $submittedId)) {
-					$html .= "\n" . '<p class="warning">There was a problem registering the signup.</p>';
+				if (!$this->addSignup ($supervision['id'], $this->user, $this->userName, $submittedId, $error /* returned by reference */)) {
+					$html .= "\n<p class=\"warning\">{$error}</p>";
 					echo $html;
 					return false;
 				}
@@ -884,7 +884,7 @@ class supervisionSignup extends frontControllerApplication
 	
 	
 	# Model function to sign up a student
-	private function addSignup ($supervisionId, $userId, $userName, $startTime)
+	private function addSignup ($supervisionId, $userId, $userName, $startTime, &$error = false)
 	{
 		# Assemble the data identity
 		$entry = array (
@@ -900,7 +900,12 @@ class supervisionSignup extends frontControllerApplication
 		$entry['startTime'] = $startTime;
 		
 		# Insert the row
-		return $this->databaseConnection->insert ($this->settings['database'], 'signups', $entry);
+		if (!$result = $this->databaseConnection->insert ($this->settings['database'], 'signups', $entry)) {
+			$error = 'There was a problem registering the signup.';
+		}
+		
+		# Return the result
+		return $result;
 	}
 	
 	
