@@ -251,6 +251,7 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Databind a form
 		$form = new form (array (
+			'div' => 'lines',
 			'displayRestrictions' => false,
 			'formCompleteText' => false,
 			'databaseConnection' => $this->databaseConnection,
@@ -269,10 +270,11 @@ class supervisionSignup extends frontControllerApplication
 			'exclude' => array ('username', 'courseName'),		// Fixed data fields, handled below
 			'attributes' => array (
 				'courseId' => array ('heading' => array (3 => 'Supervision details'), 'type' => 'select', 'values' => $courses, ),
-				'studentsPerTimeslot' => array ('heading' => array (3 => 'Dates, times and locations'), ),
+				'studentsPerTimeslot' => array ('heading' => array (3 => 'Supervision format'), ),
 				'length' => array ('type' => 'select', 'values' => $this->settings['lengths'], 'default' => ($supervision ? $supervision['length'] : $this->settings['lengthDefault']), ),
 			),
 		));
+		$form->heading (3, 'Timeslots');
 		$form->input (array (
 			'name' => 'timeslots',
 			'title' => 'Timeslots (start time of each available supervision)',
