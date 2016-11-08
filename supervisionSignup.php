@@ -256,7 +256,8 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Compile the timeslots template HTML, and obtain the timeslot fields created
 		$fieldnamePrefix = 'timeslot_';
-		$timeslotsHtml = $this->timeslotsHtml ($allDays, $fieldnamePrefix, $timeslotFields /* returned by reference */);
+		$dateTextFormat = 'D jS M';
+		$timeslotsHtml = $this->timeslotsHtml ($allDays, $fieldnamePrefix, $dateTextFormat, $timeslotFields /* returned by reference */);
 		
 		# Databind a form
 		$form = new form (array (
@@ -299,6 +300,29 @@ class supervisionSignup extends frontControllerApplication
 			}
 		}
 		
+		# Check start times via parser
+		$startTimesPerField = array ();
+		if ($unfinalisedData = $form->getUnfinalisedData ()) {
+			
+			# Obtain the timeslots
+			$timeslots = application::arrayFields ($unfinalisedData, $timeslotFields);
+			
+			# Try each field
+			foreach ($timeslots as $fieldname => $times) {
+				
+				# Skip if no data submitted
+				if (!$times) {continue;}
+				
+				# Remove the fieldname prefix to create the date
+				$date = str_replace ($fieldnamePrefix, '', $fieldname);	// e.g. 2016-11-08
+				
+				# Parse out the text block to start times
+				if (!$startTimesPerField[$fieldname] = $this->parseStartTimes ($times, $date, $dateTextFormat, $errorHtml /* returned by reference */)) {
+					$form->registerProblem ('starttimeparsefailure', $errorHtml, $fieldname);
+				}
+			}
+		}
+		
 		# Process the form
 		if ($result = $form->process ($html)) {
 			
@@ -314,7 +338,6 @@ class supervisionSignup extends frontControllerApplication
 			$result['courseName'] = $coursesFlattened[$result['courseId']];
 			
 			# Extract the timeslots for entering in the separate timeslot table, and remove from the main insert
-			$timeslots = application::arrayFields ($result, $timeslotFields);
 			foreach ($result as $field => $value) {
 				if (in_array ($field, $timeslotFields)) {
 					unset ($result[$field]);
@@ -332,18 +355,9 @@ class supervisionSignup extends frontControllerApplication
 			# Get the supervision ID just inserted
 			$supervisionId = ($supervision ? $supervision['id'] : $this->databaseConnection->getLatestId ());
 			
-			# Add each timeslot
+			# Construct the timeslot inserts
 			$timeslotInserts = array ();
-			foreach ($timeslots as $fieldname => $times) {
-				if (!$times) {continue;}
-				
-				# Remove the fieldname prefix to create the date
-				$date = str_replace ($fieldnamePrefix, '', $fieldname);	// e.g. 2016-11-08
-				
-				# Parse out the text block to start times
-				$startTimes = $this->parseStartTimes ($times, $date);
-				
-				# Construct a timeslot insert
+			foreach ($startTimesPerField as $fieldname => $startTimes) {
 				foreach ($startTimes as $startTime) {
 					$timeslotInserts[] = array (
 						'supervisionId' => $supervisionId,
@@ -401,7 +415,7 @@ class supervisionSignup extends frontControllerApplication
 	
 	
 	# Function to create the timeslots HTML
-	private function timeslotsHtml ($allDays, $fieldnamePrefix, &$timeslotFields = array ())
+	private function timeslotsHtml ($allDays, $fieldnamePrefix, $dateTextFormat, &$timeslotFields = array ())
 	{
 		# Start the table
 		$html  = "\n\t\t\t\t\t\t" . '<table class="border">';
@@ -426,7 +440,7 @@ class supervisionSignup extends frontControllerApplication
 			# Add each day, saving the fieldname
 			foreach ($daysOfWeek as $dayUnixtime => $dayYmd) {
 				$html .= "\n\t\t\t\t\t\t\t\t" . '<td class="' . strtolower (date ('l', $dayUnixtime)) . '">';
-				$html .= date ('D jS M', $dayUnixtime) . ':<br />';
+				$html .= date ($dateTextFormat, $dayUnixtime) . ':<br />';
 				$timeslotFields[$dayUnixtime] = $fieldnamePrefix . $dayYmd;
 				$html .= '{' . $timeslotFields[$dayUnixtime] . '}';
 				$html .= '</td>';
@@ -507,15 +521,19 @@ class supervisionSignup extends frontControllerApplication
 	
 	
 	# Function to parse out the start times
-	private function parseStartTimes ($times, $date)
+	private function parseStartTimes ($times, $date, $dateTextFormat, &$errorHtml = false)
 	{
 		# Extract the times list as an array
 		$times = application::textareaToList ($times);
 		
 		# Parse string to SQL time format
 		foreach ($times as $index => $time) {
-			#!# Needs validity checking
-			$times[$index] = timedate::parseTime ($time);	// e.g. 02:30:00
+			if (!$parsedTime = timedate::parseTime ($time)) {		// e.g. 02:30:00
+				$dateDescription = date ($dateTextFormat, strtotime ($date . ' 12:00:00'));
+				$errorHtml = "In the timeslot field for {$dateDescription}, the time '<em>" . htmlspecialchars ($time) . "</em>' appears to be invalid.";
+				return false;
+			}
+			$times[$index] = $parsedTime;
 		}
 		
 		# Compile as date and time
