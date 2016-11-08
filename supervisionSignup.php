@@ -681,7 +681,7 @@ class supervisionSignup extends frontControllerApplication
 			$html .= "\n</div>";
 		}
 		$html .= "\n<br />";
-		$html .= "\n<h3>Time slots:</h3>";
+		$html .= "\n<h3 id=\"timeslots\">Time slots:</h3>";
 		
 		# Determine the posted slot
 		if (isSet ($_POST['timeslot']) && is_array ($_POST['timeslot']) && count ($_POST['timeslot']) == 1) {
@@ -712,7 +712,8 @@ class supervisionSignup extends frontControllerApplication
 		$today = date ('Y-m-d');
 		
 		# Create the timeslot buttons
-		$html .= "\n\n<form class=\"timeslots\" name=\"timeslot\" action=\"\" method=\"post\">";
+		$formTarget = $_SERVER['_PAGE_URL'] . '#timeslots';
+		$html .= "\n\n<form class=\"timeslots\" name=\"timeslot\" action=\"" . htmlspecialchars ($formTarget) . "\" method=\"post\">";
 		$html .= "\n\n\t<table class=\"lines\">";
 		$userSlotPassed = false;
 		foreach ($timeslotsByDate as $date => $timeslotsForDate) {
