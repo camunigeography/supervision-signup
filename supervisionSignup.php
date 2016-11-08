@@ -303,14 +303,12 @@ class supervisionSignup extends frontControllerApplication
 			}
 		}
 		
-		# Check start times via parser
-		$startTimesPerField = array ();
+		# Check the start times and obtain the list
+		$startTimesPerDate = array ();
 		if ($unfinalisedData = $form->getUnfinalisedData ()) {
 			
-			# Obtain the timeslots
+			# Check start times via parser, by checking each field
 			$timeslots = application::arrayFields ($unfinalisedData, $timeslotsFields);
-			
-			# Try each field
 			foreach ($timeslots as $fieldname => $times) {
 				
 				# Skip if no data submitted
@@ -320,13 +318,13 @@ class supervisionSignup extends frontControllerApplication
 				$date = str_replace ($fieldnamePrefix, '', $fieldname);	// e.g. 2016-11-08
 				
 				# Parse out the text block to start times
-				if (!$startTimesPerField[$fieldname] = $this->parseStartTimes ($times, $date, $dateTextFormat, $errorHtml /* returned by reference */)) {
+				if (!$startTimesPerDate[$date] = $this->parseStartTimes ($times, $date, $dateTextFormat, $errorHtml /* returned by reference */)) {
 					$form->registerProblem ('starttimeparsefailure', $errorHtml, $fieldname);
 				}
 			}
 			
 			# Ensure that at least one timeslot has been created
-			if (!$startTimesPerField) {
+			if (!$startTimesPerDate) {
 				$form->registerProblem ('notimeslots', 'No timeslots have been set.');
 			}
 		}
@@ -365,7 +363,7 @@ class supervisionSignup extends frontControllerApplication
 			
 			# Construct the timeslot inserts
 			$timeslotInserts = array ();
-			foreach ($startTimesPerField as $fieldname => $startTimes) {
+			foreach ($startTimesPerDate as $date => $startTimes) {
 				foreach ($startTimes as $startTime) {
 					$timeslotInserts[] = array (
 						'supervisionId' => $supervisionId,
