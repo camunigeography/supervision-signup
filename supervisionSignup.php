@@ -823,6 +823,9 @@ class supervisionSignup extends frontControllerApplication
 	# Helper function to arrange existing signups by timeslot
 	private function signupsByTimeslot ($supervision, $nestByDate = false)
 	{
+		# Not relevant if no existing supervision supplied
+		if (!$supervision) {return array ();}
+		
 		# Filter, arranging by date
 		$signups = array ();
 		foreach ($supervision['signups'] as $id => $signup) {
