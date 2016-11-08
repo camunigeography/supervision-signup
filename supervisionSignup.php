@@ -691,8 +691,11 @@ class supervisionSignup extends frontControllerApplication
 				return true;
 			}
 			
-			# Show the edit button
-			$html .= "\n<p><a href=\"{$this->baseUrl}/{$id}/edit.html\" class=\"actions right\"><img src=\"/images/icons/pencil.png\" alt=\"Edit\" border=\"0\" /> Edit</a></p>";
+			# Show the edit and delete buttons
+			$html .= "\n<ul class=\"actions right spaced\">";
+			$html .= "\n\t<li><a href=\"{$this->baseUrl}/{$id}/edit.html\"><img src=\"/images/icons/pencil.png\" alt=\"Edit\" border=\"0\" /> Edit</a></li>";
+			$html .= "\n\t<li><a href=\"{$this->baseUrl}/{$id}/delete.html\"><img src=\"/images/icons/bin.png\" alt=\"Edit\" border=\"0\" /> Delete &hellip;</a></li>";
+			$html .= "\n</ul>";
 		}
 		
 		# Show the supervision
@@ -877,6 +880,38 @@ class supervisionSignup extends frontControllerApplication
 	}
 	
 	
+	# Function to delete a supervision
+	private function deleteSupervision ($supervision)
+	{
+		# Start the HTML
+		$html = '';
+		
+		# Obtain confirmation from the user
+		$message = '<strong>Are you sure you want to delete this supervision below? The data cannot be retrieved later.</strong>';
+		$confirmation = 'Yes, delete';
+		if ($this->areYouSure ($message, $confirmation, $html)) {
+			
+			# Do the deletion
+			if (!$this->doSupervisionDeletion ($supervision['id'], $error)) {
+				$html = "\n<p class=\"warning\">{$error}</p>";
+				return $html;
+			}
+			
+			# Confirm the success
+			$html = "<p>{$this->tick} The supervision was deleted.</p>";
+			
+			# Return the HTML
+			return $html;
+		}
+		
+		# Show the supervision
+		$html .= $this->showSupervision ($supervision);
+		
+		# Return the HTML
+		return $html;
+	}
+	
+	
 	# Function to get data for a single supervision
 	private function getSupervision ($id)
 	{
@@ -1043,6 +1078,32 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Return the courses
 		return $courses;
+	}
+	
+	
+	# Model function to perform supervision deletion
+	private function doSupervisionDeletion ($id, &$error = false)
+	{
+		# Delete the supervision entry itself
+		if (!$this->databaseConnection->delete ($this->settings['database'], $this->settings['table'], array ('id' => $id), $limit = 1)) {
+			$error = "There was a problem deleting the supervision.";
+			return false;
+		}
+		
+		# Delete the timeslots
+		if (!$this->databaseConnection->delete ($this->settings['database'], 'timeslots', array ('supervisionId' => $id))) {
+			$error = "There was a problem deleting the timeslots associated with the supervision.";
+			return false;
+		}
+		
+		# Delete the signups
+		if (!$this->databaseConnection->delete ($this->settings['database'], 'signups', array ('supervisionId' => $id))) {
+			$error = "There was a problem deleting the signups associated with the timeslots of the supervision.";
+			return false;
+		}
+		
+		# Return success
+		return true;
 	}
 }
 
