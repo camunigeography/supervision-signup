@@ -648,11 +648,7 @@ class supervisionSignup extends frontControllerApplication
 		}
 		
 		# Arrange signups by timeslot
-		$signups = array ();
-		foreach ($supervision['signups'] as $id => $signup) {
-			$startTime = $signup['startTime'];
-			$signups[$startTime][] = $signup;	// Indexed from 0
-		}
+		$signups = $this->signupsByTimeslot ($supervision);
 		
 		# Determine if the user has signed-up already
 		$userHasSignedUp = false;
@@ -762,6 +758,21 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Show the HTML
 		echo $html;
+	}
+	
+	
+	# Helper function to arrange existing signups by timeslot
+	private function signupsByTimeslot ($supervision)
+	{
+		# Filter, arranging by date
+		$signups = array ();
+		foreach ($supervision['signups'] as $id => $signup) {
+			$startTime = $signup['startTime'];
+			$signups[$startTime][] = $signup;	// Indexed from 0
+		}
+		
+		# Return the list
+		return $signups;
 	}
 	
 	
