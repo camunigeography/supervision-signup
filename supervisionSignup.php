@@ -255,9 +255,9 @@ class supervisionSignup extends frontControllerApplication
 		$allDays = $this->calculateTimeslotDates ($supervision);
 		
 		# Compile the timeslots template HTML, and obtain the timeslot fields created
-		$fieldnamePrefix = 'timeslot_';
+		$fieldnamePrefix = 'timeslots_';
 		$dateTextFormat = 'D jS M';
-		$timeslotsHtml = $this->timeslotsHtml ($allDays, $fieldnamePrefix, $dateTextFormat, $timeslotFields /* returned by reference */);
+		$timeslotsHtml = $this->timeslotsHtml ($allDays, $fieldnamePrefix, $dateTextFormat, $timeslotsFields /* returned by reference */);
 		
 		# Databind a form
 		$form = new form (array (
@@ -290,9 +290,9 @@ class supervisionSignup extends frontControllerApplication
 		foreach ($allDays as $weekStartUnixtime => $daysOfWeek) {
 			foreach ($daysOfWeek as $dayUnixtime => $dayYmd) {
 				$dayNumber = date ('N', $dayUnixtime);	// Monday is 1
-				$fieldname = $timeslotFields;
+				$fieldname = $timeslotsFields;
 				$form->textarea (array (
-					'name' => $timeslotFields[$dayUnixtime],
+					'name' => $timeslotsFields[$dayUnixtime],
 					'title' => date ('Y-m-d', $dayUnixtime),
 					'cols' => ($dayNumber > 5 ? 9 : 11),	// Less space for Saturday/Sunday as unlikely to be used
 					'rows' => 5,
@@ -305,7 +305,7 @@ class supervisionSignup extends frontControllerApplication
 		if ($unfinalisedData = $form->getUnfinalisedData ()) {
 			
 			# Obtain the timeslots
-			$timeslots = application::arrayFields ($unfinalisedData, $timeslotFields);
+			$timeslots = application::arrayFields ($unfinalisedData, $timeslotsFields);
 			
 			# Try each field
 			foreach ($timeslots as $fieldname => $times) {
@@ -339,7 +339,7 @@ class supervisionSignup extends frontControllerApplication
 			
 			# Extract the timeslots for entering in the separate timeslot table, and remove from the main insert
 			foreach ($result as $field => $value) {
-				if (in_array ($field, $timeslotFields)) {
+				if (in_array ($field, $timeslotsFields)) {
 					unset ($result[$field]);
 				}
 			}
@@ -415,7 +415,7 @@ class supervisionSignup extends frontControllerApplication
 	
 	
 	# Function to create the timeslots HTML
-	private function timeslotsHtml ($allDays, $fieldnamePrefix, $dateTextFormat, &$timeslotFields = array ())
+	private function timeslotsHtml ($allDays, $fieldnamePrefix, $dateTextFormat, &$timeslotsFields = array ())
 	{
 		# Start the table
 		$html  = "\n\t\t\t\t\t\t" . '<table class="border">';
@@ -430,7 +430,7 @@ class supervisionSignup extends frontControllerApplication
 		$html .= "\n\t\t\t\t\t\t\t" . '</tr>';
 		
 		# Create a list of the fields, to be passed back by reference
-		$timeslotFields = array ();
+		$timeslotsFields = array ();
 		
 		# Start each week
 		foreach ($allDays as $weekStartUnixtime => $daysOfWeek) {
@@ -441,8 +441,8 @@ class supervisionSignup extends frontControllerApplication
 			foreach ($daysOfWeek as $dayUnixtime => $dayYmd) {
 				$html .= "\n\t\t\t\t\t\t\t\t" . '<td class="' . strtolower (date ('l', $dayUnixtime)) . '">';
 				$html .= date ($dateTextFormat, $dayUnixtime) . ':<br />';
-				$timeslotFields[$dayUnixtime] = $fieldnamePrefix . $dayYmd;
-				$html .= '{' . $timeslotFields[$dayUnixtime] . '}';
+				$timeslotsFields[$dayUnixtime] = $fieldnamePrefix . $dayYmd;
+				$html .= '{' . $timeslotsFields[$dayUnixtime] . '}';
 				$html .= '</td>';
 			}
 			$html .= "\n\t\t\t\t\t\t\t" . '</tr>';
