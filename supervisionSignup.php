@@ -723,7 +723,7 @@ class supervisionSignup extends frontControllerApplication
 				$indexValue = $supervision['timeslots'][$id];
 				$html .= "\n\t\t<tr" . ($editable ? '' : ' class="uneditable"') . '>';
 				if ($first) {
-					$html .= "\n\t\t\t<td rowspan=\"{$totalThisDate}\"><strong>" . nl2br (date ("l,\njS F Y", strtotime ($date . ' 12:00:00'))) . ":</strong></h5>";
+					$html .= "\n\t\t\t<td rowspan=\"{$totalThisDate}\">" . nl2br (date ("l,\njS F Y", strtotime ($date . ' 12:00:00'))) . ":</h5>";
 					$first = false;
 				} else {
 					$html .= "\n\t\t\t";
