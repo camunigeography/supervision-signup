@@ -321,6 +321,11 @@ class supervisionSignup extends frontControllerApplication
 					$form->registerProblem ('starttimeparsefailure', $errorHtml, $fieldname);
 				}
 			}
+			
+			# Ensure that at least one timeslot has been created
+			if (!$startTimesPerField) {
+				$form->registerProblem ('notimeslots', 'No timeslots have been set.');
+			}
 		}
 		
 		# Process the form
