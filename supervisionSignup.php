@@ -262,6 +262,9 @@ class supervisionSignup extends frontControllerApplication
 		# If editing, parse existing timeslots to the textarea format
 		$timeslotsDefaults = $this->parseExistingTimeslots ($supervision);
 		
+		# If editing, obtain a list of timeslots already chosen by users, which therefore cannot be removed
+		$alreadyChosenSignups = $this->signupsByTimeslot ($supervision, true);
+		
 		# Databind a form
 		$form = new form (array (
 			'div' => false,
@@ -326,6 +329,11 @@ class supervisionSignup extends frontControllerApplication
 			# Ensure that at least one timeslot has been created
 			if (!$startTimesPerDate) {
 				$form->registerProblem ('notimeslots', 'No timeslots have been set.');
+			}
+			
+			# Prevent deletion of slots that have already been chosen by a student
+			if ($missingAlreadyChosen = $this->missingAlreadyChosen ($alreadyChosenSignups, $startTimesPerDate, $dateTextFormat)) {
+				$form->registerProblem ('missingchosen', 'Some of the timeslots that you attempted to remove already have signups: <em>' . implode ('</em>, <em>', $missingAlreadyChosen) . '</em>, so you need to be reinstate those times in the timeslots list below.');
 			}
 		}
 		
@@ -594,6 +602,35 @@ class supervisionSignup extends frontControllerApplication
 	}
 	
 	
+	# Function to detect cases of deletion of timeslot(s) that a student has already chosen
+	private function missingAlreadyChosen ($alreadyChosenSignups, $startTimesPerDate, $dateTextFormat)
+	{
+		# Start a list of missing already-chosen signups
+		$missingAlreadyChosen = array ();
+		
+		# Loop through the existing ones as the comparator, as the whole date may have been deleted, rather than the other way round
+		foreach ($alreadyChosenSignups as $dateChosen => $signupsByDatetime) {
+			foreach ($signupsByDatetime as $datetimeChosen => $signup) {
+				
+				# If the date is missing, or the time within that date, is missing, register it
+				if (!isSet ($startTimesPerDate[$dateChosen]) || !in_array ($datetimeChosen, $startTimesPerDate[$dateChosen])) {
+					$date = date ($dateTextFormat, strtotime ($datetimeChosen));
+					$time = timedate::simplifyTime (date ('H:i:s', strtotime ($datetimeChosen)));
+					$missingAlreadyChosen[$date][] = $time;
+				}
+			}
+		}
+		
+		# Compile to a string, in the format date (time1, time2, ...)
+		foreach ($missingAlreadyChosen as $date => $times) {
+			$missingAlreadyChosen[$date] = $date . ' (' . implode (', ', $times) . ')';
+		}
+		
+		# Return the list, indexed by date, each containing a compiled list
+		return $missingAlreadyChosen;
+	}
+	
+	
 	# Supervision page
 	public function supervision ($id)
 	{
@@ -760,13 +797,18 @@ class supervisionSignup extends frontControllerApplication
 	
 	
 	# Helper function to arrange existing signups by timeslot
-	private function signupsByTimeslot ($supervision)
+	private function signupsByTimeslot ($supervision, $nestByDate = false)
 	{
 		# Filter, arranging by date
 		$signups = array ();
 		foreach ($supervision['signups'] as $id => $signup) {
 			$startTime = $signup['startTime'];
-			$signups[$startTime][] = $signup;	// Indexed from 0
+			if ($nestByDate) {
+				list ($date, $time) = explode (' ', $signup['startTime'], 2);
+				$signups[$date][$startTime][] = $signup;	// Indexed from 0
+			} else {
+				$signups[$startTime][] = $signup;	// Indexed from 0
+			}
 		}
 		
 		# Return the list
