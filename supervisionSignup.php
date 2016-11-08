@@ -731,6 +731,26 @@ class supervisionSignup extends frontControllerApplication
 			}
 		}
 		
+		# Delete the timeslot if required
+		if (isSet ($_POST['delete']) && is_array ($_POST['delete']) && count ($_POST['delete']) == 1) {
+			$submittedToken = key ($_POST['delete']);
+			if (substr_count ($submittedToken, ',')) {
+				list ($startTime, $userId) = explode (',', $submittedToken, 2);
+				if (in_array ($startTime, $supervision['timeslots'])) {
+					if (!$this->deleteSignup ($supervision['id'], $startTime, $userId, $error /* returned by reference */)) {
+						$html .= "\n<p class=\"warning\">{$error}</p>";
+						echo $html;
+						return false;
+					}
+					
+					# Refresh the page
+					$html .= application::sendHeader ('refresh', false, $redirectMessage = true);
+					echo $html;
+					return;
+				}
+			}
+		}
+		
 		# Arrange timeslots by date
 		$timeslotsByDate = array ();
 		foreach ($supervision['timeslots'] as $id => $startTime) {
@@ -769,7 +789,11 @@ class supervisionSignup extends frontControllerApplication
 					$slotTaken = (isSet ($signups[$startTime]) && isSet ($signups[$startTime][$i]));
 					if ($slotTaken) {
 						$signup = $signups[$startTime][$i];
-						$html .= "<div class=\"timeslot " . ($signup['userId'] == $this->user ? 'me' : 'taken') . "\"><p>{$signup['userName']}<br /><span>{$signup['userId']}</span></p></div>";
+						$removeHtml = '';
+						if ($signup['userId'] == $this->user || $this->userIsAdministrator) {
+							$removeHtml = '<div class="delete"><input type="submit" name="delete[' . $indexValue . ',' . $signup['userId'] . ']" value="" onclick="return confirm(\'Are you sure?\');"></div>';	// See: http://stackoverflow.com/a/1193338/180733
+						}
+						$html .= "<div class=\"timeslot " . ($signup['userId'] == $this->user ? 'me' : 'taken') . "\">{$removeHtml}<p>{$signup['userName']}<br /><span>{$signup['userId']}</span></p></div>";
 						if ($signup['userId'] == $this->user) {
 							$showButton = false;
 							if (!$editable) {$userSlotPassed = true;}
@@ -902,6 +926,41 @@ class supervisionSignup extends frontControllerApplication
 		# Insert the row
 		if (!$result = $this->databaseConnection->insert ($this->settings['database'], 'signups', $entry)) {
 			$error = 'There was a problem registering the signup.';
+			return false;
+		}
+		
+		# Return success
+		return true;
+	}
+	
+	
+	# Model function to delete a signup
+	private function deleteSignup ($supervisionId, $startTime, $userId /* assumed not trusted */, &$error = false)
+	{
+		# Assemble the data identity
+		$entry = array (
+			'supervisionId' => $supervisionId,
+			'startTime' => $startTime,
+			'userId' => $userId,
+		);
+		
+		# Ensure the entry exists
+		if (!$signup = $this->databaseConnection->selectOne ($this->settings['database'], 'signups', $entry)) {
+			$error = 'There is no such signup.';
+			return false;
+		}
+		
+		# Ensure the user has rights
+		if (!$this->userIsAdministrator) {
+			if ($signup['userId'] != $this->user) {
+				$error = 'You do not appear to have rights to delete this signup.';
+				return false;
+			}
+		}
+		
+		# Delete the entry
+		if (!$this->databaseConnection->delete ($this->settings['database'], 'signups', $entry)) {
+			$error = 'There was a problem deleting the signup.';
 			return false;
 		}
 		
