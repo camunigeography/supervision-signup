@@ -259,6 +259,9 @@ class supervisionSignup extends frontControllerApplication
 		$dateTextFormat = 'D jS M';
 		$timeslotsHtml = $this->timeslotsHtml ($allDays, $fieldnamePrefix, $dateTextFormat, $timeslotsFields /* returned by reference */);
 		
+		# If editing, parse existing timeslots to the textarea format
+		$timeslotsDefaults = $this->parseExistingTimeslots ($supervision);
+		
 		# Databind a form
 		$form = new form (array (
 			'div' => false,
@@ -290,12 +293,12 @@ class supervisionSignup extends frontControllerApplication
 		foreach ($allDays as $weekStartUnixtime => $daysOfWeek) {
 			foreach ($daysOfWeek as $dayUnixtime => $dayYmd) {
 				$dayNumber = date ('N', $dayUnixtime);	// Monday is 1
-				$fieldname = $timeslotsFields;
 				$form->textarea (array (
 					'name' => $timeslotsFields[$dayUnixtime],
 					'title' => date ('Y-m-d', $dayUnixtime),
 					'cols' => ($dayNumber > 5 ? 9 : 11),	// Less space for Saturday/Sunday as unlikely to be used
 					'rows' => 5,
+					'default' => (isSet ($timeslotsDefaults[$dayYmd]) ? $timeslotsDefaults[$dayYmd] : false),
 				));
 			}
 		}
@@ -459,8 +462,32 @@ class supervisionSignup extends frontControllerApplication
 	}
 	
 	
+	# Helper function to parse existing timeslots to the textarea format
+	private function parseExistingTimeslots ($supervision)
+	{
+		# End if no existing supervision
+		if (!$supervision) {return array ();}
+		
+		# Group as date to list of simplified times
+		$timeslotsExistingByDate = array ();
+		foreach ($supervision['timeslots'] as $timeslot) {
+			list ($date, $time) = explode (' ', $timeslot, 2);
+			$timeslotsExistingByDate[$date][] = timedate::simplifyTime ($time);
+		}
+		
+		# Implode each date's entries
+		$timeslotsDefaults = array ();
+		foreach ($timeslotsExistingByDate as $date => $timeslotsExisting) {
+			$timeslotsDefaults[$date] = implode ("\n", $timeslotsExisting);
+		}
+		
+		# Return the list
+		return $timeslotsDefaults;
+	}
+	
+	
 	# Form template
-	public function formTemplate ($timeslotsHtml)
+	private function formTemplate ($timeslotsHtml)
 	{
 		# Assemble the page template
 		$html = "
