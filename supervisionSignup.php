@@ -26,6 +26,8 @@ class supervisionSignup extends frontControllerApplication
 			'lengthDefault' => 60,
 			'yearGroups' => array ('Part IA', 'Part IB', 'Part II'),
 			'organisationDescription' => 'the Department',
+			'timeslotsWeeksAhead' => 10,
+			'morningFirstHour' => 8,	// First hour that is in the morning; e.g. if set to 8, staff-entered time '8' would mean 8am rather than 8pm, and '7' would mean 7pm
 		);
 		
 		# Return the defaults
@@ -249,9 +251,16 @@ class supervisionSignup extends frontControllerApplication
 		# Get the courses
 		$courses = $this->getCourses ();
 		
+		# Create the timeslots, using the Mondays from the start of the week for the current date (for a new supervision) or the creation date (editing an existing one)
+		$allDays = $this->calculateTimeslotDates ($supervision);
+		
+		# Compile the timeslots template HTML, and obtain the timeslot fields created
+		$fieldnamePrefix = 'timeslot_';
+		$timeslotsHtml = $this->timeslotsHtml ($allDays, $fieldnamePrefix, $timeslotFields /* returned by reference */);
+		
 		# Databind a form
 		$form = new form (array (
-			'div' => 'lines',
+			'div' => false,
 			'displayRestrictions' => false,
 			'formCompleteText' => false,
 			'databaseConnection' => $this->databaseConnection,
@@ -261,28 +270,36 @@ class supervisionSignup extends frontControllerApplication
 			'cols' => 80,
 			'autofocus' => true,
 			'unsavedDataProtection' => true,
+			'display' => 'template',
+			'displayTemplate' => $this->formTemplate ($timeslotsHtml),
 		));
 		$form->dataBinding (array (
 			'database' => $this->settings['database'],
 			'table' => $this->settings['table'],
 			'data' => $supervision,
 			'intelligence' => true,
-			'exclude' => array ('username', 'courseName'),		// Fixed data fields, handled below
+			'exclude' => array ('id', 'username', 'courseName'),		// Fixed data fields, handled below
 			'attributes' => array (
-				'courseId' => array ('heading' => array (3 => 'Supervision details'), 'type' => 'select', 'values' => $courses, ),
-				'studentsPerTimeslot' => array ('heading' => array (3 => 'Supervision format'), ),
+				'courseId' => array ('type' => 'select', 'values' => $courses, ),
 				'length' => array ('type' => 'select', 'values' => $this->settings['lengths'], 'default' => ($supervision ? $supervision['length'] : $this->settings['lengthDefault']), ),
 			),
 		));
-		$form->heading (3, 'Timeslots');
-		$form->input (array (
-			'name' => 'timeslots',
-			'title' => 'Timeslots (start time of each available supervision)',
-			'expandable' => "\n",
-			'required' => true,
-			'default' => ($supervision ? implode ("\n", $supervision['timeslots']) : date ('Y-m-d H:00:00', strtotime ('+1 day'))),
-			'placeholder' => 'YYYY-MM-DD hh:mm:ss',
-		));
+		
+		# Add a widget for each timeslot
+		foreach ($allDays as $weekStartUnixtime => $daysOfWeek) {
+			foreach ($daysOfWeek as $dayUnixtime => $dayYmd) {
+				$dayNumber = date ('N', $dayUnixtime);	// Monday is 1
+				$fieldname = $timeslotFields;
+				$form->textarea (array (
+					'name' => $timeslotFields[$dayUnixtime],
+					'title' => date ('Y-m-d', $dayUnixtime),
+					'cols' => ($dayNumber > 5 ? 9 : 11),	// Less space for Saturday/Sunday as unlikely to be used
+					'rows' => 5,
+				));
+			}
+		}
+		
+		# Process the form
 		if ($result = $form->process ($html)) {
 			
 			# Add in fixed data
@@ -296,9 +313,13 @@ class supervisionSignup extends frontControllerApplication
 			$coursesFlattened = application::flattenMultidimensionalArray ($courses);
 			$result['courseName'] = $coursesFlattened[$result['courseId']];
 			
-			# Extract the timeslots for entering in the separate timeslot table
-			$timeslots = explode ("\n", $result['timeslots']);
-			unset ($result['timeslots']);
+			# Extract the timeslots for entering in the separate timeslot table, and remove from the main insert
+			$timeslots = application::arrayFields ($result, $timeslotFields);
+			foreach ($result as $field => $value) {
+				if (in_array ($field, $timeslotFields)) {
+					unset ($result[$field]);
+				}
+			}
 			
 			# Insert the new supervision into the database
 			$databaseAction = ($supervision ? 'update' : 'insert');
@@ -311,16 +332,24 @@ class supervisionSignup extends frontControllerApplication
 			# Get the supervision ID just inserted
 			$supervisionId = ($supervision ? $supervision['id'] : $this->databaseConnection->getLatestId ());
 			
-			# Unique the list of timeslots
-			$timeslots = array_unique ($timeslots);
-			
 			# Add each timeslot
 			$timeslotInserts = array ();
-			foreach ($timeslots as $index => $timeslot) {
-				$timeslotInserts[] = array (
-					'supervisionId' => $supervisionId,
-					'startTime' => $timeslot,
-				);
+			foreach ($timeslots as $fieldname => $times) {
+				if (!$times) {continue;}
+				
+				# Remove the fieldname prefix to create the date
+				$date = str_replace ($fieldnamePrefix, '', $fieldname);	// e.g. 2016-11-08
+				
+				# Parse out the text block to start times
+				$startTimes = $this->parseStartTimes ($times, $date);
+				
+				# Construct a timeslot insert
+				foreach ($startTimes as $startTime) {
+					$timeslotInserts[] = array (
+						'supervisionId' => $supervisionId,
+						'startTime' => $startTime,
+					);
+				}
 			}
 			
 			# If editing, clear out any timeslots that are no longer wanted
@@ -344,6 +373,167 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Return the HTML
 		return $html;
+	}
+	
+	
+	# Function to determine the timeslots based on a start time
+	private function calculateTimeslotDates ($supervision)
+	{
+		# Start from either today or, if there is a supervision being edited, the creation date
+		$timestamp = ($supervision ? strtotime ($supervision['createdAt']) : false);
+		
+		# Get the Mondays from the start timestamp
+		$mondaysUnixtime = timedate::getMondays ($this->settings['timeslotsWeeksAhead'], false, true, $timestamp);
+		
+		# Calculate the days for each week
+		$allDays = array ();
+		foreach ($mondaysUnixtime as $weekStartUnixtime) {
+			for ($days = 0; $days < 7; $days++) {
+				$dayUnixtime = $weekStartUnixtime + ($days * 60 * 60 * 24);
+				$dayYmd = date ('Y-m-d', $dayUnixtime);
+				$allDays[$weekStartUnixtime][$dayUnixtime] = $dayYmd;
+			}
+		}
+		
+		# Return the dates
+		return $allDays;
+	}
+	
+	
+	# Function to create the timeslots HTML
+	private function timeslotsHtml ($allDays, $fieldnamePrefix, &$timeslotFields = array ())
+	{
+		# Start the table
+		$html  = "\n\t\t\t\t\t\t" . '<table class="border">';
+		
+		# Add the header row
+		$html .= "\n\t\t\t\t\t\t\t" . '<tr>';
+		$html .= "\n\t\t\t\t\t\t\t\t" . '<td></td>';
+		$days = array ('Monday', 'Tuesday', 'Wednesday','Thursday','Friday', 'Saturday', 'Sunday');
+		foreach ($days as $day) {
+			$html .= "\n\t\t\t\t\t\t\t\t" . '<th class="' . strtolower ($day) . '">' . $day . '</th>';
+		}
+		$html .= "\n\t\t\t\t\t\t\t" . '</tr>';
+		
+		# Create a list of the fields, to be passed back by reference
+		$timeslotFields = array ();
+		
+		# Start each week
+		foreach ($allDays as $weekStartUnixtime => $daysOfWeek) {
+			$html .= "\n\t\t\t\t\t\t\t" . '<tr>';
+			$html .= "\n\t\t\t\t\t\t\t\t" . '<td class="comment">Start times, e.g. :<br /><br /><span class="small">11<br />12<br />1.30</span></td>';
+			
+			# Add each day, saving the fieldname
+			foreach ($daysOfWeek as $dayUnixtime => $dayYmd) {
+				$html .= "\n\t\t\t\t\t\t\t\t" . '<td class="' . strtolower (date ('l', $dayUnixtime)) . '">';
+				$html .= date ('D jS M', $dayUnixtime) . ':<br />';
+				$timeslotFields[$dayUnixtime] = $fieldnamePrefix . $dayYmd;
+				$html .= '{' . $timeslotFields[$dayUnixtime] . '}';
+				$html .= '</td>';
+			}
+			$html .= "\n\t\t\t\t\t\t\t" . '</tr>';
+		}
+		$html .= "\n\t\t\t\t\t\t" . '</table>';
+		
+		# Return the HTML
+		return $html;
+	}
+	
+	
+	# Form template
+	public function formTemplate ($timeslotsHtml)
+	{
+		# Assemble the page template
+		$html = "
+			
+			{[[PROBLEMS]]}
+			
+			<table class=\"lines setdetails\">
+				
+				<tr>
+					<td colspan=\"2\"><h3>Supervision details</h3></td>
+				</tr>
+				<tr>
+					<td>Course: *</td>
+					<td>{courseId}</td>
+				</tr>
+				<tr>
+					<td>Supervision title: *</td>
+					<td>{title}</td>
+				</tr>
+				<tr>
+					<td>Description: *</td>
+					<td>{descriptionHtml}</td>
+				</tr>
+				<tr>
+					<td>Reading list (optional): *</td>
+					<td>{readingListHtml}</td>
+				</tr>
+				
+				<tr>
+					<td colspan=\"2\"><h3>Supervision format</h3></td>
+				</tr>
+				<tr>
+					<td>Students per timeslot: *</td>
+					<td>{studentsPerTimeslot}</td>
+				</tr>
+				<tr>
+					<td>Location(s): *</td>
+					<td>{location}</td>
+				</tr>
+				<tr>
+					<td>Length of time: *</td>
+					<td>{length}</td>
+				</tr>
+				
+				<tr>
+					<td colspan=\"2\">
+						<h3>Timeslots</h3>
+						<p><img src=\"/images/icons/information.png\" class=\"icon\" /> Enter each start time, one per line, on the relevant days, as per the example at the start of each line:</p>
+						{$timeslotsHtml}
+					</td>
+				</tr>
+				
+				<tr>
+					<td></td>
+					<td>{[[SUBMIT]]}</td>
+				</tr>
+			</table>
+		";
+		
+		# Return the HTML
+		return $html;
+	}
+	
+	
+	# Function to parse out the start times
+	private function parseStartTimes ($times, $date)
+	{
+		# Extract the times list as an array
+		$times = application::textareaToList ($times);
+		
+		# Parse string to SQL time format
+		foreach ($times as $index => $time) {
+			#!# Needs validity checking
+			$times[$index] = timedate::parseTime ($time);	// e.g. 02:30:00
+		}
+		
+		# Compile as date and time
+		$startTimes = array ();
+		foreach ($times as $index => $time) {
+			$startTimes[$index] = $date . ' ' . $time;
+		}
+		
+		# Convert mornings to 24 hours
+		foreach ($times as $index => $time) {
+			list ($hours, $minutes, $seconds) = explode (':', $time, 3);
+			if ($hours < $this->settings['morningFirstHour']) {
+				$startTimes[$index] = date ('Y-m-d H:i:s', strtotime ($startTimes[$index] . ' + 12 hours'));
+			}
+		}
+		
+		# Return the list
+		return $startTimes;
 	}
 	
 	

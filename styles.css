@@ -11,3 +11,4 @@
 #supervisionsignup div.timeslot p {margin: 0; padding: 0; line-height: 1.3em;}
 #supervisionsignup div.timeslot span {font-size: 0.83em; color: #666;}
 
+#supervisionsignup table.setdetails .saturday, #supervisionsignup table.setdetails .sunday {background-color: #f7f7f7;}
