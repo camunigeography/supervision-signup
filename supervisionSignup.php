@@ -704,7 +704,7 @@ class supervisionSignup extends frontControllerApplication
 		$timeslotsByDate = array ();
 		foreach ($supervision['timeslots'] as $id => $startTime) {
 			$date = date ('Y-m-d', strtotime ($startTime));
-			$timeFormatted = date ('H:i', strtotime ($startTime)) . ' - ' . date ('H:i', strtotime ($startTime) + ($supervision['length'] * 60));
+			$timeFormatted = timedate::simplifyTime (date ('H:i:s', strtotime ($startTime))) . ' - ' . timedate::simplifyTime (date ('H:i:s', strtotime ($startTime) + ($supervision['length'] * 60)));
 			$timeslotsByDate[$date][$id] = $timeFormatted;
 		}
 		
