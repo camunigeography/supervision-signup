@@ -188,21 +188,34 @@ class supervisionSignup extends frontControllerApplication
 	private function supervisionsList ($userYeargroup)
 	{
 		# Get the supervisions
-		if (!$data = $this->getSupervisions ($userYeargroup)) {return false;}
+		if (!$supervisionsByYeargroup = $this->getSupervisions ($userYeargroup)) {return false;}
 		
-		# Regroup by year group
-		$supervisionsByYeargroup = application::regroup ($data, 'yearGroup');
+		# Start the HTML
+		$html  = '';
 		
 		# Convert to HTML list
-		$html = '';
-		foreach ($supervisionsByYeargroup as $yeargroup => $supervisions) {
-			$html .= "<h3>{$yeargroup}:</h3>";
-			$list = array ();
-			foreach ($supervisions as $id => $supervision) {
-				$list[$id] = "<a href=\"{$supervision['href']}\">" . htmlspecialchars (($supervision['courseNumber'] ? 'Paper ' . $supervision['courseNumber'] . ': ' : '') . $supervision['courseName'] . ' (' . $supervision['username'] . ')') . '</a>';
+		foreach ($supervisionsByYeargroup as $yeargroup => $supervisionsByCourse) {
+			$html .= "\n\n<h3>{$yeargroup}:</h3>";
+			
+			# Start a table of courses
+			$table = array ();
+			
+			# Show each course
+			foreach ($supervisionsByCourse as $courseDescription => $supervisions) {
+				$key = "<h4>{$courseDescription}:</h4>";
+				$list = array ();
+				foreach ($supervisions as $id => $supervision) {
+					$list[$id] = "<a href=\"{$supervision['href']}\">". htmlspecialchars ($supervision['title']) . ' (' . $supervision['username'] . ')' . '</a>';
+				}
+				$table[$key] = application::htmlUl ($list, 3);
 			}
-			$html .= application::htmlUl ($list);
+			
+			# Construct the table
+			$html .= application::htmlTableKeyed ($table, array (), true, 'lines graybox listing', $allowHtml = true, $showColons = false);
 		}
+		
+		# Wrap in a div
+		$html = "\n\n<div id=\"listing\">" . $html . "\n\n</div>";
 		
 		# Return the HTML
 		return $html;
@@ -877,7 +890,7 @@ class supervisionSignup extends frontControllerApplication
 	}
 	
 	
-	# Model function to get supervisions
+	# Model function to get supervisions, arranged hierarchically
 	private function getSupervisions ($yeargroup)
 	{
 		# Add constraints if required
@@ -887,10 +900,13 @@ class supervisionSignup extends frontControllerApplication
 		}
 		
 		# Obtain the supervision data
-		#!# Need to join to timeslots to get startDate
+		#!# Need to show only forthcoming by default, by joining to timeslots to get startDate
+		#!# There is now redundant data, e.g. courseName
 		$query = "SELECT
 				{$this->settings['table']}.id,
 				username,
+				title,
+				courseId,
 				courses.yearGroup,
 				courses.courseNumber,
 				courses.courseName
@@ -905,8 +921,31 @@ class supervisionSignup extends frontControllerApplication
 			$supervisions[$id]['href'] = $this->baseUrl . '/' . $id . '/';
 		}
 		
+		# Regroup by yeargroup
+		$supervisionsByYeargroup = application::regroup ($supervisions, 'yearGroup');
+		
+		# Regroup by course within each yeargroup
+		foreach ($supervisionsByYeargroup as $yeargroup => $supervisions) {
+			
+			# Add each supervision
+			$supervisionsThisYeargroup = array ();
+			foreach ($supervisions as $id => $supervision) {
+				$courseDescription = htmlspecialchars (($supervision['courseNumber'] ? 'Paper ' . $supervision['courseNumber'] . ': ' : '') . $supervision['courseName']);
+				$supervisionsThisYeargroup[$courseDescription][$id] = $supervision;
+			}
+			
+			# Natsort on the course name (i.e. the key)
+			#!# Need to consider the problem of dealing with courses with no numbering
+			array_multisort (array_keys ($supervisionsThisYeargroup), SORT_NATURAL, $supervisionsThisYeargroup);	// See: http://stackoverflow.com/a/20431495/180733
+			
+			# Replace the list
+			$supervisionsByYeargroup[$yeargroup] = $supervisionsThisYeargroup;
+		}
+		
+		
+		
 		# Return the data
-		return $supervisions;
+		return $supervisionsByYeargroup;
 	}
 	
 	
