@@ -695,6 +695,20 @@ class supervisionSignup extends frontControllerApplication
 			$html .= "\n<p><a href=\"{$this->baseUrl}/{$id}/edit.html\" class=\"actions right\"><img src=\"/images/icons/pencil.png\" alt=\"Edit\" border=\"0\" /> Edit</a></p>";
 		}
 		
+		# Show the supervision
+		$html .= $this->showSupervision ($supervision);
+		
+		# Show the HTML
+		echo $html;
+	}
+	
+	
+	# Function to show a supervision
+	private function showSupervision ($supervision)
+	{
+		# Start the HTML
+		$html = '';
+		
 		# Arrange signups by timeslot
 		$signups = $this->signupsByTimeslot ($supervision);
 		
@@ -733,14 +747,12 @@ class supervisionSignup extends frontControllerApplication
 			if (in_array ($startTime, $supervision['timeslots'])) {
 				if (!$this->addSignup ($supervision['id'], $startTime, $this->user, $this->userName, $error /* returned by reference */)) {
 					$html .= "\n<p class=\"warning\">{$error}</p>";
-					echo $html;
-					return false;
+					return $html;
 				}
 				
 				# Refresh the page
 				$html .= application::sendHeader ('refresh', false, $redirectMessage = true);
-				echo $html;
-				return;
+				return $html;
 			}
 		}
 		
@@ -752,14 +764,12 @@ class supervisionSignup extends frontControllerApplication
 				if (in_array ($startTime, $supervision['timeslots'])) {
 					if (!$this->deleteSignup ($supervision['id'], $startTime, $userId, $error /* returned by reference */)) {
 						$html .= "\n<p class=\"warning\">{$error}</p>";
-						echo $html;
-						return false;
+						return $html;
 					}
 					
 					# Refresh the page
 					$html .= application::sendHeader ('refresh', false, $redirectMessage = true);
-					echo $html;
-					return;
+					return $html;
 				}
 			}
 		}
@@ -828,8 +838,8 @@ class supervisionSignup extends frontControllerApplication
 		$html .= "\n\t</table>";
 		$html .= "\n\n</form>";
 		
-		# Show the HTML
-		echo $html;
+		# Return the HTML
+		return $html;
 	}
 	
 	
