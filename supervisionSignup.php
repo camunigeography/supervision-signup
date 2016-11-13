@@ -662,9 +662,6 @@ class supervisionSignup extends frontControllerApplication
 			return;
 		}
 		
-		# Add title
-		$html .= "\n<h2>Sign up to a supervision</h2>";
-		
 		# Enable editing by staff
 		if ($this->userIsStaff) {
 			
@@ -692,11 +689,14 @@ class supervisionSignup extends frontControllerApplication
 			}
 			
 			# Show the edit and delete buttons
-			$html .= "\n<ul class=\"actions right spaced\">";
+			$html .= "\n<ul class=\"actions right\">";
 			$html .= "\n\t<li><a href=\"{$this->baseUrl}/{$id}/edit.html\"><img src=\"/images/icons/pencil.png\" alt=\"Edit\" border=\"0\" /> Edit</a></li>";
 			$html .= "\n\t<li><a href=\"{$this->baseUrl}/{$id}/delete.html\"><img src=\"/images/icons/bin.png\" alt=\"Edit\" border=\"0\" /> Delete &hellip;</a></li>";
 			$html .= "\n</ul>";
 		}
+		
+		# Add title
+		$html .= "\n<h2>Sign up to a supervision</h2>";
 		
 		# Show the supervision
 		$html .= $this->showSupervision ($supervision);

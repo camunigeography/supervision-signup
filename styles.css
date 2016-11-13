@@ -18,3 +18,7 @@
 
 #supervisionsignup table.setdetails .saturday, #supervisionsignup table.setdetails .sunday {background-color: #f7f7f7;}
 
+#supervisionsignup ul.actions {margin-top: 1em;}
+#supervisionsignup ul.actions li {margin-bottom: 6px;}
+#supervisionsignup ul.actions li a:hover {background-color: #f7f7f7; text-decoration: none;}
+
