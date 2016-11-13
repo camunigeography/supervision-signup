@@ -272,11 +272,11 @@ class supervisionSignup extends frontControllerApplication
 		$dateTextFormat = 'D jS M';
 		$timeslotsHtml = $this->timeslotsHtml ($allDays, $fieldnamePrefix, $dateTextFormat, $timeslotsFields /* returned by reference */);
 		
-		# If editing, parse existing timeslots to the textarea format
-		$timeslotsDefaults = $this->parseExistingTimeslots ($supervision);
-		
+		# If editing, parse existing timeslots to the textarea format; clone mode only clones properties, not timeslots
+		$timeslotsDefaults = $this->parseExistingTimeslots (($editMode ? $supervision : array ()));
+
 		# If editing, obtain a list of timeslots already chosen by users, which therefore cannot be removed
-		$alreadyChosenSignups = $this->signupsByTimeslot ($supervision, true);
+		$alreadyChosenSignups = $this->signupsByTimeslot (($editMode ? $supervision : array ()), true);
 		
 		# Databind a form
 		$form = new form (array (
@@ -372,15 +372,15 @@ class supervisionSignup extends frontControllerApplication
 			}
 			
 			# Insert the new supervision into the database
-			$databaseAction = ($supervision ? 'update' : 'insert');
-			$parameter4 = ($supervision ? array ('id' => $supervision['id']) : false);
+			$databaseAction = ($editMode ? 'update' : 'insert');
+			$parameter4 = ($editMode ? array ('id' => $supervision['id']) : false);
 			if (!$this->databaseConnection->{$databaseAction} ($this->settings['database'], $this->settings['table'], $result, $parameter4)) {
-				$html .= "\n" . '<p class="warning">There was a problem ' . ($supervision ? 'updating' : 'creating') . ' the new supervision signup sheet.</p>';
+				$html .= "\n" . '<p class="warning">There was a problem ' . ($editMode ? 'updating' : 'creating') . ' the new supervision signup sheet.</p>';
 				return $html;
 			}
 			
 			# Get the supervision ID just inserted
-			$supervisionId = ($supervision ? $supervision['id'] : $this->databaseConnection->getLatestId ());
+			$supervisionId = ($editMode ? $supervision['id'] : $this->databaseConnection->getLatestId ());
 			
 			# Construct the timeslot inserts
 			$timeslotInserts = array ();
