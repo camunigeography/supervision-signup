@@ -20,7 +20,7 @@
 	RewriteRule ^$applicationBaseUrl/(add)$ $applicationBaseUrl/$1/ [R]
 	RewriteRule ^$applicationBaseUrl/([1-9][0-9]*)/$ $applicationBaseUrl/index.html?action=supervision&item=$1 [L]
 	RewriteRule ^$applicationBaseUrl/([1-9][0-9]*)$ $applicationBaseUrl/$1/ [R]
-	RewriteRule ^$applicationBaseUrl/([1-9][0-9]*)/(edit|clone|delete).html$ $applicationBaseUrl/index.html?action=supervision&item=$1&do=$2 [L]
+	RewriteRule ^$applicationBaseUrl/([1-9][0-9]*)/(edit|delete|clone).html$ $applicationBaseUrl/index.html?action=supervision&item=$1&do=$2 [L]
 	
 	# Courses
 	Use MacroSinenomineEmbeddedTable "$applicationBaseUrl" "/courses" "courses"
