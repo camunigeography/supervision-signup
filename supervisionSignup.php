@@ -959,12 +959,15 @@ class supervisionSignup extends frontControllerApplication
 	
 	
 	# Model function to get supervisions, arranged hierarchically
-	private function getSupervisions ($yeargroup)
+	private function getSupervisions ($yeargroup, $supervisor)
 	{
 		# Add constraints if required
 		$preparedStatementValues = array ();
 		if ($yeargroup) {
 			$preparedStatementValues['yearGroup'] = $yeargroup;
+		}
+		if ($supervisor) {
+			$preparedStatementValues['supervisor'] = $supervisor;
 		}
 		
 		# Obtain the supervision data
@@ -981,6 +984,7 @@ class supervisionSignup extends frontControllerApplication
 			FROM {$this->settings['database']}.{$this->settings['table']}
 			JOIN courses ON {$this->settings['table']}.courseId = courses.id
 			" . ($yeargroup ? 'WHERE yearGroup = :yearGroup' : '') . "
+			" . ($supervisor ? 'WHERE supervisor = :supervisor' : '') . "
 		;";
 		$supervisions = $this->databaseConnection->getData ($query, "{$this->settings['database']}.{$this->settings['table']}", true, $preparedStatementValues);
 		
