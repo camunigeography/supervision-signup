@@ -86,8 +86,7 @@ class supervisionSignup extends frontControllerApplication
 			  `courseId` int(11) NOT NULL COMMENT 'Course',
 			  `courseName` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Course name',
 			  `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Supervision title',
-			  `descriptionHtml` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Description',
-			  `readingListHtml` text COLLATE utf8_unicode_ci COMMENT 'Reading list (optional)',
+			  `descriptionHtml` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT 'Description',
 			  `studentsPerTimeslot` ENUM('1','2','3','4','5','6') CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '3' COMMENT 'Students per timeslot',
 			  `location` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Location(s)',
 			  `length` int(11) NOT NULL COMMENT 'Length of time',
@@ -527,12 +526,8 @@ class supervisionSignup extends frontControllerApplication
 					<td>{title}</td>
 				</tr>
 				<tr>
-					<td>Description: *</td>
+					<td>Description (optional):</td>
 					<td>{descriptionHtml}</td>
-				</tr>
-				<tr>
-					<td>Reading list (optional): *</td>
-					<td>{readingListHtml}</td>
 				</tr>
 				
 				<tr>
@@ -726,20 +721,17 @@ class supervisionSignup extends frontControllerApplication
 		}
 		
 		# Get the person name
+#!# Needs to be more resilient
 		$userLookupData = camUniData::getLookupData ($supervision['username']);
 		
 		# Create the supervision page
 		$html .= "\n<h3>" . htmlspecialchars ($supervision['title']) . '</h3>';
 		$html .= "\n<p>With: <strong>" . htmlspecialchars ($userLookupData['name']) . '</strong></p>';
 		$html .= "\n<br />";
-		$html .= "\n<h4>Description:</h4>";
-		$html .= "\n<div class=\"graybox\">";
-		$html .= "\n" . $supervision['descriptionHtml'];
-		$html .= "\n</div>";
-		if ($supervision['readingListHtml']) {
-			$html .= "\n<h4>Reading list:</h4>";
+		if ($supervision['descriptionHtml']) {
+			$html .= "\n<h4>Description:</h4>";
 			$html .= "\n<div class=\"graybox\">";
-			$html .= "\n" . $supervision['readingListHtml'];
+			$html .= "\n" . $supervision['descriptionHtml'];
 			$html .= "\n</div>";
 		}
 		$html .= "\n<br />";
