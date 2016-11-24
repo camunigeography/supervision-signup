@@ -1144,20 +1144,24 @@ class supervisionSignup extends frontControllerApplication
 	{
 		# Delete the supervision entry itself
 		if (!$this->databaseConnection->delete ($this->settings['database'], $this->settings['table'], array ('id' => $id), $limit = 1)) {
-			$error = "There was a problem deleting the supervision.";
+			$error = 'There was a problem deleting the supervision.';
 			return false;
 		}
 		
 		# Delete the timeslots
 		if (!$this->databaseConnection->delete ($this->settings['database'], 'timeslots', array ('supervisionId' => $id))) {
-			$error = "There was a problem deleting the timeslots associated with the supervision.";
+			$error = 'There was a problem deleting the timeslots associated with the supervision.';
 			return false;
 		}
 		
-		# Delete the signups
+		# Delete the signups, if any
+		#!# The database library API currently unable to distinguish syntax error vs nothing to delete
 		if (!$this->databaseConnection->delete ($this->settings['database'], 'signups', array ('supervisionId' => $id))) {
-			$error = "There was a problem deleting the signups associated with the timeslots of the supervision.";
-			return false;
+			$status = $this->databaseConnection->error ();
+			if ($status[0] != '00000') {	// 00000 indicates OK
+				$error = 'There was a problem deleting the signups associated with the timeslots of the supervision.';
+				return false;
+			}
 		}
 		
 		# Return success
