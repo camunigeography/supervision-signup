@@ -170,11 +170,14 @@ class supervisionSignup extends frontControllerApplication
 		# Start the HTML
 		$html = '';
 		
+		# Get the supervisions
+		$supervisions = $this->getSupervisions ($this->userYeargroup);
+		
 		# List of supervisions
 		$html .= "\n<h2>Sign up to a supervision</h2>";
-		if ($supervisionsList = $this->supervisionsList ($this->userYeargroup)) {
+		if ($supervisions) {
 			$html .= "\n<p>You can sign up to the following supervisions online:</p>";
-			$html .= $supervisionsList;
+			$html .= $this->supervisionsList ($supervisions);
 		} else {
 			$html .= "\n<p>There are no supervisions available to sign up to yet.</p>";
 		}
@@ -192,13 +195,13 @@ class supervisionSignup extends frontControllerApplication
 	
 	
 	# Function to list supervisions
-	private function supervisionsList ($userYeargroup, $supervisor = false)
+	private function supervisionsList ($supervisions, $showSupervisor = true)
 	{
-		# Get the supervisions
-		if (!$supervisionsByYeargroup = $this->getSupervisions ($userYeargroup, $supervisor)) {return false;}
-		
 		# Start the HTML
 		$html  = '';
+		
+		# Rearrange by yeargroup
+		$supervisionsByYeargroup = $this->arrangeByYeargroup ($supervisions);
 		
 		# Convert to HTML list
 		foreach ($supervisionsByYeargroup as $yeargroup => $supervisionsByCourse) {
@@ -212,7 +215,7 @@ class supervisionSignup extends frontControllerApplication
 				$key = "<h4>{$courseDescription}:</h4>";
 				$list = array ();
 				foreach ($supervisions as $id => $supervision) {
-					$list[$id] = "<a href=\"{$supervision['href']}\">". htmlspecialchars ($supervision['title']) . (!$supervisor ? ' (' . $supervision['supervisorName'] . ')' : '') . '</a>';
+					$list[$id] = "<a href=\"{$supervision['href']}\">". htmlspecialchars ($supervision['title']) . ($showSupervisor ? ' (' . $supervision['supervisorName'] . ')' : '') . '</a>';
 				}
 				$table[$key] = application::htmlUl ($list, 3);
 			}
@@ -249,10 +252,18 @@ class supervisionSignup extends frontControllerApplication
 		# Start the HTML
 		$html = '';
 		
+		# Get the supervisions
+		$supervisionsSupervising = $this->getSupervisions (false, $this->user);
+		
 		# List the supervisions for this user
-		$html .= "\n<p>You are running the supervisions listed below.</p>";
-		$html .= "\n<p>You can view the student signups, or edit/delete a supervision, on each page.</p>";
-		$html .= $this->supervisionsList (false, $this->user);
+		if ($supervisionsSupervising) {
+			$html .= "\n<p>You are running the supervisions listed below.</p>";
+			$html .= "\n<p>You can view the student signups, or edit/delete a supervision, on each page.</p>";
+			$html .= $this->supervisionsList ($supervisionsSupervising, false);
+		} else {
+			$html .= "\n<p>There are none.</p>";
+			$html .= "\n<p>You can <a href=\"{$this->baseUrl}/add/\">create a new supervision signup sheet</a>.</p>";
+		}
 		
 		# Return the HTML
 		echo $html;
@@ -989,7 +1000,7 @@ class supervisionSignup extends frontControllerApplication
 	
 	
 	# Model function to get supervisions, arranged hierarchically
-	private function getSupervisions ($yeargroup, $supervisor)
+	private function getSupervisions ($yeargroup = false, $supervisor = false)
 	{
 		# Add constraints if required
 		$preparedStatementValues = array ();
@@ -1024,6 +1035,14 @@ class supervisionSignup extends frontControllerApplication
 			$supervisions[$id]['href'] = $this->baseUrl . '/' . $id . '/';
 		}
 		
+		# Return the supervisions
+		return $supervisions;
+	}
+	
+	
+	# Helper function to rearrange supervisions by yeargroup
+	private function arrangeByYeargroup ($supervisions)
+	{
 		# Regroup by yeargroup
 		$supervisionsByYeargroup = application::regroup ($supervisions, 'yearGroup');
 		
@@ -1044,8 +1063,6 @@ class supervisionSignup extends frontControllerApplication
 			# Replace the list
 			$supervisionsByYeargroup[$yeargroup] = $supervisionsThisYeargroup;
 		}
-		
-		
 		
 		# Return the data
 		return $supervisionsByYeargroup;
