@@ -1046,6 +1046,7 @@ class supervisionSignup extends frontControllerApplication
 			JOIN courses ON {$this->settings['table']}.courseId = courses.id
 			" . ($yeargroup ? 'WHERE yearGroup = :yearGroup' : '') . "
 			" . ($supervisor ? 'WHERE supervisor = :supervisor' : '') . "
+			ORDER BY courses.yearGroup, id
 		;";
 		$supervisions = $this->databaseConnection->getData ($query, "{$this->settings['database']}.{$this->settings['table']}", true, $preparedStatementValues);
 		
