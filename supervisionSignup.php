@@ -353,7 +353,9 @@ class supervisionSignup extends frontControllerApplication
 		if ($result = $form->process ($html)) {
 			
 			# Add in fixed data
-			$result['username'] = $this->user;
+			if (!$editMode) {
+				$result['username'] = $this->user;
+			}
 			$result['updatedAt'] = 'NOW()';
 			if ($editMode) {
 				$result['id'] = $supervision['id'];
