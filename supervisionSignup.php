@@ -182,11 +182,14 @@ class supervisionSignup extends frontControllerApplication
 			$html .= "\n<p>There are no supervisions available to sign up to yet.</p>";
 		}
 		
-		# Give link for staff
+		# Give links for staff
 		if ($this->userIsStaff) {
 			$html .= "\n<br />";
 			$html .= "\n<h2>Create supervision signup sheet</h2>";
-			$html .= "\n<p>As a member of staff, you can <a href=\"{$this->baseUrl}/add/\" class=\"actions\"><img src=\"/images/icons/add.png\" alt=\"Add\" border=\"0\" /> create a supervision signup sheet</a>.</p>";
+			$html .= "\n<p>As a member of staff, you can <a href=\"{$this->baseUrl}/add/\" class=\"actions\"><img src=\"/images/icons/add.png\" alt=\"Add\" border=\"0\" /> Create a supervision signup sheet</a>.</p>";
+			$html .= "\n<br />";
+			$html .= "\n<h2>My supervisions</h2>";
+			$html .= "\n<p>As a member of staff, you can <a href=\"{$this->baseUrl}/my/\" class=\"actions\"><img src=\"/images/icons/asterisk_orange.png\" alt=\"Add\" border=\"0\" /> View supervisions you are running</a>.</p>";
 		}
 		
 		# Return the HTML
