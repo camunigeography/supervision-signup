@@ -212,7 +212,7 @@ class supervisionSignup extends frontControllerApplication
 				$key = "<h4>{$courseDescription}:</h4>";
 				$list = array ();
 				foreach ($supervisions as $id => $supervision) {
-					$list[$id] = "<a href=\"{$supervision['href']}\">". htmlspecialchars ($supervision['title']) . (!$supervisor ? ' (' . $supervision['supervisor'] . ')' : '') . '</a>';
+					$list[$id] = "<a href=\"{$supervision['href']}\">". htmlspecialchars ($supervision['title']) . (!$supervisor ? ' (' . $supervision['supervisorName'] . ')' : '') . '</a>';
 				}
 				$table[$key] = application::htmlUl ($list, 3);
 			}
@@ -772,7 +772,7 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Create the supervision page
 		$html .= "\n<h3>" . htmlspecialchars ($supervision['title']) . '</h3>';
-		$html .= "\n<p>With: <strong>" . htmlspecialchars ($supervision['supervisorName']) . '</strong></p>';
+		$html .= "\n<p>With: <strong>" . htmlspecialchars ($supervision['supervisorName']) . ' &lt;' . $supervision['supervisor'] . '&gt;' . '</strong></p>';
 		$html .= "\n<br />";
 		if ($supervision['descriptionHtml']) {
 			$html .= "\n<h4>Description:</h4>";
@@ -1006,6 +1006,7 @@ class supervisionSignup extends frontControllerApplication
 		$query = "SELECT
 				{$this->settings['table']}.id,
 				supervisor,
+				supervisorName,
 				title,
 				courseId,
 				courses.yearGroup,
