@@ -211,7 +211,7 @@ class supervisionSignup extends frontControllerApplication
 				$key = "<h4>{$courseDescription}:</h4>";
 				$list = array ();
 				foreach ($supervisions as $id => $supervision) {
-					$list[$id] = "<a href=\"{$supervision['href']}\">". htmlspecialchars ($supervision['title']) . ' (' . $supervision['supervisor'] . ')' . '</a>';
+					$list[$id] = "<a href=\"{$supervision['href']}\">". htmlspecialchars ($supervision['title']) . (!$supervisor ? ' (' . $supervision['supervisor'] . ')' : '') . '</a>';
 				}
 				$table[$key] = application::htmlUl ($list, 3);
 			}
