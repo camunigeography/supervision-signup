@@ -46,6 +46,13 @@ class supervisionSignup extends frontControllerApplication
 				'tab' => 'Sign up to a supervision',
 				'icon' => 'pencil',
 			),
+			'my' => array (
+				'description' => 'My supervisions',
+				'url' => 'my/',
+				'tab' => 'My supervisions',
+				'icon' => 'asterisk_orange',
+				'enableIf' => $this->userIsStaff,
+			),
 			'add' => array (
 				'description' => 'Create a new supervision',
 				'url' => 'add/',
@@ -184,10 +191,10 @@ class supervisionSignup extends frontControllerApplication
 	
 	
 	# Function to list supervisions
-	private function supervisionsList ($userYeargroup)
+	private function supervisionsList ($userYeargroup, $supervisor = false)
 	{
 		# Get the supervisions
-		if (!$supervisionsByYeargroup = $this->getSupervisions ($userYeargroup)) {return false;}
+		if (!$supervisionsByYeargroup = $this->getSupervisions ($userYeargroup, $supervisor)) {return false;}
 		
 		# Start the HTML
 		$html  = '';
@@ -229,6 +236,22 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Show the form
 		$html .= $this->supervisionForm ();
+		
+		# Return the HTML
+		echo $html;
+	}
+	
+	
+	# Function to list a user's supervisions
+	public function my ()
+	{
+		# Start the HTML
+		$html = '';
+		
+		# List the supervisions for this user
+		$html .= "\n<p>You are running the supervisions listed below.</p>";
+		$html .= "\n<p>You can view the student signups, or edit/delete a supervision, on each page.</p>";
+		$html .= $this->supervisionsList (false, $this->user);
 		
 		# Return the HTML
 		echo $html;
