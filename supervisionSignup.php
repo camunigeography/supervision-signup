@@ -308,7 +308,7 @@ class supervisionSignup extends frontControllerApplication
 		
 		# If editing, parse existing timeslots to the textarea format; clone mode only clones properties, not timeslots
 		$timeslotsDefaults = $this->parseExistingTimeslots (($editMode ? $supervision : array ()));
-
+		
 		# If editing, obtain a list of timeslots already chosen by users, which therefore cannot be removed
 		$alreadyChosenSignups = $this->signupsByTimeslot (($editMode ? $supervision : array ()), true);
 		
@@ -708,6 +708,14 @@ class supervisionSignup extends frontControllerApplication
 		if (!$supervision = $this->getSupervision ($id)) {
 			$this->page404 ();
 			return;
+		}
+		
+		# If the user is a student, require a match on yeargroup, for privacy reasons
+		if (!$this->userIsStaff && !$this->userIsAdministrator) {
+			if ($supervision['yearGroup'] != $this->userYeargroup) {
+				$this->page404 ();
+				return;
+			}
 		}
 		
 		# Determine editing rights
