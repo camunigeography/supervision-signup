@@ -90,6 +90,7 @@ class supervisionSignup extends frontControllerApplication
 			CREATE TABLE `supervisions` (
 			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Supervision ID #',
 			  `supervisor` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Supervisor username',
+			  `supervisorName` VARCHAR(255) COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT 'Supervisor name',
 			  `courseId` int(11) NOT NULL COMMENT 'Course',
 			  `courseName` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Course name',
 			  `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Supervision title',
@@ -320,7 +321,7 @@ class supervisionSignup extends frontControllerApplication
 			'table' => $this->settings['table'],
 			'data' => $supervision,
 			'intelligence' => true,
-			'exclude' => array ('id', 'supervisor', 'courseName'),		// Fixed data fields, handled below
+			'exclude' => array ('id', 'supervisor', 'supervisorName', 'courseName'),		// Fixed data fields, handled below
 			'attributes' => array (
 				'courseId' => array ('type' => 'select', 'values' => $courses, ),
 				'length' => array ('type' => 'select', 'values' => $this->settings['lengths'], 'default' => ($supervision ? $supervision['length'] : $this->settings['lengthDefault']), ),
@@ -378,6 +379,8 @@ class supervisionSignup extends frontControllerApplication
 			# Add in fixed data
 			if (!$editMode) {
 				$result['supervisor'] = $this->user;
+				$userLookupData = camUniData::getLookupData ($this->user);
+				$result['supervisorName'] = $userLookupData['name'];
 			}
 			$result['updatedAt'] = 'NOW()';
 			if ($editMode) {
@@ -767,13 +770,9 @@ class supervisionSignup extends frontControllerApplication
 			}
 		}
 		
-		# Get the person name
-#!# Needs to be more resilient
-		$userLookupData = camUniData::getLookupData ($supervision['supervisor']);
-		
 		# Create the supervision page
 		$html .= "\n<h3>" . htmlspecialchars ($supervision['title']) . '</h3>';
-		$html .= "\n<p>With: <strong>" . htmlspecialchars ($userLookupData['name']) . '</strong></p>';
+		$html .= "\n<p>With: <strong>" . htmlspecialchars ($supervision['supervisorName']) . '</strong></p>';
 		$html .= "\n<br />";
 		if ($supervision['descriptionHtml']) {
 			$html .= "\n<h4>Description:</h4>";
