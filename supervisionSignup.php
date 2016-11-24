@@ -783,6 +783,10 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Create the supervision page
 		$html .= "\n<h3>" . htmlspecialchars ($supervision['title']) . '</h3>';
+		$html .= "\n<p>";
+		$html .= "\n\tYear group: <strong>" . htmlspecialchars ($supervision['yearGroup']) . '</strong><br />';
+		$html .= "\n\tCourse: <strong>" . htmlspecialchars ($supervision['courseName']) . '</strong>';
+		$html .= "\n</p>";
 		$html .= "\n<p>With: <strong>" . htmlspecialchars ($supervision['supervisorName']) . ' &lt;' . $supervision['supervisor'] . '&gt;' . '</strong></p>';
 		$html .= "\n<br />";
 		if ($supervision['descriptionHtml']) {
@@ -980,7 +984,14 @@ class supervisionSignup extends frontControllerApplication
 	private function getSupervision ($id)
 	{
 		# Obtain the supervision data or end
-		if (!$supervision = $this->databaseConnection->selectOne ($this->settings['database'], $this->settings['table'], array ('id' => $id))) {
+		$query = "SELECT
+				{$this->settings['table']}.*,
+				courses.yearGroup
+			FROM {$this->settings['database']}.{$this->settings['table']}
+			JOIN courses ON {$this->settings['table']}.courseId = courses.id
+			WHERE {$this->settings['table']}.id = :id
+		;";
+		if (!$supervision = $this->databaseConnection->getOne ($query, "{$this->settings['database']}.{$this->settings['table']}", true, array ('id' => $id))) {
 			return false;
 		}
 		
