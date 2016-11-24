@@ -696,19 +696,25 @@ class supervisionSignup extends frontControllerApplication
 			return;
 		}
 		
-		# Enable editing by staff
+		# Determine editing rights
+		$userHasEditRights = ($supervision['supervisor'] == $this->user);
+		
+		# Enable editing by the user
 		if ($this->userIsStaff) {
 			
 			# Determine if editing is requested
-			$editingActions = array (
-				'edit'		=> 'Edit supervision details',
-				'delete'	=> 'Delete supervision details',
-				'clone'		=> 'Clone to new supervision',
-			);
+			$editingActions = array ();
+			if ($userHasEditRights) {
+				$editingActions = array (
+					'edit'		=> 'Edit supervision details',
+					'delete'	=> 'Delete supervision details',
+					'clone'		=> 'Clone to new supervision',
+				);
+			}
 			$do = (isSet ($_GET['do']) ? $_GET['do'] : false);
 			if ($do) {
 				
-				# Validate
+				# Validate action and rights
 				if (!isSet ($editingActions[$do])) {
 					$this->page404 ();
 					return false;
@@ -723,11 +729,13 @@ class supervisionSignup extends frontControllerApplication
 			}
 			
 			# Show the edit and delete buttons
-			$html .= "\n<ul class=\"actions right\">";
-			$html .= "\n\t<li><a href=\"{$this->baseUrl}/{$id}/edit.html\"><img src=\"/images/icons/pencil.png\" alt=\"Edit\" border=\"0\" /> Edit</a></li>";
-			$html .= "\n\t<li><a href=\"{$this->baseUrl}/{$id}/delete.html\"><img src=\"/images/icons/bin.png\" alt=\"Edit\" border=\"0\" /> Delete &hellip;</a></li>";
-			$html .= "\n\t<li><a href=\"{$this->baseUrl}/{$id}/clone.html\"><img src=\"/images/icons/page_copy.png\" alt=\"Edit\" border=\"0\" /> Copy</a></li>";
-			$html .= "\n</ul>";
+			if ($userHasEditRights) {
+				$html .= "\n<ul class=\"actions right\">";
+				$html .= "\n\t<li><a href=\"{$this->baseUrl}/{$id}/edit.html\"><img src=\"/images/icons/pencil.png\" alt=\"Edit\" border=\"0\" /> Edit</a></li>";
+				$html .= "\n\t<li><a href=\"{$this->baseUrl}/{$id}/delete.html\"><img src=\"/images/icons/bin.png\" alt=\"Edit\" border=\"0\" /> Delete &hellip;</a></li>";
+				$html .= "\n\t<li><a href=\"{$this->baseUrl}/{$id}/clone.html\"><img src=\"/images/icons/page_copy.png\" alt=\"Edit\" border=\"0\" /> Copy</a></li>";
+				$html .= "\n</ul>";
+			}
 		}
 		
 		# Add title
