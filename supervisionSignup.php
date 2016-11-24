@@ -408,8 +408,22 @@ class supervisionSignup extends frontControllerApplication
 				return $html;
 			}
 			
-			# Redirect the user
+			# Determine the page URL
 			$redirectTo = $this->baseUrl . '/' . $supervisionId . '/';
+			
+			# Mail the user (except when editing)
+			if (!$editMode) {
+				$to = $this->user . '@' . $this->settings['emailDomain'];
+				$subject = "Supervision signup sheet created: {$result['title']} ({$result['courseName']})";
+				$message = "\nThis e-mail confirms that you have created an online supervision signup sheet.";
+				$message .= "\n\nYou can view student signups, or edit the details, at:\n\n{$_SERVER['_SITE_URL']}{$redirectTo}";
+				$message .= "\n\nPlease note that you will not receive any further e-mails about this supervision signup sheet.";
+				$extraHeaders  = 'From: Webserver <' . $this->settings['webmaster'] . '>';
+				$extraHeaders .= "\r\n" . 'Bcc: ' . $this->settings['administratorEmail'];
+				application::utf8Mail ($to, $subject, wordwrap ($message), $extraHeaders);
+			}
+			
+			# Redirect the user
 			$html .= application::sendHeader (302, $redirectTo, true);
 		}
 		
