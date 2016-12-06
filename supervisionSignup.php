@@ -374,6 +374,22 @@ class supervisionSignup extends frontControllerApplication
 				if (!$startTimesPerDate[$date] = $this->parseStartTimes ($times, $date, $dateTextFormat, $errorHtml /* returned by reference */)) {
 					$form->registerProblem ('starttimeparsefailure', $errorHtml, $fieldname);
 				}
+				
+				# Add constraint that number of slots cannot be reduced if that number is filled
+				if ($unfinalisedData['studentsPerTimeslot']) {
+					if ($editMode) {
+						$greatestTotalSignups = 0;
+						foreach ($alreadyChosenSignups as $date) {
+							foreach ($date as $timeslot => $signupsThisSlot) {
+								$totalSignups = count ($signupsThisSlot);
+								$greatestTotalSignups = max ($greatestTotalSignups, $totalSignups);
+							}
+						}
+						if ($unfinalisedData['studentsPerTimeslot'] < $greatestTotalSignups) {
+							$form->registerProblem ('timeslotloss', "You cannot reduce to {$unfinalisedData['studentsPerTimeslot']} students per timeslot because there is already a timeslot with {$greatestTotalSignups} existing student signups.");
+						}
+					}
+				}
 			}
 			
 			# Ensure that at least one timeslot has been created
