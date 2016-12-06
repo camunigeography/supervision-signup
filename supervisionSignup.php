@@ -321,7 +321,7 @@ class supervisionSignup extends frontControllerApplication
 			'displayRestrictions' => false,
 			'formCompleteText' => false,
 			'databaseConnection' => $this->databaseConnection,
-			'richtextEditorToolbarSet' => 'Basic',
+			'richtextEditorToolbarSet' => 'BasicNoLinks',
 			'richtextWidth' => 650,
 			'richtextHeight' => 250,
 			'cols' => 80,
@@ -416,6 +416,9 @@ class supervisionSignup extends frontControllerApplication
 			if ($editMode) {
 				$result['id'] = $supervision['id'];
 			}
+			
+			# Strip links (and other HTML), so that links can reliably be rendered dynamically (avoiding auto-linking of a link tag)
+			$result['descriptionHtml'] = strip_tags ($result['descriptionHtml'], '<p><br><strong><em><u><ul><ol><li>');
 			
 			# Add in the course name so that this not dependent on a live feed which may change from year to year
 			$coursesFlattened = application::flattenMultidimensionalArray ($courses);
@@ -819,7 +822,7 @@ class supervisionSignup extends frontControllerApplication
 		if ($supervision['descriptionHtml']) {
 			$html .= "\n<h4>Description:</h4>";
 			$html .= "\n<div class=\"graybox\">";
-			$html .= "\n" . $supervision['descriptionHtml'];
+			$html .= "\n" . application::makeClickableLinks ($supervision['descriptionHtml']);
 			$html .= "\n</div>";
 		}
 		$html .= "\n<br />";
