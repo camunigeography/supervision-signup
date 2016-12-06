@@ -1062,11 +1062,16 @@ class supervisionSignup extends frontControllerApplication
 				courseId,
 				courses.yearGroup,
 				courses.courseNumber,
-				courses.courseName
+				courses.courseName,
+				DATE(MIN(timeslots.startTime)) AS dateFrom,
+				DATE(MAX(timeslots.startTime)) AS dateUntil,
+				IF ( DATE(NOW()) > DATE(MAX(timeslots.startTime)) , 1, '') AS hasFinished
 			FROM {$this->settings['database']}.{$this->settings['table']}
 			JOIN courses ON {$this->settings['table']}.courseId = courses.id
+			LEFT JOIN timeslots ON supervisions.id = timeslots.supervisionId
 			" . ($yeargroup ? 'WHERE yearGroup = :yearGroup' : '') . "
 			" . ($supervisor ? 'WHERE supervisor = :supervisor' : '') . "
+			GROUP BY supervisions.id
 			ORDER BY courses.yearGroup, id
 		;";
 		$supervisions = $this->databaseConnection->getData ($query, "{$this->settings['database']}.{$this->settings['table']}", true, $preparedStatementValues);
