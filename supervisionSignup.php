@@ -218,7 +218,7 @@ class supervisionSignup extends frontControllerApplication
 				$key = "<h4>{$courseDescription}:</h4>";
 				$list = array ();
 				foreach ($supervisions as $id => $supervision) {
-					$list[$id] = "<a href=\"{$supervision['href']}\">". htmlspecialchars ($supervision['title']) . ($showSupervisor ? ' (' . $supervision['supervisorName'] . ')' : '') . '</a>';
+					$list[$id] = "<a href=\"{$supervision['href']}\"" . ($supervision['hasFinished'] ? ' class="finished"' : '') . '>'. htmlspecialchars ($supervision['title']) . ($showSupervisor ? ' (' . $supervision['supervisorName'] . ')' : '') . '</a>';
 				}
 				$table[$key] = application::htmlUl ($list, 3);
 			}
@@ -1053,7 +1053,6 @@ class supervisionSignup extends frontControllerApplication
 		}
 		
 		# Obtain the supervision data
-		#!# Need to show only forthcoming by default, by joining to timeslots to get startDate
 		$query = "SELECT
 				{$this->settings['table']}.id,
 				supervisor,
