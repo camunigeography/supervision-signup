@@ -1054,7 +1054,6 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Obtain the supervision data
 		#!# Need to show only forthcoming by default, by joining to timeslots to get startDate
-		#!# There is now redundant data, e.g. courseName
 		$query = "SELECT
 				{$this->settings['table']}.id,
 				supervisor,
