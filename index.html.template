@@ -7,6 +7,7 @@ $settings = array (
 	'password' => 'the_password',
 	'userIsStaffCallback' => 'userIsStaffCallback',
 	'userYeargroupCallback' => 'userYeargroupCallback',
+	'userNameCallback' => 'userNameCallback',
 );
 
 # Callback function to determine if the user is a member of staff; this function will only be called if a user is signed in
@@ -19,6 +20,12 @@ function userIsStaffCallback ($username)
 function userYeargroupCallback ($username)
 {
 	// Function returning bool true or false
+}
+
+# Callback function to get the full name of a user
+function userNameCallback ($username)
+{
+	// Function returning string, e.g. 'Jane Smith'
 }
 
 # Run the application with the specified settings

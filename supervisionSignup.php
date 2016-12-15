@@ -20,6 +20,7 @@ class supervisionSignup extends frontControllerApplication
 			'administrators' => true,
 			'userIsStaffCallback' => 'userIsStaffCallback',		// Callback function
 			'userYeargroupCallback' => 'userYeargroupCallback',	// Callback function
+			'userNameCallback' => false,						// Callback function; useful if a better name source than Lookup (which tends only to have initials for forenames) is available
 			'authentication' => true,
 			'databaseStrictWhere' => true,
 			'lengths' => array (30 => '30 minutes', 45 => '45 minutes', 60 => '1 hour', 90 => 'Hour and a half', 120 => 'Two hours', ),
@@ -149,6 +150,14 @@ class supervisionSignup extends frontControllerApplication
 	{
 		# Load required libraries
 		require_once ('timedate.php');
+		
+		# Determine the full name of a user via callback if specified
+		if ($this->settings['userNameCallback']) {
+			$userNameCallback = $this->settings['userNameCallback'];
+			if ($userName = $userNameCallback ($this->user)) {
+				$this->userName = $userName;
+			}
+		}
 		
 		# Determine the year group of the user
 		$userYeargroupCallbackFunction = $this->settings['userYeargroupCallback'];
