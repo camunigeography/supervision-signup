@@ -1030,7 +1030,7 @@ class supervisionSignup extends frontControllerApplication
 		}
 		
 		# Add the student signup data (which may be empty)
-		$supervision['signups'] = $this->databaseConnection->select ($this->settings['database'], 'signups', array ('supervisionId' => $id), array ('id', 'userId', 'userName', 'startTime'), true, $orderBy = 'startTime');
+		$supervision['signups'] = $this->databaseConnection->select ($this->settings['database'], 'signups', array ('supervisionId' => $id), array ('id', 'userId', 'userName', 'startTime'), true, $orderBy = 'startTime, id');
 		
 		// application::dumpData ($supervision);
 		
