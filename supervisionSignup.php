@@ -147,6 +147,9 @@ class supervisionSignup extends frontControllerApplication
 	# Additional initialisation
 	public function main ()
 	{
+		# Load required libraries
+		require_once ('timedate.php');
+		
 		# Determine the year group of the user
 		$userYeargroupCallbackFunction = $this->settings['userYeargroupCallback'];
 		$this->userYeargroup = ($this->user ? $userYeargroupCallbackFunction ($this->user) : false);
