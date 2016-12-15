@@ -412,8 +412,7 @@ class supervisionSignup extends frontControllerApplication
 			# Add in fixed data
 			if (!$editMode) {
 				$result['supervisor'] = $this->user;
-				$userLookupData = camUniData::getLookupData ($this->user);
-				$result['supervisorName'] = $userLookupData['name'];
+				$result['supervisorName'] = $this->userName;
 			}
 			$result['updatedAt'] = 'NOW()';
 			if ($editMode) {
