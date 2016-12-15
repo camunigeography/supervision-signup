@@ -23,3 +23,17 @@
 #supervisionsignup ul.actions li {margin-bottom: 6px;}
 #supervisionsignup ul.actions li a:hover {background-color: #f7f7f7; text-decoration: none;}
 
+
+/* Print styes; those properties prefixed with _ are buggy in Firefox so have been disabled */
+@media print {
+	#supervisionsignup h1, #supervisionsignup ul.tabs, #supervisionsignup ul.tabs + h2, #supervisionsignup h3#timeslots {display: none;}
+	#supervisionsignup form.timeslots table {width: 99%; table-layout: fixed;}
+	#supervisionsignup form.timeslots table td {border: 1px solid #ddd;}
+	#supervisionsignup form.timeslots table td * {line-height: 1.4em;}
+	#supervisionsignup form.timeslots table td.date {width: 9em;}
+	#supervisionsignup form.timeslots table td.time {width: 6em;}
+	#supervisionsignup form.timeslots table td.time span {font-weight: bold;}
+	#supervisionsignup div.timeslot, #supervisionsignup form.timeslots input[type=submit] {_width: auto; height: auto; _background-color: #eee !important; -webkit-print-color-adjust: exact;}
+	#supervisionsignup form.timeslots input[type=submit], #supervisionsignup form.timeslots div.timeslot.available {display: none;}
+}
+

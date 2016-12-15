@@ -818,7 +818,6 @@ class supervisionSignup extends frontControllerApplication
 		$html .= "\n\tCourse: <strong>" . htmlspecialchars ($supervision['courseName']) . '</strong>';
 		$html .= "\n</p>";
 		$html .= "\n<p>With: <strong>" . htmlspecialchars ($supervision['supervisorName']) . ' &lt;' . $supervision['supervisor'] . '&gt;' . '</strong></p>';
-		$html .= "\n<br />";
 		if ($supervision['descriptionHtml']) {
 			$html .= "\n<h4>Description:</h4>";
 			$html .= "\n<div class=\"graybox\">";
@@ -865,7 +864,7 @@ class supervisionSignup extends frontControllerApplication
 		$timeslotsByDate = array ();
 		foreach ($supervision['timeslots'] as $id => $startTime) {
 			$date = date ('Y-m-d', strtotime ($startTime));
-			$timeFormatted = timedate::simplifyTime (date ('H:i:s', strtotime ($startTime))) . '&nbsp;-&nbsp;' . timedate::simplifyTime (date ('H:i:s', strtotime ($startTime) + ($supervision['length'] * 60)));
+			$timeFormatted = '<span>' . timedate::simplifyTime (date ('H:i:s', strtotime ($startTime))) . '</span> -&nbsp;' . timedate::simplifyTime (date ('H:i:s', strtotime ($startTime) + ($supervision['length'] * 60)));
 			$timeslotsByDate[$date][$id] = $timeFormatted;
 		}
 		
@@ -885,12 +884,12 @@ class supervisionSignup extends frontControllerApplication
 				$indexValue = $supervision['timeslots'][$id];
 				$html .= "\n\t\t<tr" . ($editable ? '' : ' class="uneditable"') . '>';
 				if ($first) {
-					$html .= "\n\t\t\t<td rowspan=\"{$totalThisDate}\">" . nl2br (date ("l,\njS F Y", strtotime ($date . ' 12:00:00'))) . ":</h5>";
+					$html .= "\n\t\t\t<td class=\"date\" rowspan=\"{$totalThisDate}\">" . nl2br (date ("l,\njS F Y", strtotime ($date . ' 12:00:00'))) . ":</h5>";
 					$first = false;
 				} else {
 					$html .= "\n\t\t\t";
 				}
-				$html .= "\n\t\t\t<td>{$timeFormatted}:</td>";
+				$html .= "\n\t\t\t<td class=\"time\">{$timeFormatted}:</td>";
 				$startTime = $supervision['timeslots'][$id];
 				$showButton = true;
 				if (!$editable) {$showButton = false;}
