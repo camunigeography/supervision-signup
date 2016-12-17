@@ -27,7 +27,7 @@ class supervisionSignup extends frontControllerApplication
 			'lengthDefault' => 60,
 			'yearGroups' => array ('Part IA', 'Part IB', 'Part II'),
 			'organisationDescription' => 'the Department',
-			'timeslotsWeeksAhead' => 10,
+			'timeslotsWeeksAhead' => 14,
 			'morningFirstHour' => 8,	// First hour that is in the morning; e.g. if set to 8, staff-entered time '8' would mean 8am rather than 8pm, and '7' would mean 7pm
 		);
 		
