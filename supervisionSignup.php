@@ -788,7 +788,7 @@ class supervisionSignup extends frontControllerApplication
 				$html .= "\n<ul class=\"actions right\">";
 				$html .= "\n\t<li><a href=\"{$this->baseUrl}/{$id}/edit.html\"><img src=\"/images/icons/pencil.png\" alt=\"Edit\" border=\"0\" /> Edit</a></li>";
 				$html .= "\n\t<li><a href=\"{$this->baseUrl}/{$id}/delete.html\"><img src=\"/images/icons/bin.png\" alt=\"Edit\" border=\"0\" /> Delete &hellip;</a></li>";
-				$html .= "\n\t<li><a href=\"{$this->baseUrl}/{$id}/clone.html\"><img src=\"/images/icons/page_copy.png\" alt=\"Edit\" border=\"0\" /> Copy</a></li>";
+				$html .= "\n\t<li><a href=\"{$this->baseUrl}/{$id}/clone.html\"><img src=\"/images/icons/page_copy.png\" alt=\"Edit\" border=\"0\" /> Clone</a></li>";
 				$html .= "\n</ul>";
 			}
 		}
