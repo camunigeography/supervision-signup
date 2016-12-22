@@ -814,16 +814,30 @@ class supervisionSignup extends frontControllerApplication
 		$signups = $this->signupsByTimeslot ($supervision);
 		
 		# Determine if the user has signed-up already
-		$userHasSignedUp = false;
+		$userSignup = false;
 		foreach ($supervision['signups'] as $id => $signup) {
 			if ($signup['userId'] == $this->user) {
-				$userHasSignedUp = true;
+				$userSignup = $signup;
 				break;
+			}
+		}
+		
+		# Add iCal export button
+		$icalHtml = '';
+		if ($userSignup) {
+			$icalHtml = "\n" . "<p><a href=\"{$this->baseUrl}/{$supervision['id']}/supervision{$supervision['id']}.ics\">" . '<img src="/images/icons/extras/ical.gif" alt="iCal" title="iCal output - export to your calendar" class="right" /></a></p>';
+		}
+		
+		# Serve iCal feed if required
+		if ($userSignup) {
+			if (isSet ($_GET['ical'])) {
+				$this->iCal ($supervision, $userSignup['startTime']);
 			}
 		}
 		
 		# Create the supervision page
 		$html .= "\n<h3>" . htmlspecialchars ($supervision['title']) . '</h3>';
+		$html .= $icalHtml;
 		$html .= "\n<p>";
 		$html .= "\n\tYear group: <strong>" . htmlspecialchars ($supervision['yearGroup']) . '</strong><br />';
 		$html .= "\n\tCourse: <strong>" . htmlspecialchars ($supervision['courseName']) . '</strong>';
@@ -920,7 +934,7 @@ class supervisionSignup extends frontControllerApplication
 						}
 					} else {
 						if ($showButton && !$userSlotPassed) {
-							$label = ($userHasSignedUp ? 'Change to here' : 'Sign up');
+							$label = ($userSignup ? 'Change to here' : 'Sign up');
 							$html .= "<input type=\"submit\" name=\"timeslot[{$indexValue}]\" value=\"{$label}\" />";		// See multiple button solution using [] at: http://stackoverflow.com/a/34915274/180733
 							$showButton = false;	// Only first in row show be clickable, so they fill up from the left
 						} else {
@@ -1238,6 +1252,32 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Return success
 		return true;
+	}
+	
+	
+	# Function to implement the export of bookings as iCal
+	private function iCal ($supervision, $startTime)
+	{
+		# Add the entry
+		$entry = array (
+			'title' => "Supervision with {$supervision['supervisorName']}",
+			'startTime' => strtotime ($startTime),
+			'untilTime' => strtotime ($startTime) + ($supervision['length'] * 60),
+			'location' => $supervision['location'],
+			'description' => "Supervision with {$supervision['supervisorName']} for course: {$supervision['courseName']}",
+		);
+		
+		# Delegate to iCal class
+		require_once ('ical.php');
+		$ical = new ical ();
+		$title = 'Supervision';
+		$output = $ical->create (array ($entry), $title, 'ac.uk.cam.geog', 'Supervisions');
+		
+		# Serve the file, first flushing all previous HTML (including from auto_prepend_file)
+		ob_clean ();
+		flush ();
+		echo $output;
+		exit;
 	}
 }
 
