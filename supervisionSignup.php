@@ -933,8 +933,9 @@ class supervisionSignup extends frontControllerApplication
 				$startTime = $supervision['timeslots'][$id];
 				$showButton = true;
 				if (!$editable) {$showButton = false;}
+				$html .= "\n\t\t\t<td>";
 				for ($i = 0; $i < $supervision['studentsPerTimeslot']; $i++) {
-					$html .= "\n\t\t\t\t<td>";
+					$html .= "\n\t\t\t\t";
 					$slotTaken = (isSet ($signups[$startTime]) && isSet ($signups[$startTime][$i]));
 					if ($slotTaken) {
 						$signup = $signups[$startTime][$i];
@@ -956,8 +957,8 @@ class supervisionSignup extends frontControllerApplication
 							$html .= "<div class=\"timeslot available\"><p>" . ($editable ? 'Available' : '-') . '</p></div>';
 						}
 					}
-					$html .= '</td>';
 				}
+				$html .= "\n\t\t\t</td>";
 				$html .= "\n\t\t</tr>";
 			}
 		}
