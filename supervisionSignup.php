@@ -15,6 +15,7 @@ class supervisionSignup extends frontControllerApplication
 			'div' => strtolower (__CLASS__),
 			'database' => 'supervisions',
 			'table' => 'supervisions',
+			'settingsTableExplodeTextarea' => true,
 			'useCamUniLookup' => true,
 			'emailDomain' => 'cam.ac.uk',
 			'administrators' => true,
@@ -87,6 +88,13 @@ class supervisionSignup extends frontControllerApplication
 			  `privilege` enum('Administrator','Restricted administrator') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Administrator' COMMENT 'Administrator level'
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='System administrators';
 			
+			-- Settings
+			CREATE TABLE IF NOT EXISTS `settings` (
+			  `id` int(11) NOT NULL COMMENT 'Automatic key (ignored)' PRIMARY KEY,
+			  `additionalSupervisors` text COLLATE utf8_unicode_ci COMMENT 'Additional supervisors (usernames, one per line)'
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Settings';
+			INSERT INTO settings (id, additionalSupervisors) VALUES ('1', NULL);
+			
 			-- Supervisions
 			CREATE TABLE `supervisions` (
 			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Supervision ID #',
@@ -138,9 +146,16 @@ class supervisionSignup extends frontControllerApplication
 	# Additional initialisation, pre-actions
 	public function mainPreActions ()
 	{
-		# Determine if the user is staff
+		# Determine if the user is staff from the callback function
 		$userIsStaffCallbackFunction = $this->settings['userIsStaffCallback'];
 		$this->userIsStaff = ($this->user ? $userIsStaffCallbackFunction ($this->user) : false);
+		
+		# Also enable additional staff users set in the database
+		if ($this->user) {
+			if (in_array ($this->user, $this->settings['additionalSupervisors'])) {
+				$this->userIsStaff = true;
+			}
+		}
 		
 	}
 	
