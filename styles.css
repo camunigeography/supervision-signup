@@ -8,6 +8,10 @@
 #supervisionsignup form.timeslots input[type=submit] {cursor: pointer;}
 
 #supervisionsignup form.timeslots td {text-align: left;}
+@media screen and (max-width: 480px) {
+	#supervisionsignup form.timeslots td, body #supervisionsignup form.timeslots td input {font-size: 12px;}
+	#supervisionsignup form.timeslots td span.abbreviation {display: none;}
+}
 #supervisionsignup form.timeslots tr.uneditable {opacity: 0.4;}
 
 #supervisionsignup div.timeslot.taken {background-color: #f5cba7;}

@@ -911,6 +911,14 @@ class supervisionSignup extends frontControllerApplication
 		# Determine today
 		$today = date ('Y-m-d');
 		
+		# Define a set of abbreviations for days and months, so that "January" can be shown as "Jan" using CSS for mobile purposes
+		$abbreviations = $this->getDaysMonthsAbbreviated ();
+		
+		# Surround the word part after the abbreviations with spans, e.g. Jan<span>uary</span>
+		foreach ($abbreviations as $datePeriod => $datePeriodAbbreviated) {
+			$abbreviations[$datePeriod] = preg_replace ("/^({$datePeriodAbbreviated})(.+)$/", '$1<span class="abbreviation">$2</span>', $datePeriod);
+		}
+		
 		# Create the timeslot buttons
 		$formTarget = $_SERVER['_PAGE_URL'] . '#timeslots';
 		$html .= "\n\n<form class=\"timeslots\" name=\"timeslot\" action=\"" . htmlspecialchars ($formTarget) . "\" method=\"post\">";
@@ -924,7 +932,8 @@ class supervisionSignup extends frontControllerApplication
 				$indexValue = $supervision['timeslots'][$id];
 				$html .= "\n\t\t<tr" . ($editable ? '' : ' class="uneditable"') . '>';
 				if ($first) {
-					$html .= "\n\t\t\t<td class=\"date\" rowspan=\"{$totalThisDate}\">" . nl2br (date ("l,\njS F Y", strtotime ($date . ' 12:00:00'))) . ":</h5>";
+					$date = nl2br (date ("l,\njS F Y", strtotime ($date . ' 12:00:00')));
+					$html .= "\n\t\t\t<td class=\"date\" rowspan=\"{$totalThisDate}\">" . strtr ($date, $abbreviations) . ":</h5>";
 					$first = false;
 				} else {
 					$html .= "\n\t\t\t";
@@ -967,6 +976,30 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Return the HTML
 		return $html;
+	}
+	
+	
+	# Helper function to get an array of days and months and their abbrevations
+	private function getDaysMonthsAbbreviated ()
+	{
+		# Get days, e.g. Monday => Mon, Tuesday => Tue
+		$days = array ();
+		for ($i = 0; $i < 7; $i++) {
+			$timestamp = strtotime ("+{$i} days", strtotime ('next Monday'));	// Any Monday
+			$dayName = strftime ('%A', $timestamp);	// Locale-aware version of date()
+			$dayAbbreviated = strftime ('%a', $timestamp);
+			$days[$dayName] = $dayAbbreviated;
+		}
+		
+		# Get months
+		$calendar = cal_info (CAL_GREGORIAN);	// Locale-aware
+		$months = array_combine ($calendar['months'], $calendar['abbrevmonths']);
+		
+		# Combine
+		$abbreviations = array_merge ($days, $months);
+		
+		# Return the list
+		return $abbreviations;
 	}
 	
 	
