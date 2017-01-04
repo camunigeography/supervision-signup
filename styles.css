@@ -3,8 +3,8 @@
 #supervisionsignup #listing table.listing td:first-child {width: 33%; padding-right: 20px;}
 #supervisionsignup #listing li a.finished {opacity: 0.35;}
 
-#supervisionsignup div.timeslot, #supervisionsignup form.timeslots input[type=submit] {background-color: #ddd; border: 0 none; text-align: left; height: 3.5em; width: 15em; max-width: 15em; margin-right: 10px;}
-#supervisionsignup div.timeslot {float: left; margin: 0 10px 5px 0; padding: 5px 8px; width: calc(15em - 16px); height: calc(3.5em - 10px);}
+#supervisionsignup div.timeslot, #supervisionsignup form.timeslots input[type=submit] {float: left; margin: 0 10px 5px 0; background-color: #ddd; border: 0 none; text-align: left; height: 3.5em; width: 15em; max-width: 15em; margin-right: 10px;}
+#supervisionsignup div.timeslot {padding: 5px 8px; width: calc(15em - 16px); height: calc(3.5em - 10px);}
 #supervisionsignup form.timeslots input[type=submit] {cursor: pointer;}
 
 #supervisionsignup form.timeslots td {text-align: left;}
