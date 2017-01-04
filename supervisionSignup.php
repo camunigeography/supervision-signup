@@ -627,7 +627,7 @@ class supervisionSignup extends frontControllerApplication
 					<td>{title}</td>
 				</tr>
 				<tr>
-					<td>Description (optional):</td>
+					<td>Description (optional):<br /><br />(NB: Web addresses will automatically become links.)</td>
 					<td>{descriptionHtml}</td>
 				</tr>
 				
