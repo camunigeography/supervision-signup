@@ -137,6 +137,7 @@ class supervisionSignup extends frontControllerApplication
 			  `courseNumber` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Course number',
 			  `courseName` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Course name',
 			  `available` int(1) NOT NULL DEFAULT '1' COMMENT 'Currently available?',
+			  `ordering` INT(1) NULL DEFAULT '5' COMMENT 'Ordering (1=first, 9=last)' AFTER `available`,
 			  PRIMARY KEY (`id`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Courses';
 		";
@@ -306,6 +307,7 @@ class supervisionSignup extends frontControllerApplication
 		# Get the databinding attributes
 		$dataBindingAttributes = array (
 			'yearGroup' => array ('type' => 'select', 'values' => $this->settings['yearGroups'], ),		// NB: Strings must match response from userYeargroupCallback
+			'ordering' => array ('type' => 'select', 'values' => range (1, 9), ),
 		);
 		
 		# Define general sinenomine settings
@@ -1253,7 +1255,7 @@ class supervisionSignup extends frontControllerApplication
 	private function getCourses ()
 	{
 		# Get the courses
-		$data = $this->databaseConnection->select ($this->settings['database'], 'courses', array ('available' => '1'), array (), true, $orderBy = 'yearGroup, LENGTH(courseNumber), courseNumber, courseName');
+		$data = $this->databaseConnection->select ($this->settings['database'], 'courses', array ('available' => '1'), array (), true, $orderBy = 'yearGroup, ordering, LENGTH(courseNumber), courseNumber, courseName');
 		
 		# Regroup as nested set
 		$courses = array ();
