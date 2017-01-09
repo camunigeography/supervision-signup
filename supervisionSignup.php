@@ -1253,7 +1253,7 @@ class supervisionSignup extends frontControllerApplication
 	private function getCourses ()
 	{
 		# Get the courses
-		$data = $this->databaseConnection->select ($this->settings['database'], 'courses', array ('available' => '1'), array (), true, $orderBy = 'yearGroup, courseNumber, courseName');
+		$data = $this->databaseConnection->select ($this->settings['database'], 'courses', array ('available' => '1'), array (), true, $orderBy = 'yearGroup, LENGTH(courseNumber), courseNumber, courseName');
 		
 		# Regroup as nested set
 		$courses = array ();
@@ -1261,12 +1261,6 @@ class supervisionSignup extends frontControllerApplication
 			$yearGroup = $course['yearGroup'] . ':';
 			$id = $course['id'];
 			$courses[$yearGroup][$id] = ($course['courseNumber'] ? $course['courseNumber'] . ': ' : '') . $course['courseName'];
-		}
-		
-		# Natsort each set
-		foreach ($courses as $yearGroup => $set) {
-			natsort ($set);
-			$courses[$yearGroup] = $set;
 		}
 		
 		# Return the courses
