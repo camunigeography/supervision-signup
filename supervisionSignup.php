@@ -104,7 +104,7 @@ class supervisionSignup extends frontControllerApplication
 			  `courseName` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Course name',
 			  `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Supervision title',
 			  `descriptionHtml` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT 'Description',
-			  `studentsPerTimeslot` ENUM('1','2','3','4','5','6') CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '3' COMMENT 'Students per timeslot',
+			  `studentsPerTimeslot` ENUM('1','2','3','4','5','6') CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '3' COMMENT 'Maximum students per timeslot',
 			  `location` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Location(s)',
 			  `length` int(11) NOT NULL COMMENT 'Length of time',
 			  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Automatic timestamp',
@@ -415,7 +415,7 @@ class supervisionSignup extends frontControllerApplication
 							}
 						}
 						if ($unfinalisedData['studentsPerTimeslot'] < $greatestTotalSignups) {
-							$form->registerProblem ('timeslotloss', "You cannot reduce to {$unfinalisedData['studentsPerTimeslot']} students per timeslot because there is already a timeslot with {$greatestTotalSignups} existing student signups.");
+							$form->registerProblem ('timeslotloss', "You cannot reduce to {$unfinalisedData['studentsPerTimeslot']} students per timeslot (max) because there is already a timeslot with {$greatestTotalSignups} existing student signups.");
 						}
 					}
 				}
@@ -637,7 +637,7 @@ class supervisionSignup extends frontControllerApplication
 					<td colspan=\"2\"><h3>Supervision format</h3></td>
 				</tr>
 				<tr>
-					<td>Students per timeslot: *</td>
+					<td>Maximum students per timeslot: *</td>
 					<td>{studentsPerTimeslot}</td>
 				</tr>
 				<tr>
