@@ -22,6 +22,7 @@ class supervisionSignup extends frontControllerApplication
 			'userIsStaffCallback' => 'userIsStaffCallback',		// Callback function
 			'userYeargroupCallback' => 'userYeargroupCallback',	// Callback function
 			'userNameCallback' => false,						// Callback function; useful if a better name source than Lookup (which tends only to have initials for forenames) is available
+			'usersAutocomplete' => false,
 			'authentication' => true,
 			'databaseStrictWhere' => true,
 			'lengths' => array (30 => '30 minutes', 45 => '45 minutes', 60 => '1 hour', 90 => 'Hour and a half', 120 => 'Two hours', ),
@@ -100,6 +101,8 @@ class supervisionSignup extends frontControllerApplication
 			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Supervision ID #',
 			  `supervisor` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Supervisor username',
 			  `supervisorName` VARCHAR(255) COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT 'Supervisor name',
+			  `supervisor2` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Second supervisor (if applicable) - username',
+			  `supervisor2Name` VARCHAR(255) COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT 'Second supervisor (if applicable) - name',
 			  `courseId` int(11) NOT NULL COMMENT 'Course',
 			  `courseName` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Course name',
 			  `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Supervision title',
@@ -246,7 +249,17 @@ class supervisionSignup extends frontControllerApplication
 				$key = "<h4>{$courseDescription}:</h4>";
 				$list = array ();
 				foreach ($supervisions as $id => $supervision) {
-					$list[$id] = "<a href=\"{$supervision['href']}\"" . ($supervision['hasFinished'] ? ' class="finished"' : '') . '>'. htmlspecialchars ($supervision['title']) . ($showSupervisor ? ' (' . $supervision['supervisorName'] . ')' : '') . '</a>';
+					$list[$id]  = "<a href=\"{$supervision['href']}\"" . ($supervision['hasFinished'] ? ' class="finished"' : '') . '>';
+					$list[$id] .= htmlspecialchars ($supervision['title']);
+					if ($showSupervisor) {
+						$list[$id] .= ' (';
+						$list[$id] .= htmlspecialchars ($supervision['supervisorName']);
+						if ($supervision['supervisor2'] && $supervision['supervisor2Name']) {
+							$list[$id] .= ' / ' . htmlspecialchars ($supervision['supervisor2Name']);
+						}
+						$list[$id] .= ')';
+					}
+					$list[$id] .= '</a>';
 				}
 				$table[$key] = application::htmlUl ($list, 3);
 			}
@@ -364,9 +377,10 @@ class supervisionSignup extends frontControllerApplication
 			'table' => $this->settings['table'],
 			'data' => $supervision,
 			'intelligence' => true,
-			'exclude' => array ('id', 'supervisor', 'supervisorName', 'courseName'),		// Fixed data fields, handled below
+			'exclude' => array ('id', 'supervisor', 'supervisorName', 'supervisor2Name', 'courseName'),		// Fixed data fields, handled below
 			'attributes' => array (
 				'courseId' => array ('type' => 'select', 'values' => $courses, ),
+				'supervisor2'  => ($this->settings['usersAutocomplete'] ? array ('autocomplete' => $this->settings['usersAutocomplete'], 'autocompleteOptions' => array ('delay' => 0), ) : array ()),
 				'length' => array ('type' => 'select', 'values' => $this->settings['lengths'], 'default' => ($supervision ? $supervision['length'] : $this->settings['lengthDefault']), ),
 			),
 		));
@@ -451,6 +465,17 @@ class supervisionSignup extends frontControllerApplication
 			# Add in the course name so that this not dependent on a live feed which may change from year to year
 			$coursesFlattened = application::flattenMultidimensionalArray ($courses);
 			$result['courseName'] = $coursesFlattened[$result['courseId']];
+			
+			# Add in the second supervisor name, if applicable
+			if ($result['supervisor2']) {
+				$result['supervisor2Name'] = '?';
+				if ($this->settings['userNameCallback']) {
+					$userNameCallback = $this->settings['userNameCallback'];
+					if ($supervisor2Name = $userNameCallback ($result['supervisor2'])) {
+						$result['supervisor2Name'] = $supervisor2Name;
+					}
+				}
+			}
 			
 			# Extract the timeslots for entering in the separate timeslot table, and remove from the main insert
 			foreach ($result as $field => $value) {
@@ -633,6 +658,10 @@ class supervisionSignup extends frontControllerApplication
 					<td>Description (optional):<br /><br />(NB: Web addresses will automatically become links.)</td>
 					<td>{descriptionHtml}</td>
 				</tr>
+				<tr>
+					<td>2nd supervisor (if applicable) - username</td>
+					<td>{supervisor2}</td>
+				</tr>
 				
 				<tr>
 					<td colspan=\"2\"><h3>Supervision format</h3></td>
@@ -770,7 +799,7 @@ class supervisionSignup extends frontControllerApplication
 		}
 		
 		# Determine editing rights
-		$userHasEditRights = ($supervision['supervisor'] == $this->user);
+		$userHasEditRights = (($supervision['supervisor'] == $this->user) || ($supervision['supervisor2'] && ($supervision['supervisor2'] == $this->user)));
 		
 		# Enable editing by the user
 		if ($this->userIsStaff) {
@@ -860,7 +889,12 @@ class supervisionSignup extends frontControllerApplication
 		$html .= "\n\tYear group: <strong>" . htmlspecialchars ($supervision['yearGroup']) . '</strong><br />';
 		$html .= "\n\tCourse: <strong>" . htmlspecialchars ($supervision['courseName']) . '</strong>';
 		$html .= "\n</p>";
-		$html .= "\n<p>With: <strong>" . htmlspecialchars ($supervision['supervisorName']) . ' &lt;' . $supervision['supervisor'] . '&gt;' . '</strong></p>';
+		$html .= "\n<p>With: ";
+		$html .= '<strong>' . htmlspecialchars ($supervision['supervisorName']) . ' &lt;' . $supervision['supervisor'] . '&gt;' . '</strong>';
+		if ($supervision['supervisor2'] && $supervision['supervisor2Name']) {
+			$html .= ' / <strong>' . htmlspecialchars ($supervision['supervisor2Name']) . ' &lt;' . $supervision['supervisor2'] . '&gt;' . '</strong>';
+		}
+		$html .= '</p>';
 		if ($supervision['descriptionHtml']) {
 			$html .= "\n<h4>Description:</h4>";
 			$html .= "\n<div class=\"graybox\">";
@@ -1133,6 +1167,8 @@ class supervisionSignup extends frontControllerApplication
 				{$this->settings['table']}.id,
 				supervisor,
 				supervisorName,
+				supervisor2,
+				supervisor2Name,
 				title,
 				courseId,
 				courses.yearGroup,
