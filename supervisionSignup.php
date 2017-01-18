@@ -380,6 +380,7 @@ class supervisionSignup extends frontControllerApplication
 			'exclude' => array ('id', 'supervisor', 'supervisorName', 'supervisor2Name', 'courseName'),		// Fixed data fields, handled below
 			'attributes' => array (
 				'courseId' => array ('type' => 'select', 'values' => $courses, ),
+				'title' => array ('regexp' => '[a-z]+', ),	// Prevent ALL UPPER CASE text
 				'supervisor2'  => ($this->settings['usersAutocomplete'] ? array ('autocomplete' => $this->settings['usersAutocomplete'], 'autocompleteOptions' => array ('delay' => 0), ) : array ()),
 				'length' => array ('type' => 'select', 'values' => $this->settings['lengths'], 'default' => ($supervision ? $supervision['length'] : $this->settings['lengthDefault']), ),
 			),
