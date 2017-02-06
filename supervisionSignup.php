@@ -991,8 +991,10 @@ class supervisionSignup extends frontControllerApplication
 					if ($slotTaken) {
 						$signup = $signups[$startTime][$i];
 						$removeHtml = '';
-						if ($signup['userId'] == $this->user || $this->userIsAdministrator) {
-							$removeHtml = '<div class="delete"><input type="submit" name="delete[' . $indexValue . ',' . $signup['userId'] . ']" value="" onclick="return confirm(\'Are you sure?\');"></div>';	// See: http://stackoverflow.com/a/1193338/180733
+						if ($editable) {
+							if ($signup['userId'] == $this->user || $this->userIsAdministrator) {
+								$removeHtml = '<div class="delete"><input type="submit" name="delete[' . $indexValue . ',' . $signup['userId'] . ']" value="" onclick="return confirm(\'Are you sure?\');"></div>';	// See: http://stackoverflow.com/a/1193338/180733
+							}
 						}
 						$html .= "<div class=\"timeslot " . ($signup['userId'] == $this->user ? 'me' : 'taken') . "\">{$removeHtml}<p>{$signup['userName']}<br /><span>{$signup['userId']}</span></p></div>";
 						if ($signup['userId'] == $this->user) {
