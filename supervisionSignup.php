@@ -847,8 +847,41 @@ class supervisionSignup extends frontControllerApplication
 		# Show the supervision
 		$html .= $this->showSupervision ($supervision);
 		
+		# Show list of signups for easy export
+		if ($userHasEditRights) {
+			$html .= $this->listSignedupUsers ($supervision['signups']);
+		}
+		
 		# Show the HTML
 		echo $html;
+	}
+	
+	
+	# Function to show users that have signed up, to enable easier e-mailing
+	private function listSignedupUsers ($signups)
+	{
+		# End if none
+		if (!$signups) {return false;}
+		
+		# Extract the usernames, converting to e-mail addresses
+		$emails = array ();
+		foreach ($signups as $signup) {
+			$emails[] = $signup['userId'] . '@' . $this->settings['emailDomain'];
+		}
+		
+		# Unique and sort
+		$emails = array_unique ($emails);
+		sort ($emails);
+		
+		# Compile the HTML
+		$html  = "\n<h3>Students signed up</h3>";
+		$html .= "\n<p>This list, available only to you as the supervisor, shows the list of those currently signed up, as e-mails, as per the list above:</p>";
+		$html .= "\n<div class=\"graybox\">";
+		$html .= "\n<p>" . implode (', ', $emails) . '</p>';
+		$html .= "\n</div>";
+		
+		# Return the HTML
+		return $html;
 	}
 	
 	
@@ -907,7 +940,7 @@ class supervisionSignup extends frontControllerApplication
 		$html .= "\n" . application::makeClickableLinks ($supervision['location']);
 		$html .= "\n</div>";
 		$html .= "\n<br />";
-		$html .= "\n<h3 id=\"timeslots\">Time slots:</h3>";
+		$html .= "\n<h3 id=\"timeslots\">Time slots</h3>";
 		
 		# Add the timeslot if required, determining the posted slot
 		if (isSet ($_POST['timeslot']) && is_array ($_POST['timeslot']) && count ($_POST['timeslot']) == 1) {
