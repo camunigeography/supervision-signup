@@ -894,7 +894,11 @@ class supervisionSignup extends frontControllerApplication
 		$html  = "\n<h3>Students signed up</h3>";
 		$html .= "\n<p>This list, available only to you as the supervisor, shows the list of those currently signed up, as e-mails, as per the list above:</p>";
 		$html .= "\n<div class=\"graybox\">";
-		$html .= "\n<p>" . implode (', ', $emails) . '</p>';
+		if ($emails) {
+			$html .= "\n<p>" . implode (', ', $emails) . '</p>';
+		} else {
+			$html .= "\n<p><em>(No signups yet.)</em></p>";
+		}
 		$html .= "\n</div>";
 		
 		# Return the HTML
