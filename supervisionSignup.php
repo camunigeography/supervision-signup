@@ -354,9 +354,6 @@ class supervisionSignup extends frontControllerApplication
 		# If editing, parse existing timeslots to the textarea format; clone mode only clones properties, not timeslots
 		$timeslotsDefaults = $this->parseExistingTimeslots (($editMode ? $supervision : array ()));
 		
-		# If editing, obtain a list of timeslots already chosen by users, which therefore cannot be removed
-		$alreadyChosenSignupsByDate = $this->signupsByTimeslot (($editMode ? $supervision : array ()), true);
-		
 		# Databind a form
 		$form = new form (array (
 			'div' => false,
@@ -403,6 +400,12 @@ class supervisionSignup extends frontControllerApplication
 		# Check the start times and obtain the list
 		$startTimesPerDate = array ();
 		if ($unfinalisedData = $form->getUnfinalisedData ()) {
+			
+			# If editing, obtain a list of timeslots already chosen by users, which therefore cannot be removed
+			$alreadyChosenSignups = $this->signupsByTimeslot (($editMode ? $supervision : array ()));
+			
+			# Nest by date
+			$alreadyChosenSignupsByDate = $this->nestTimeslotsByDate ($alreadyChosenSignups);
 			
 			# Check start times via parser, by checking each field
 			$timeslots = application::arrayFields ($unfinalisedData, $timeslotsFields);
@@ -543,6 +546,21 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Return the HTML
 		return $html;
+	}
+	
+	
+	# Function to nest timeslots by date
+	private function nestTimeslotsByDate ($timeslots)
+	{
+		# Nest by date
+		$timeslotsByDate = array ();
+		foreach ($timeslots as $startTime => $signups) {
+			list ($date, $time) = explode (' ', $startTime, 2);
+			$timeslotsByDate[$date][$startTime] = $signups;
+		}
+		
+		# Return the list
+		return $timeslotsByDate;
 	}
 	
 	
@@ -1078,25 +1096,20 @@ class supervisionSignup extends frontControllerApplication
 	
 	
 	# Helper function to arrange existing signups by timeslot
-	private function signupsByTimeslot ($supervision, $nestByDate = false)
+	private function signupsByTimeslot ($supervision)
 	{
 		# Not relevant if no existing supervision supplied
 		if (!$supervision) {return array ();}
 		
 		# Filter, arranging by date
-		$signups = array ();
+		$signupsByTimeslot = array ();
 		foreach ($supervision['signups'] as $id => $signup) {
 			$startTime = $signup['startTime'];
-			if ($nestByDate) {
-				list ($date, $time) = explode (' ', $signup['startTime'], 2);
-				$signups[$date][$startTime][] = $signup;	// Indexed from 0
-			} else {
-				$signups[$startTime][] = $signup;	// Indexed from 0
-			}
+			$signupsByTimeslot[$startTime][] = $signup;	// Indexed from 0
 		}
 		
 		# Return the list
-		return $signups;
+		return $signupsByTimeslot;
 	}
 	
 	
