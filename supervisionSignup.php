@@ -498,7 +498,7 @@ class supervisionSignup extends frontControllerApplication
 			
 			# Construct the timeslot inserts
 			$timeslotInserts = array ();
-			foreach ($startTimesPerDate as $date => $startTimes) {
+			foreach ($proposedStartTimesPerDate as $date => $startTimes) {
 				foreach ($startTimes as $startTime) {
 					$timeslotInserts[] = array (
 						'supervisionId' => $supervisionId,
