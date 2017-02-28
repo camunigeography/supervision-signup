@@ -355,7 +355,7 @@ class supervisionSignup extends frontControllerApplication
 		$timeslotsDefaults = $this->parseExistingTimeslots (($editMode ? $supervision : array ()));
 		
 		# If editing, obtain a list of timeslots already chosen by users, which therefore cannot be removed
-		$alreadyChosenSignups = $this->signupsByTimeslot (($editMode ? $supervision : array ()), true);
+		$alreadyChosenSignupsByDate = $this->signupsByTimeslot (($editMode ? $supervision : array ()), true);
 		
 		# Databind a form
 		$form = new form (array (
@@ -423,7 +423,7 @@ class supervisionSignup extends frontControllerApplication
 				if ($unfinalisedData['studentsPerTimeslot']) {
 					if ($editMode) {
 						$greatestTotalSignups = 0;
-						foreach ($alreadyChosenSignups as $date) {
+						foreach ($alreadyChosenSignupsByDate as $date) {
 							foreach ($date as $timeslot => $signupsThisSlot) {
 								$totalSignups = count ($signupsThisSlot);
 								$greatestTotalSignups = max ($greatestTotalSignups, $totalSignups);
@@ -442,7 +442,7 @@ class supervisionSignup extends frontControllerApplication
 			}
 			
 			# Prevent deletion of slots that have already been chosen by a student
-			if ($missingAlreadyChosen = $this->missingAlreadyChosen ($alreadyChosenSignups, $startTimesPerDate, $dateTextFormat)) {
+			if ($missingAlreadyChosen = $this->missingAlreadyChosen ($alreadyChosenSignupsByDate, $startTimesPerDate, $dateTextFormat)) {
 				$form->registerProblem ('missingchosen', 'Some of the timeslots that you attempted to remove already have signups: <em>' . implode ('</em>, <em>', $missingAlreadyChosen) . '</em>, so you need to be reinstate those times in the timeslots list below.');
 			}
 		}
@@ -745,13 +745,13 @@ class supervisionSignup extends frontControllerApplication
 	
 	
 	# Function to detect cases of deletion of timeslot(s) that a student has already chosen
-	private function missingAlreadyChosen ($alreadyChosenSignups, $startTimesPerDate, $dateTextFormat)
+	private function missingAlreadyChosen ($alreadyChosenSignupsByDate, $startTimesPerDate, $dateTextFormat)
 	{
 		# Start a list of missing already-chosen signups
 		$missingAlreadyChosen = array ();
 		
 		# Loop through the existing ones as the comparator, as the whole date may have been deleted, rather than the other way round
-		foreach ($alreadyChosenSignups as $dateChosen => $signupsByDatetime) {
+		foreach ($alreadyChosenSignupsByDate as $dateChosen => $signupsByDatetime) {
 			foreach ($signupsByDatetime as $datetimeChosen => $signup) {
 				
 				# If the date is missing, or the time within that date, is missing, register it
