@@ -401,11 +401,8 @@ class supervisionSignup extends frontControllerApplication
 		$startTimesPerDate = array ();
 		if ($unfinalisedData = $form->getUnfinalisedData ()) {
 			
-			# If editing, obtain a list of timeslots already chosen by users, which therefore cannot be removed
-			$alreadyChosenSignups = $this->signupsByTimeslot (($editMode ? $supervision : array ()));
-			
-			# Nest by date
-			$alreadyChosenSignupsByDate = $this->nestTimeslotsByDate ($alreadyChosenSignups);
+			# Obtain the already chosen signups, by date
+			$alreadyChosenSignupsByDate = ($editMode ? $this->nestTimeslotsByDate ($supervision['signupsByTimeslot']) : array ());
 			
 			# Check start times via parser, by checking each field
 			$timeslots = application::arrayFields ($unfinalisedData, $timeslotsFields);
@@ -1095,24 +1092,6 @@ class supervisionSignup extends frontControllerApplication
 	}
 	
 	
-	# Helper function to arrange existing signups by timeslot
-	private function signupsByTimeslot ($supervision)
-	{
-		# Not relevant if no existing supervision supplied
-		if (!$supervision) {return array ();}
-		
-		# Filter, arranging by date
-		$signupsByTimeslot = array ();
-		foreach ($supervision['signups'] as $id => $signup) {
-			$startTime = $signup['startTime'];
-			$signupsByTimeslot[$startTime][] = $signup;	// Indexed from 0
-		}
-		
-		# Return the list
-		return $signupsByTimeslot;
-	}
-	
-	
 	# Function to edit a supervision
 	private function editSupervision ($supervision)
 	{
@@ -1194,12 +1173,27 @@ class supervisionSignup extends frontControllerApplication
 		$supervision['signups'] = $this->databaseConnection->select ($this->settings['database'], 'signups', array ('supervisionId' => $id), array ('id', 'userId', 'userName', 'startTime'), true, $orderBy = 'startTime, id');
 		
 		# Arrange signups by timeslot
-		$supervision['signupsByTimeslot'] = $this->signupsByTimeslot ($supervision);
+		$supervision['signupsByTimeslot'] = $this->signupsByTimeslot ($supervision['signups']);
 		
 		// application::dumpData ($supervision);
 		
 		# Return the collection
 		return $supervision;
+	}
+	
+	
+	# Helper function to arrange existing signups by timeslot
+	private function signupsByTimeslot ($signups)
+	{
+		# Filter, arranging by date
+		$signupsByTimeslot = array ();
+		foreach ($signups as $id => $signup) {
+			$startTime = $signup['startTime'];
+			$signupsByTimeslot[$startTime][] = $signup;	// Indexed from 0
+		}
+		
+		# Return the list
+		return $signupsByTimeslot;
 	}
 	
 	
