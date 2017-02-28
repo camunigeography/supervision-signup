@@ -866,7 +866,7 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Show list of signups for easy export
 		if ($userHasEditRights) {
-			$html .= $this->listSignedupUsers ($supervision['signups']);
+			$html .= $this->listSignedupUsers ($supervision['signupsByTimeslot']);
 		}
 		
 		# Show the HTML
@@ -875,15 +875,14 @@ class supervisionSignup extends frontControllerApplication
 	
 	
 	# Function to show users that have signed up, to enable easier e-mailing
-	private function listSignedupUsers ($signups)
+	private function listSignedupUsers ($signupsByTimeslot)
 	{
-		# End if none
-		if (!$signups) {return false;}
-		
 		# Extract the usernames, converting to e-mail addresses
 		$emails = array ();
-		foreach ($signups as $signup) {
-			$emails[] = $signup['userId'] . '@' . $this->settings['emailDomain'];
+		foreach ($signupsByTimeslot as $timeslot => $signups) {
+			foreach ($signups as $signup) {
+				$emails[] = $signup['userId'] . '@' . $this->settings['emailDomain'];
+			}
 		}
 		
 		# Unique and sort
@@ -914,10 +913,12 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Determine if the user has signed-up already
 		$userSignup = false;
-		foreach ($supervision['signups'] as $id => $signup) {
-			if ($signup['userId'] == $this->user) {
-				$userSignup = $signup;
-				break;
+		foreach ($supervision['signupsByTimeslot'] as $timeslot => $signups) {
+			foreach ($signups as $id => $signup) {
+				if ($signup['userId'] == $this->user) {
+					$userSignup = $signup;
+					break;
+				}
 			}
 		}
 		
