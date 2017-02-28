@@ -633,7 +633,7 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Group as date to list of simplified times
 		$timeslotsExistingByDate = array ();
-		foreach ($supervision['timeslots'] as $timeslot) {
+		foreach ($supervision['signupsByTimeslot'] as $timeslot => $signups) {
 			list ($date, $time) = explode (' ', $timeslot, 2);
 			$timeslotsExistingByDate[$date][] = timedate::simplifyTime ($time);
 		}
@@ -964,7 +964,7 @@ class supervisionSignup extends frontControllerApplication
 		# Add the timeslot if required, determining the posted slot
 		if (isSet ($_POST['timeslot']) && is_array ($_POST['timeslot']) && count ($_POST['timeslot']) == 1) {
 			$startTime = key ($_POST['timeslot']);
-			if (in_array ($startTime, $supervision['timeslots'])) {
+			if (array_key_exists ($startTime, $supervision['signupsByTimeslot'])) {
 				if (!$this->addSignup ($supervision['id'], $startTime, $this->user, $this->userName, $error /* returned by reference */)) {
 					$html .= "\n<p class=\"warning\">{$error}</p>";
 					return $html;
@@ -981,7 +981,7 @@ class supervisionSignup extends frontControllerApplication
 			$submittedToken = key ($_POST['delete']);
 			if (substr_count ($submittedToken, ',')) {
 				list ($startTime, $userId) = explode (',', $submittedToken, 2);
-				if (in_array ($startTime, $supervision['timeslots'])) {
+				if (array_key_exists ($startTime, $supervision['signupsByTimeslot'])) {
 					if (!$this->deleteSignup ($supervision['id'], $startTime, $userId, $error /* returned by reference */)) {
 						$html .= "\n<p class=\"warning\">{$error}</p>";
 						return $html;
