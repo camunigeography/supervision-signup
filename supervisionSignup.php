@@ -891,9 +891,6 @@ class supervisionSignup extends frontControllerApplication
 		# Start the HTML
 		$html = '';
 		
-		# Arrange signups by timeslot
-		$signups = $this->signupsByTimeslot ($supervision);
-		
 		# Determine if the user has signed-up already
 		$userSignup = false;
 		foreach ($supervision['signups'] as $id => $signup) {
@@ -1020,9 +1017,9 @@ class supervisionSignup extends frontControllerApplication
 				$html .= "\n\t\t\t<td>";
 				for ($i = 0; $i < $supervision['studentsPerTimeslot']; $i++) {
 					$html .= "\n\t\t\t\t";
-					$slotTaken = (isSet ($signups[$startTime]) && isSet ($signups[$startTime][$i]));
+					$slotTaken = (isSet ($supervision['signupsByTimeslot'][$startTime]) && isSet ($supervision['signupsByTimeslot'][$startTime][$i]));
 					if ($slotTaken) {
-						$signup = $signups[$startTime][$i];
+						$signup = $supervision['signupsByTimeslot'][$startTime][$i];
 						$removeHtml = '';
 						if ($editable) {
 							if ($signup['userId'] == $this->user || $this->userIsAdministrator) {
@@ -1182,6 +1179,9 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Add the student signup data (which may be empty)
 		$supervision['signups'] = $this->databaseConnection->select ($this->settings['database'], 'signups', array ('supervisionId' => $id), array ('id', 'userId', 'userName', 'startTime'), true, $orderBy = 'startTime, id');
+		
+		# Arrange signups by timeslot
+		$supervision['signupsByTimeslot'] = $this->signupsByTimeslot ($supervision);
 		
 		// application::dumpData ($supervision);
 		
