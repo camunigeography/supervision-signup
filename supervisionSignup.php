@@ -1177,10 +1177,10 @@ class supervisionSignup extends frontControllerApplication
 		}
 		
 		# Add the student signup data (which may be empty)
-		$supervision['signups'] = $this->databaseConnection->select ($this->settings['database'], 'signups', array ('supervisionId' => $id), array ('id', 'userId', 'userName', 'startTime'), true, $orderBy = 'startTime, id');
+		$signups = $this->databaseConnection->select ($this->settings['database'], 'signups', array ('supervisionId' => $id), array ('id', 'userId', 'userName', 'startTime'), true, $orderBy = 'startTime, id');
 		
 		# Arrange signups by timeslot
-		$supervision['signupsByTimeslot'] = $this->signupsByTimeslot ($supervision);
+		$supervision['signupsByTimeslot'] = $this->signupsByTimeslot ($supervision['timeslots'], $signups);
 		
 		// application::dumpData ($supervision);
 		
@@ -1190,16 +1190,16 @@ class supervisionSignup extends frontControllerApplication
 	
 	
 	# Helper function to arrange existing signups by timeslot
-	private function signupsByTimeslot ($supervision)
+	private function signupsByTimeslot ($timeslots, $signups)
 	{
 		# Initialise to ensure all slots exist
 		$signupsByTimeslot = array ();
-		foreach ($supervision['timeslots'] as $startTime) {
+		foreach ($timeslots as $startTime) {
 			$signupsByTimeslot[$startTime] = array ();
 		}
 		
 		# Filter, arranging by date
-		foreach ($supervision['signups'] as $id => $signup) {
+		foreach ($signups as $id => $signup) {
 			$startTime = $signup['startTime'];
 			$signupsByTimeslot[$startTime][] = $signup;	// Indexed from 0
 		}
