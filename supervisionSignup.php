@@ -1176,7 +1176,7 @@ class supervisionSignup extends frontControllerApplication
 			return false;
 		}
 		
-		# Add the student signup data (which may be empty)
+		# Get the student signup data (which may be empty)
 		$signups = $this->databaseConnection->select ($this->settings['database'], 'signups', array ('supervisionId' => $id), array ('id', 'userId', 'userName', 'startTime'), true, $orderBy = 'startTime, id');
 		
 		# Arrange signups by timeslot
@@ -1210,7 +1210,7 @@ class supervisionSignup extends frontControllerApplication
 	
 	
 	# Model function to get supervisions, arranged hierarchically
-	private function getSupervisions ($yeargroup = false, $supervisor = false)
+	private function getSupervisions ($yeargroup = false, $supervisor = false, $includeTimeslots = false)
 	{
 		# Add constraints if required
 		$preparedStatementValues = array ();
@@ -1249,6 +1249,36 @@ class supervisionSignup extends frontControllerApplication
 		# Add link to each
 		foreach ($supervisions as $id => $supervision) {
 			$supervisions[$id]['href'] = $this->baseUrl . '/' . $id . '/';
+		}
+		
+		# Obtain the timeslot data
+		if ($includeTimeslots) {
+			
+			# Initialise timeslots and signups by timeslot
+			foreach ($supervisions as $id => $supervision) {
+				$supervisions[$id]['timeslots'] = array ();
+				$supervisions[$id]['signupsByTimeslot'] = array ();
+			}
+			
+			# Get the timeslots as a single query
+			$timeslots = $this->databaseConnection->select ($this->settings['database'], 'timeslots', array ('supervisionId' => array_keys ($supervisions)), array ('id', 'supervisionId', 'startTime'), true, $orderBy = 'supervisionId, startTime');
+			
+			# Regroup by supervision
+			foreach ($timeslots as $id => $timeslot) {
+				$supervisionId = $timeslot['supervisionId'];
+				$supervisions[$supervisionId]['timeslots'][$id] = $timeslot['startTime'];
+			}
+			
+			# Get the student signup data (which may be empty)
+			$signups = $this->databaseConnection->select ($this->settings['database'], 'signups', array ('supervisionId' => array_keys ($supervisions)), array ('id', 'supervisionId', 'userId', 'userName', 'startTime'), true, $orderBy = 'supervisionId, startTime, id');
+			
+			# Regroup by supervision
+			$signupsBySupervision = application::regroup ($signups, 'supervisionId');
+			
+			# Add the timeslots
+			foreach ($signupsBySupervision as $id => $signups) {
+				$supervisions[$id]['signupsByTimeslot'] = $this->signupsByTimeslot ($supervisions[$id]['timeslots'], $signupsBySupervision[$id]);
+			}
 		}
 		
 		# Return the supervisions
