@@ -143,6 +143,14 @@ class supervisionSignup extends frontControllerApplication
 			  `ordering` INT(1) NULL DEFAULT '5' COMMENT 'Ordering (1=first, 9=last)' AFTER `available`,
 			  PRIMARY KEY (`id`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Courses';
+			
+			-- Users
+			CREATE TABLE `users` (
+			  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'User ID',
+			  `token` varchar(16) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Token',
+			  PRIMARY KEY (`id`),
+			  UNIQUE KEY (`token`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table of users';
 		";
 	}
 	
@@ -316,6 +324,33 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Return the HTML
 		echo $html;
+	}
+	
+	
+	# Function to create a user's token if not already present
+	private function getToken ()
+	{
+		# Return it if already present
+		if ($token = $this->databaseConnection->selectOneField ($this->settings['database'], 'users', 'token', array ('id' => $this->user))) {
+			return $token;
+		}
+		
+		# Generate a token; it is assumed that collisions are unlikely given a length of 16
+		$token = application::generatePassword (16);
+		
+		# Add the entry
+		$this->databaseConnection->insert ($this->settings['database'], 'users', array ('id' => $this->user, 'token' => $token));
+		
+		# Return the token
+		return $token;
+	}
+	
+	
+	# Function to get the user from their token
+	private function getUserFromToken ($token)
+	{
+		# Return the result, if any
+		return $this->databaseConnection->selectOneField ($this->settings['database'], 'users', 'id', array ('token' => $_GET['token']));
 	}
 	
 	
