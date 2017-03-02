@@ -1518,7 +1518,7 @@ class supervisionSignup extends frontControllerApplication
 				
 				# Compile the event
 				$event = array (
-					'title' => "Supervision: {$supervision['courseName']}",
+					'title' => "Supervision: {$supervision['courseName']} - {$supervision['title']}",
 					'startTime' => strtotime ($startTime),
 					'untilTime' => strtotime ($startTime) + ($supervision['length'] * 60),
 					'location' => $supervision['location'],
@@ -1544,7 +1544,7 @@ class supervisionSignup extends frontControllerApplication
 			'startTime' => strtotime ($startTime),
 			'untilTime' => strtotime ($startTime) + ($supervision['length'] * 60),
 			'location' => $supervision['location'],
-			'description' => "Supervision with {$supervision['supervisorName']} for course: {$supervision['courseName']}",
+			'description' => "Supervision with {$supervision['supervisorName']} for course: {$supervision['courseName']} - {$supervision['title']}",
 		);
 		
 		# Serve the iCal
