@@ -312,7 +312,7 @@ class supervisionSignup extends frontControllerApplication
 		$html = '';
 		
 		# Get the supervisions
-		$supervisionsSupervising = $this->getSupervisions (false);
+		$supervisionsSupervising = $this->getSupervisions (false, $this->user);
 		
 		# Get the user's token if not already present
 		$token = $this->getToken ();
