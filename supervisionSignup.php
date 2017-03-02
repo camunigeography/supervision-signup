@@ -56,6 +56,13 @@ class supervisionSignup extends frontControllerApplication
 				'icon' => 'asterisk_orange',
 				'enableIf' => $this->userIsStaff,
 			),
+			'ical' => array (
+				'description' => 'My supervisions - iCal',
+				'url' => 'my/supervisions.ics',
+				'tab' => 'My supervisions',
+				'export' => true,
+				'authentication' => false,
+			),
 			'add' => array (
 				'description' => 'Create a new supervision',
 				'url' => 'add/',
@@ -192,7 +199,7 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Ensure the user is current student or staff (or admin)
 		if (!$this->userYeargroup && !$this->userIsStaff && !$this->userIsAdministrator) {
-			if ($this->action != 'feedback') {		// Unless on feedback page
+			if (!in_array ($this->action, array ('feedback', 'ical'))) {		// Unless on feedback page or iCal output
 				$html  = "\n<p>This system is only available to current students and staff of " . htmlspecialchars ($this->settings['organisationDescription']) . '.</p>';
 				$html .= "\n<p>If you think you should have access, please <a href=\"{$this->baseUrl}/feedback.html\">contact us</a>.</p>";
 				echo $html;
@@ -305,15 +312,14 @@ class supervisionSignup extends frontControllerApplication
 		$html = '';
 		
 		# Get the supervisions
-		$supervisionsSupervising = $this->getSupervisions (false, $this->user, true);
+		$supervisionsSupervising = $this->getSupervisions (false);
 		
-		# Serve iCal feed if required
-		if (isSet ($_GET['ical'])) {
-			$this->iCalBookings ($supervisionsSupervising);
-		}
+		# Get the user's token if not already present
+		$token = $this->getToken ();
 		
 		# List the supervisions for this user
 		if ($supervisionsSupervising) {
+			$html = "\n" . "<p><a href=\"{$this->baseUrl}/my/supervisions.ics?token={$token}\">" . '<img src="/images/icons/extras/ical.gif" alt="iCal" title="iCal output - subscribe for your calendar" class="right" /></a></p>';
 			$html .= "\n<p>You are running the supervisions listed below.</p>";
 			$html .= "\n<p>You can view the student signups, or edit/delete a supervision, on each page.</p>";
 			$html .= $this->supervisionsList ($supervisionsSupervising, false);
@@ -351,6 +357,32 @@ class supervisionSignup extends frontControllerApplication
 	{
 		# Return the result, if any
 		return $this->databaseConnection->selectOneField ($this->settings['database'], 'users', 'id', array ('token' => $_GET['token']));
+	}
+	
+	
+	# iCal output for My supervisions
+	public function ical ()
+	{
+		# Ensure that a token has been supplied, or end
+		if (!isSet ($_GET['token']) || !strlen ($_GET['token'])) {
+			application::sendHeader (401);
+			echo "\n<p>ERROR: No token was supplied.</p>";
+			return false;
+		}
+		
+		# Look up the user from the token, or end
+		if (!$userId = $this->getUserFromToken ($_GET['token'])) {
+			sleep (1);
+			application::sendHeader (403);
+			echo "\n<p>ERROR: Invalid token.</p>";
+			return false;
+		}
+		
+		# Get the supervisions
+		$supervisionsSupervising = $this->getSupervisions (false, $userId, true);
+		
+		# Serve iCal feed if required
+		$this->iCalBookings ($supervisionsSupervising);
 	}
 	
 	
