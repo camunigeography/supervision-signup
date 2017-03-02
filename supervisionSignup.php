@@ -931,7 +931,7 @@ class supervisionSignup extends frontControllerApplication
 		# Serve iCal feed if required
 		if ($userSignup) {
 			if (isSet ($_GET['ical'])) {
-				$this->iCal ($supervision, $userSignup['startTime']);
+				$this->iCalBooking ($supervision, $userSignup['startTime']);
 			}
 		}
 		
@@ -1426,11 +1426,11 @@ class supervisionSignup extends frontControllerApplication
 	}
 	
 	
-	# Function to implement the export of bookings as iCal
-	private function iCal ($supervision, $startTime)
+	# Function to implement the export of a booking as iCal
+	private function iCalBooking ($supervision, $startTime)
 	{
 		# Add the entry
-		$entry = array (
+		$event = array (
 			'title' => "Supervision with {$supervision['supervisorName']}",
 			'startTime' => strtotime ($startTime),
 			'untilTime' => strtotime ($startTime) + ($supervision['length'] * 60),
@@ -1438,11 +1438,19 @@ class supervisionSignup extends frontControllerApplication
 			'description' => "Supervision with {$supervision['supervisorName']} for course: {$supervision['courseName']}",
 		);
 		
+		# Serve the iCal
+		$this->serveICal (array ($event));
+	}
+	
+	
+	# Function to serve an iCal for one or more entries
+	private function serveICal ($events)
+	{
 		# Delegate to iCal class
 		require_once ('ical.php');
 		$ical = new ical ();
 		$title = 'Supervision';
-		$output = $ical->create (array ($entry), $title, 'ac.uk.cam.geog', 'Supervisions');
+		$output = $ical->create ($events, $title, 'ac.uk.cam.geog', 'Supervisions');
 		
 		# Serve the file, first flushing all previous HTML (including from auto_prepend_file)
 		ob_clean ();
