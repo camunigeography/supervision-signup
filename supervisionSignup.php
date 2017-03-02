@@ -297,7 +297,12 @@ class supervisionSignup extends frontControllerApplication
 		$html = '';
 		
 		# Get the supervisions
-		$supervisionsSupervising = $this->getSupervisions (false, $this->user);
+		$supervisionsSupervising = $this->getSupervisions (false, $this->user, true);
+		
+		# Serve iCal feed if required
+		if (isSet ($_GET['ical'])) {
+			$this->iCalBookings ($supervisionsSupervising);
+		}
 		
 		# List the supervisions for this user
 		if ($supervisionsSupervising) {
@@ -1229,6 +1234,8 @@ class supervisionSignup extends frontControllerApplication
 				supervisor2,
 				supervisor2Name,
 				title,
+				length,
+				location,
 				courseId,
 				courses.yearGroup,
 				courses.courseNumber,
@@ -1423,6 +1430,41 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Return success
 		return true;
+	}
+	
+	
+	# Function to implement the export of multiple bookings as iCal
+	private function iCalBookings ($supervisions)
+	{
+		# Loop through each supervision
+		$events = array ();
+		foreach ($supervisions as $supervision) {
+			
+			# Loop through each timeslot and create an event for it
+			foreach ($supervision['signupsByTimeslot'] as $startTime => $signupsByTimeslot) {
+				
+				# Assemble the list of signups for this timeslot
+				$names = array ();
+				foreach ($signupsByTimeslot as $signup) {
+					$names[] = $signup['userName'] . ' (' . $signup['userId'] . ')';
+				}
+				
+				# Compile the event
+				$event = array (
+					'title' => "Supervision: {$supervision['courseName']}",
+					'startTime' => strtotime ($startTime),
+					'untilTime' => strtotime ($startTime) + ($supervision['length'] * 60),
+					'location' => $supervision['location'],
+					'description' => "Supervision: {$supervision['courseName']}" . ($names ? ", with students: " . implode (', ', $names) . '.' : ". (No students signed up yet.)"),
+				);
+				
+				# Register the event
+				$events[] = $event;
+			}
+		}
+		
+		# Serve the iCal
+		$this->serveICal ($events);
 	}
 	
 	

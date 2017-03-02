@@ -18,6 +18,7 @@
 	RewriteEngine on
 	RewriteRule ^$applicationBaseUrl/(add|my)/$ $applicationBaseUrl/index.html?action=$1 [L]
 	RewriteRule ^$applicationBaseUrl/(add|my)$ $applicationBaseUrl/$1/ [R]
+	RewriteRule ^$applicationBaseUrl/(my)/supervisions.ics$ $applicationBaseUrl/index.html?action=$1&ical=1 [L]
 	RewriteRule ^$applicationBaseUrl/([1-9][0-9]*)/$ $applicationBaseUrl/index.html?action=supervision&item=$1 [L]
 	RewriteRule ^$applicationBaseUrl/([1-9][0-9]*)$ $applicationBaseUrl/$1/ [R]
 	RewriteRule ^$applicationBaseUrl/([1-9][0-9]*)/supervision\1.ics$ $applicationBaseUrl/index.html?action=supervision&item=$1&ical=1 [L]
