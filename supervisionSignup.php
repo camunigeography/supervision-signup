@@ -1558,7 +1558,7 @@ class supervisionSignup extends frontControllerApplication
 		# Delegate to iCal class
 		require_once ('ical.php');
 		$ical = new ical ();
-		$title = 'Supervision';
+		$title = (count ($events) == 1 ? 'Supervision' : 'Supervisions');
 		$output = $ical->create ($events, $title, 'ac.uk.cam.geog', 'Supervisions');
 		
 		# Serve the file, first flushing all previous HTML (including from auto_prepend_file)
