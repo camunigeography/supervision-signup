@@ -951,22 +951,29 @@ class supervisionSignup extends frontControllerApplication
 	{
 		# Extract the usernames, converting to e-mail addresses
 		$emails = array ();
+		$usernames = array ();
 		foreach ($signupsByTimeslot as $timeslot => $signups) {
 			foreach ($signups as $signup) {
 				$emails[] = $signup['userId'] . '@' . $this->settings['emailDomain'];
+				$usernames[] = $signup['userId'];
 			}
 		}
 		
 		# Unique and sort
 		$emails = array_unique ($emails);
 		sort ($emails);
+		$usernames = array_unique ($usernames);
+		sort ($usernames);
 		
 		# Compile the HTML
 		$html  = "\n<h3>Students signed up</h3>";
-		$html .= "\n<p>This list, available only to you as the supervisor, shows the list of those currently signed up, as e-mails, as per the list above:</p>";
+		$html .= "\n<p>This list, available only to you as the supervisor, shows the list of those currently signed up, as e-mails and usernames, as per the list above:</p>";
 		$html .= "\n<div class=\"graybox\">";
 		if ($emails) {
+			$html .= "\n<p><em>As e-mails (for e-mailing):</em></p>";
 			$html .= "\n<p>" . implode (', ', $emails) . '</p>';
+			$html .= "\n<p><em>As usernames (for CamCORS):</em></p>";
+			$html .= "\n<p>" . implode ('<br />', $usernames) . '</p>';
 		} else {
 			$html .= "\n<p><em>(No signups yet.)</em></p>";
 		}
