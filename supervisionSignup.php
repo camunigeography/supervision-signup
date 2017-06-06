@@ -59,7 +59,6 @@ class supervisionSignup extends frontControllerApplication
 			'ical' => array (
 				'description' => 'My supervisions - iCal',
 				'url' => 'my/supervisions.ics',
-				'tab' => 'My supervisions',
 				'export' => true,
 				'authentication' => false,
 			),
