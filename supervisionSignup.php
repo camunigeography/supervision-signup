@@ -98,9 +98,10 @@ class supervisionSignup extends frontControllerApplication
 			-- Settings
 			CREATE TABLE IF NOT EXISTS `settings` (
 			  `id` int(11) NOT NULL COMMENT 'Automatic key (ignored)' PRIMARY KEY,
-			  `additionalSupervisors` text COLLATE utf8_unicode_ci COMMENT 'Additional supervisors (usernames, one per line)'
+			  `additionalSupervisors` text COLLATE utf8_unicode_ci COMMENT 'Additional supervisors (usernames, one per line)',
+			  `academicYearStartsMonth` INT(2) NOT NULL DEFAULT '8' COMMENT '\'Current\' year starts on month'
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Settings';
-			INSERT INTO settings (id, additionalSupervisors) VALUES ('1', NULL);
+			INSERT INTO settings (id) VALUES (1);
 			
 			-- Supervisions
 			CREATE TABLE `supervisions` (
@@ -145,7 +146,7 @@ class supervisionSignup extends frontControllerApplication
 			  `yearGroup` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Year group',
 			  `courseNumber` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Course number',
 			  `courseName` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Course name',
-			  `available` int(1) NOT NULL DEFAULT '1' COMMENT 'Currently available?',
+			  `academicYear` VARCHAR(7) NOT NULL COMMENT 'Academic year',
 			  `ordering` INT(1) NULL DEFAULT '5' COMMENT 'Ordering (1=first, 9=last)' AFTER `available`,
 			  PRIMARY KEY (`id`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Courses';
@@ -183,6 +184,9 @@ class supervisionSignup extends frontControllerApplication
 	{
 		# Load required libraries
 		require_once ('timedate.php');
+		
+		# Current academic year for today's date
+		$this->currentAcademicYear = timedate::academicYear ($this->settings['academicYearStartsMonth'], true, true);
 		
 		# Determine the full name of a user via callback if specified
 		if ($this->settings['userNameCallback']) {
@@ -1461,7 +1465,7 @@ class supervisionSignup extends frontControllerApplication
 	private function getCourses ()
 	{
 		# Get the courses
-		$data = $this->databaseConnection->select ($this->settings['database'], 'courses', array ('available' => '1'), array (), true, $orderBy = 'yearGroup, ordering, LENGTH(courseNumber), courseNumber, courseName');
+		$data = $this->databaseConnection->select ($this->settings['database'], 'courses', array ('academicYear' => $this->currentAcademicYear), array (), true, $orderBy = 'yearGroup, ordering, LENGTH(courseNumber), courseNumber, courseName');
 		
 		# Regroup as nested set
 		$courses = array ();
