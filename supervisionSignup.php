@@ -228,7 +228,7 @@ class supervisionSignup extends frontControllerApplication
 			$html .= "\n<p>You can sign up to the following supervisions online:</p>";
 			$html .= $this->supervisionsList ($supervisions);
 		} else {
-			$html .= "\n<p>There are no supervisions available to sign up to yet.</p>";
+			$html .= "\n<p>There are no supervisions available to sign up to yet, for the current academic year.</p>";
 		}
 		
 		# Give links for staff
@@ -1296,6 +1296,7 @@ class supervisionSignup extends frontControllerApplication
 	{
 		# Add constraints if required
 		$preparedStatementValues = array ();
+		$preparedStatementValues['academicYear'] = $this->currentAcademicYear;
 		if ($yeargroup) {
 			$preparedStatementValues['yearGroup'] = $yeargroup;
 		}
@@ -1323,8 +1324,10 @@ class supervisionSignup extends frontControllerApplication
 			FROM {$this->settings['database']}.{$this->settings['table']}
 			JOIN courses ON {$this->settings['table']}.courseId = courses.id
 			LEFT JOIN timeslots ON supervisions.id = timeslots.supervisionId
-			" . ($yeargroup ? 'WHERE yearGroup = :yearGroup' : '') . "
-			" . ($supervisor ? 'WHERE supervisor = :supervisor' : '') . "
+			WHERE
+				academicYear = :academicYear
+				" . ($yeargroup ? ' AND yearGroup = :yearGroup' : '') . "
+				" . ($supervisor ? ' AND supervisor = :supervisor' : '') . "
 			GROUP BY supervisions.id
 			ORDER BY courses.yearGroup, id
 		;";
