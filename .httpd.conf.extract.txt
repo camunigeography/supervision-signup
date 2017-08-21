@@ -25,6 +25,8 @@
 	RewriteRule ^$applicationBaseUrl/([1-9][0-9]*)/(edit|delete|clone).html$ $applicationBaseUrl/index.html?action=supervision&item=$1&do=$2 [L]
 	
 	# Courses
+	RewriteRule ^$applicationBaseUrl/courses/(import)/$ $applicationBaseUrl/index.html?action=importcourses [L]
+	RewriteRule ^$applicationBaseUrl/courses/(import)$ $applicationBaseUrl/courses/$1/ [R]
 	Use MacroSinenomineEmbeddedTable "$applicationBaseUrl" "/courses" "courses"
 	
 	# Remove auth for iCal

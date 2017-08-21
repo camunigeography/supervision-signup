@@ -76,6 +76,12 @@ class supervisionSignup extends frontControllerApplication
 				'icon' => 'page_white_stack',
 				'administrator' => true,
 			),
+			'importcourses' => array (
+				'description' => 'Import course data',
+				'url' => 'courses/import/',
+				'usetab' => 'courses',
+				'administrator' => true,
+			),
 		);
 		
 		# Return the actions
@@ -392,6 +398,12 @@ class supervisionSignup extends frontControllerApplication
 	# Courses editing section, substantially delegated to the sinenomine editing component
 	public function courses ($attributes = array (), $deny = false)
 	{
+		# Start the HTML
+		$html = '';
+		
+		# Add link to import
+		$html .= "\n<ul class=\"actions\">\n<li><a href=\"{$this->baseUrl}/courses/import/\"><img src=\"/images/icons/add.png\" alt=\"Add\" border=\"0\" /> Import</a>\n</li>\n</ul>";
+		
 		# Get the databinding attributes
 		$dataBindingAttributes = array (
 			'yearGroup' => array ('type' => 'select', 'values' => $this->settings['yearGroups'], ),		// NB: Strings must match response from userYeargroupCallback
@@ -405,7 +417,81 @@ class supervisionSignup extends frontControllerApplication
 		);
 		
 		# Delegate to the standard function for editing
-		echo $this->editingTable ('courses', $dataBindingAttributes, 'ultimateform', false, $sinenomineExtraSettings);
+		$html .= $this->editingTable ('courses', $dataBindingAttributes, 'ultimateform', false, $sinenomineExtraSettings);
+		
+		# Show the HTML
+		echo $html;
+	}
+	
+	
+	# Function to provide mass import of course data
+	public function importcourses ()
+	{
+		# Start the HTML
+		$html = "\n<p>Here you can import course data.</p>";
+		
+		# Define the required headers
+		$expectedHeaders = $this->databaseConnection->getFieldnames ($this->settings['database'], 'courses', false, false, $excludeAuto = true);
+		
+		# Create a form
+		$form = new form (array (
+			'formCompleteText' => false,
+		));
+		$form->heading ('p', "Paste the data from a spreadsheet, which must contain the following headers in the first row (as per <a href=\"{$this->baseUrl}/courses/\">existing examples</a>):<br />" . '<tt><strong>' . implode ('</tt></strong>, <strong><tt>', $expectedHeaders) . '</strong></tt>');
+		$form->textarea (array (
+			'name'		=> 'data',
+			'title'		=> 'Paste in your spreadsheet contents, including the headers',
+			'required'	=> true,
+			'rows'		=> 15,
+			'cols'		=> 90,
+		));
+		
+		# Do checks on the pasted data
+		require_once ('csv.php');
+		if ($unfinalisedData = $form->getUnfinalisedData ()) {
+			if ($unfinalisedData['data']) {
+				
+				# Arrange the data
+				$data = csv::tsvToArray ($unfinalisedData['data']);
+				
+				# Ensure there is some data
+				if (count ($data) < 2) {
+					$form->registerProblem ('data', 'There must be at least one line of data in the pasted spreadsheet block.');
+				}
+				
+				# Ensure the headings are all present
+				if (isSet ($expectedHeaders)) {
+					$headersPresent = array_keys ($data[0]);
+					if ($headersPresent !== $expectedHeaders) {
+						$form->registerProblem ('headers', 'The headers in the pasted spreadsheet block must be exactly <strong><tt>' . implode ('</tt>, <tt>', $expectedHeaders) . '</tt></strong>');
+					}
+				}
+			}
+		}
+		
+		# Process the form or end
+		if (!$result = $form->process ($html)) {
+			echo $html;
+			return false;
+		}
+		
+		# Convert the data into a CSV structure
+		$data = csv::tsvToArray ($result['data']);
+		
+		# Insert the data
+		if (!$result = $this->databaseConnection->insertMany ($this->settings['database'], 'courses', $data)) {
+			echo "\n<p class=\"warning\">Error:</p>";
+			application::dumpData ($this->databaseConnection->error ());
+			return false;
+		}
+		
+		# Confirm success<br>
+		echo "\n<div class=\"graybox\">";
+		echo "\n\t<p class=\"success\">{$this->tick} The courses have been successfully imported. They can now be viewed or edited on the <a href=\"{$this->baseUrl}/courses/\">courses list page</a>.</p>";
+		echo "\n</div>";
+		
+		# Return the HTML
+		echo $html;
 	}
 	
 	
