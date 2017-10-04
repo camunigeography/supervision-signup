@@ -16,8 +16,8 @@
 	Use MacroFrontControllerApplication "$applicationBaseUrl/" "$description"
 	
 	RewriteEngine on
-	RewriteRule ^$applicationBaseUrl/(add|my)/$ $applicationBaseUrl/index.html?action=$1 [L]
-	RewriteRule ^$applicationBaseUrl/(add|my)$ $applicationBaseUrl/$1/ [R]
+	RewriteRule ^$applicationBaseUrl/(add|my|statistics)/$ $applicationBaseUrl/index.html?action=$1 [L]
+	RewriteRule ^$applicationBaseUrl/(add|my|statistics)$ $applicationBaseUrl/$1/ [R]
 	RewriteRule ^$applicationBaseUrl/my/supervisions.ics$ $applicationBaseUrl/index.html?action=ical [L,QSA]
 	RewriteRule ^$applicationBaseUrl/([1-9][0-9]*)/$ $applicationBaseUrl/index.html?action=supervision&item=$1 [L]
 	RewriteRule ^$applicationBaseUrl/([1-9][0-9]*)$ $applicationBaseUrl/$1/ [R]

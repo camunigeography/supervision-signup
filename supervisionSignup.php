@@ -82,6 +82,12 @@ class supervisionSignup extends frontControllerApplication
 				'usetab' => 'courses',
 				'administrator' => true,
 			),
+			'statistics' => array (
+				'description' => 'Usage statistics',
+				'url' => 'statistics/',
+				'parent' => 'admin',
+				'administrator' => true,
+			),
 		);
 		
 		# Return the actions
@@ -1665,6 +1671,56 @@ class supervisionSignup extends frontControllerApplication
 		flush ();
 		echo $output;
 		exit;
+	}
+	
+	
+	# Usage statistics page
+	public function statistics ()
+	{
+		# Start the HTML
+		$html = '';
+		
+		# Define the queries as a set of subqueries
+		$query = "SELECT
+			
+			-- Supervisions created
+			(SELECT COUNT(id) FROM supervisions) AS 'Supervisions created',
+			
+			-- Unique supervisors
+			(SELECT COUNT(DISTINCT supervisor) FROM supervisions) AS 'By unique supervisors',
+			
+			-- Signups
+			(SELECT COUNT(id) FROM signups) AS 'Signups',
+			
+			-- Student users
+			(SELECT COUNT(DISTINCT userId) FROM signups) AS 'Unique student users'
+		;";
+		
+		# Get the data
+		$statistics = $this->databaseConnection->getOne ($query);
+		
+		# Apply number formatting
+		foreach ($statistics as $key => $value) {
+			$statistics[$key] = number_format ($value);
+		}
+		
+		# Render as a table
+		$html .= application::htmlTableKeyed ($statistics);
+		
+		# Show supervisors
+		$query = "SELECT
+			CONCAT(supervisorName, ' <', supervisor, '>', ' (', COUNT(*), ')') AS supervisor
+			FROM supervisions
+			GROUP BY supervisor
+			ORDER BY SUBSTR(supervisorName, INSTR(supervisorName, ' '))		-- I.e. by name after first space in string
+		;";
+		$supervisors = $this->databaseConnection->getPairs ($query);
+		
+		# Show list
+		$html .= application::htmlUl ($supervisors, 0, NULL, true, $sanitise = true);
+		
+		# Return the HTML
+		echo $html;
 	}
 }
 
