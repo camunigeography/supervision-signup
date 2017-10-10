@@ -56,6 +56,12 @@ class supervisionSignup extends frontControllerApplication
 				'icon' => 'asterisk_orange',
 				'enableIf' => $this->userIsStaff,
 			),
+			'aboutical' => array (
+				'description' => 'My supervisions - iCal',
+				'url' => 'my/ical.html',
+				'usetab' => 'my',
+				'enableIf' => $this->userIsStaff,
+			),
 			'ical' => array (
 				'description' => 'My supervisions - iCal',
 				'url' => 'my/supervisions.ics',
@@ -329,12 +335,9 @@ class supervisionSignup extends frontControllerApplication
 		# Get the supervisions
 		$supervisionsSupervising = $this->getSupervisions (false, $this->user);
 		
-		# Get the user's token if not already present
-		$token = $this->getToken ();
-		
 		# List the supervisions for this user
 		if ($supervisionsSupervising) {
-			$html = "\n" . "<p><a href=\"{$this->baseUrl}/my/supervisions.ics?token={$token}\">" . '<img src="/images/icons/extras/ical.gif" alt="iCal" title="iCal output - subscribe for your calendar" class="right" /></a></p>';
+			$html = "\n" . "<p><a href=\"{$this->baseUrl}/my/ical.html\">" . '<img src="/images/icons/extras/ical.gif" alt="iCal" title="iCal output - subscribe for your calendar" class="right" /></a></p>';
 			$html .= "\n<p>You are running the supervisions listed below.</p>";
 			$html .= "\n<p>You can view the student signups, or edit/delete a supervision, on each page.</p>";
 			$html .= $this->supervisionsList ($supervisionsSupervising, false);
@@ -372,6 +375,26 @@ class supervisionSignup extends frontControllerApplication
 	{
 		# Return the result, if any
 		return $this->databaseConnection->selectOneField ($this->settings['database'], 'users', 'id', array ('token' => $_GET['token']));
+	}
+	
+	
+	# iCal instructions page for My supervisions
+	public function aboutical ()
+	{
+		# Start the HTML
+		$html = '';
+		
+		# Get the user's token if not already present
+		$token = $this->getToken ();
+		$icsUrl = "{$this->baseUrl}/my/supervisions.ics?token={$token}";
+		
+		# Delegate to iCal class
+		require_once ('ical.php');
+		$ical = new ical ();
+		$html = $ical->instructionsLink ($icsUrl);
+		
+		# Return the HTML
+		echo $html;
 	}
 	
 	
@@ -1099,7 +1122,7 @@ class supervisionSignup extends frontControllerApplication
 		# Add iCal export button
 		$icalHtml = '';
 		if ($userSignup) {
-			$icalHtml = "\n" . "<p><a href=\"{$this->baseUrl}/{$supervision['id']}/supervision{$supervision['id']}.ics\">" . '<img src="/images/icons/extras/ical.gif" alt="iCal" title="iCal output - export to your calendar" class="right" /></a></p>';
+			$icalHtml = "\n" . "<p><a href=\"{$this->baseUrl}/{$supervision['id']}/supervision{$supervision['id']}.ics\">" . '<img src="/images/icons/extras/ical.gif" alt="iCal" title="iCal output - follow this link for information on how to export to your calendar" class="right" /></a></p>';
 		}
 		
 		# Serve iCal feed if required
