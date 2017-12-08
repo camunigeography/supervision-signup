@@ -25,7 +25,7 @@ class supervisionSignup extends frontControllerApplication
 			'usersAutocomplete' => false,
 			'authentication' => true,
 			'databaseStrictWhere' => true,
-			'lengths' => array (30 => '30 minutes', 45 => '45 minutes', 60 => '1 hour', 90 => 'Hour and a half', 120 => 'Two hours', ),
+			'lengths' => array (15 => '15 minutes', 30 => '30 minutes', 45 => '45 minutes', 60 => '1 hour', 90 => 'Hour and a half', 120 => 'Two hours', ),
 			'lengthDefault' => 60,
 			'yearGroups' => array ('Part IA', 'Part IB', 'Part II'),
 			'organisationDescription' => 'the Department',
