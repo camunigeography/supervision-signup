@@ -531,7 +531,12 @@ class supervisionSignup extends frontControllerApplication
 		$html = '';
 		
 		# Get the courses
-		$courses = $this->getCourses ();
+		if (!$courses = $this->getCourses ()) {
+			$html  = "\n<p>The list of courses available for the current year has not yet been loaded, so it is not yet possible to create a new supervision.</p>";
+			$html .= "\n<p>Please <a href=\"{$this->baseUrl}/feedback.html\">contact us</a> to have this updated.</p>";
+			echo $html;
+			return;
+		}
 		
 		# Create the timeslots, using the Mondays from the start of the week for the current date (for a new supervision) or the creation date (editing an existing one)
 		$allDays = $this->calculateTimeslotDates ($supervision);
