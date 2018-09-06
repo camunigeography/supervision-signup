@@ -4,10 +4,10 @@
 #   
 #   # Assessments
 #   Include /path/to/supervision-signup/.httpd.conf.extract.txt
-#   Use MacroSupervisionSignup "/supervisions" "Supervision signup" "/path/to/supervision-signup/:/path/to/php/libraries/"
+#   Use MacroSupervisionSignup "/supervisions" "/path/to/repo" "Supervision signup" "/path/to/supervision-signup/:/path/to/php/libraries/"
 
 
-<Macro MacroSupervisionSignup $applicationBaseUrl $description $includePath>
+<Macro MacroSupervisionSignup $applicationBaseUrl $repoPath $description $includePath>
 	
 	<Location $applicationBaseUrl>
 		php_value include_path "$includePath"
@@ -29,6 +29,9 @@
 	RewriteRule ^$applicationBaseUrl/courses/(import)/$ $applicationBaseUrl/index.html?action=importcourses [L]
 	RewriteRule ^$applicationBaseUrl/courses/(import)$ $applicationBaseUrl/courses/$1/ [R]
 	Use MacroSinenomineEmbeddedTable "$applicationBaseUrl" "/courses" "courses"
+	
+	# Assets
+	Alias $applicationBaseUrl/images/ $repoPath/images/
 	
 	# Remove auth for iCal
 	<LocationMatch ^$applicationBaseUrl/(my)/supervisions.ics$>

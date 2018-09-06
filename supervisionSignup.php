@@ -467,12 +467,14 @@ class supervisionSignup extends frontControllerApplication
 			'formCompleteText' => false,
 		));
 		$form->heading ('p', "Paste the data from a spreadsheet, which must contain the following headers in the first row (as per <a href=\"{$this->baseUrl}/courses/\">existing examples</a>):<br />" . '<tt><strong>' . implode ('</tt></strong>, <strong><tt>', $expectedHeaders) . '</strong></tt>');
+		$form->heading ('p', "<strong>Example:</strong><br /><img src=\"{$this->baseUrl}/images/import.png\" alt=\"Import example\" border=\"0\" width=\"600\" />");
 		$form->textarea (array (
-			'name'		=> 'data',
-			'title'		=> 'Paste in your spreadsheet contents, including the headers',
-			'required'	=> true,
-			'rows'		=> 15,
-			'cols'		=> 90,
+			'name'			=> 'data',
+			'title'			=> 'Paste in your spreadsheet contents, including the headers',
+			'required'		=> true,
+			'rows'			=> 15,
+			'cols'			=> 90,
+			'placeholder'	=> 'See the example above',
 		));
 		
 		# Do checks on the pasted data
