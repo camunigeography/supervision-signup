@@ -730,7 +730,7 @@ class supervisionSignup extends frontControllerApplication
 				$message .= "\n\nDon't forget that you need to e-mail the relevant students to tell them about the supervision and give them this link.";
 				$message .= "\n\nPlease note that you will not receive any further e-mails about this supervision signup sheet.";
 				$extraHeaders  = 'From: Webserver <' . $this->settings['webmaster'] . '>';
-				$extraHeaders .= "\r\n" . 'Bcc: ' . $this->settings['administratorEmail'];
+				// $extraHeaders .= "\r\n" . 'Bcc: ' . $this->settings['administratorEmail'];
 				application::utf8Mail ($to, $subject, wordwrap ($message), $extraHeaders);
 			}
 			
