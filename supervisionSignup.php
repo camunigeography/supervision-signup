@@ -108,37 +108,37 @@ class supervisionSignup extends frontControllerApplication
 			
 			-- Administrators
 			CREATE TABLE IF NOT EXISTS `administrators` (
-			  `username` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Username' PRIMARY KEY,
-			  `active` enum('','Yes','No') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Yes' COMMENT 'Currently active?',
-			  `privilege` enum('Administrator','Restricted administrator') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Administrator' COMMENT 'Administrator level'
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='System administrators';
+			  `username` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Username' PRIMARY KEY,
+			  `active` enum('','Yes','No') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Yes' COMMENT 'Currently active?',
+			  `privilege` enum('Administrator','Restricted administrator') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Administrator' COMMENT 'Administrator level'
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='System administrators';
 			
 			-- Settings
 			CREATE TABLE IF NOT EXISTS `settings` (
 			  `id` int(11) NOT NULL COMMENT 'Automatic key (ignored)' PRIMARY KEY,
-			  `additionalSupervisors` text COLLATE utf8_unicode_ci COMMENT 'Additional supervisors (usernames, one per line)',
+			  `additionalSupervisors` text COLLATE utf8mb4_unicode_ci COMMENT 'Additional supervisors (usernames, one per line)',
 			  `academicYearStartsMonth` INT(2) NOT NULL DEFAULT '8' COMMENT '\'Current\' year starts on month'
-			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Settings';
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='Settings';
 			INSERT INTO settings (id) VALUES (1);
 			
 			-- Supervisions
 			CREATE TABLE `supervisions` (
 			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Supervision ID #',
-			  `supervisor` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Supervisor username',
-			  `supervisorName` VARCHAR(255) COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT 'Supervisor name',
-			  `supervisor2` varchar(20) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Second supervisor (if applicable) - username',
-			  `supervisor2Name` VARCHAR(255) COLLATE utf8_unicode_ci NULL DEFAULT NULL COMMENT 'Second supervisor (if applicable) - name',
+			  `supervisor` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Supervisor username',
+			  `supervisorName` VARCHAR(255) COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT 'Supervisor name',
+			  `supervisor2` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Second supervisor (if applicable) - username',
+			  `supervisor2Name` VARCHAR(255) COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT 'Second supervisor (if applicable) - name',
 			  `courseId` int(11) NOT NULL COMMENT 'Course',
-			  `courseName` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Course name',
-			  `title` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Supervision title',
-			  `descriptionHtml` TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL COMMENT 'Description',
-			  `studentsPerTimeslot` ENUM('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15') CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '3' COMMENT 'Maximum students per timeslot',
-			  `location` text COLLATE utf8_unicode_ci NOT NULL COMMENT 'Location(s)',
+			  `courseName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Course name',
+			  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Supervision title',
+			  `descriptionHtml` TEXT CHARACTER SET utf8 COLLATE utf8mb4_unicode_ci NULL COMMENT 'Description',
+			  `studentsPerTimeslot` ENUM('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15') CHARACTER SET utf8 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '3' COMMENT 'Maximum students per timeslot',
+			  `location` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Location(s)',
 			  `length` int(11) NOT NULL COMMENT 'Length of time',
 			  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Automatic timestamp',
 			  `updatedAt` datetime NOT NULL COMMENT 'Updated at',
 			  PRIMARY KEY (`id`)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table of supervisions';
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='Table of supervisions';
 			
 			-- Timeslots
 			CREATE TABLE `timeslots` (
@@ -146,36 +146,36 @@ class supervisionSignup extends frontControllerApplication
 			  `supervisionId` INT(11) NOT NULL COMMENT 'Supervision ID',
 			  `startTime` datetime NOT NULL COMMENT 'Start datetime',
 			  PRIMARY KEY (`id`)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table of timeslots';
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='Table of timeslots';
 			
 			-- Signups
 			CREATE TABLE `signups` (
 			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Automatic key',
 			  `supervisionId` int(11) NOT NULL COMMENT 'Supervision ID',
-			  `userId` varchar(50) COLLATE utf8_unicode_ci NOT NULL COMMENT 'User ID',
-			  `userName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'User name',
+			  `userId` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'User ID',
+			  `userName` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'User name',
 			  `startTime` datetime NOT NULL COMMENT 'Start datetime',
 			  PRIMARY KEY (`id`)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table of timeslots';
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='Table of timeslots';
 			
 			-- Courses
 			CREATE TABLE `courses` (
 			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Automatic key',
-			  `yearGroup` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Year group',
-			  `courseNumber` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'Course number',
-			  `courseName` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Course name',
+			  `yearGroup` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Year group',
+			  `courseNumber` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Course number',
+			  `courseName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Course name',
 			  `academicYear` VARCHAR(7) NOT NULL COMMENT 'Academic year',
 			  `ordering` INT(1) NULL DEFAULT '5' COMMENT 'Ordering (1=first, 9=last)' AFTER `available`,
 			  PRIMARY KEY (`id`)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Courses';
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='Courses';
 			
 			-- Users
 			CREATE TABLE `users` (
-			  `id` varchar(255) COLLATE utf8_unicode_ci NOT NULL COMMENT 'User ID',
-			  `token` varchar(16) COLLATE utf8_unicode_ci NOT NULL COMMENT 'Token',
+			  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'User ID',
+			  `token` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Token',
 			  PRIMARY KEY (`id`),
 			  UNIQUE KEY (`token`)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='Table of users';
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='Table of users';
 		";
 	}
 	
