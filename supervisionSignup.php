@@ -17,6 +17,7 @@ class supervisionSignup extends frontControllerApplication
 			'database' => 'supervisions',
 			'table' => 'supervisions',
 			'settingsTableExplodeTextarea' => true,
+			'tabUlClass' => 'tabsflat',
 			'useCamUniLookup' => true,
 			'emailDomain' => 'cam.ac.uk',
 			'administrators' => true,
