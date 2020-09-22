@@ -1762,6 +1762,31 @@ class supervisionSignup extends frontControllerApplication
 		# Return the HTML
 		echo $html;
 	}
+	
+	
+	# Settings
+	public function settings ($dataBindingSettingsOverrides = array ())
+	{
+		# Define overrides
+		$dataBindingSettingsOverrides = array (
+			'attributes' => array (
+				'additionalSupervisors' => array (
+					'type' => 'select',
+					'multiple' => true,
+					'expandable' => true,
+					'defaultPresplit' => true,
+					'separator' => "\n",
+					'autocomplete' => $this->settings['usersAutocomplete'],
+					'autocompleteOptions' => array ('delay' => 0),
+					'output' => array ('processing' => 'compiled'),
+					'description' => 'Type a name or username to get a username;<br />One person per line only.',
+				),
+			),
+		);
+		
+		# Run the main settings system with the overriden attributes
+		return parent::settings ($dataBindingSettingsOverrides);
+	}
 }
 
 ?>
