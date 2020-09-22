@@ -28,6 +28,8 @@
 #supervisionsignup ul.actions li {margin-bottom: 6px;}
 #supervisionsignup ul.actions li a:hover {background-color: #f7f7f7; text-decoration: none;}
 
+#supervisionsignup div.courses {margin-top: 2em;}
+
 
 /* Print styes; those properties prefixed with _ are buggy in Firefox so have been disabled */
 @media print {

@@ -431,7 +431,10 @@ class supervisionSignup extends frontControllerApplication
 		$html = '';
 		
 		# Add link to import
-		$html .= "\n<ul class=\"actions\">\n<li><a href=\"{$this->baseUrl}/courses/import/\"><img src=\"/images/icons/add.png\" alt=\"Add\" border=\"0\" /> Import</a>\n</li>\n</ul>";
+		$html .= "\n" . '<div class="graybox courses">';
+		$html .= "\n<h3>Add courses for new academic year</h3>";
+		$html .= "\n<ul class=\"actions left\">\n<li><a href=\"{$this->baseUrl}/courses/import/\"><img src=\"/images/icons/add.png\" alt=\"Add\" border=\"0\" /> Import new courses</a>\n</li>\n</ul>";
+		$html .= "\n" . '</div>';
 		
 		# Get the databinding attributes
 		$dataBindingAttributes = array (
@@ -446,7 +449,11 @@ class supervisionSignup extends frontControllerApplication
 		);
 		
 		# Delegate to the standard function for editing
+		$html .= "\n" . '<div class="graybox courses">';
+		$html .= "\n<h3>Existing course data</h3>";
+		$html .= "\n<p>Here you can correct existing course entries. However, you should not delete old entries, as they will be attached to existing supervisions.</p>";
 		$html .= $this->editingTable ('courses', $dataBindingAttributes, 'ultimateform', false, $sinenomineExtraSettings);
+		$html .= "\n" . '</div>';
 		
 		# Show the HTML
 		echo $html;
