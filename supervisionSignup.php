@@ -16,7 +16,7 @@ class supervisionSignup extends frontControllerApplication
 			'databaseStrictWhere' => true,
 			'database' => 'supervisions',
 			'table' => 'supervisions',
-			'settingsTableExplodeTextarea' => true,
+			'settingsTableExplodeTextarea' => array ('additionalSupervisors'),
 			'tabUlClass' => 'tabsflat',
 			'useCamUniLookup' => true,
 			'emailDomain' => 'cam.ac.uk',
@@ -117,6 +117,7 @@ class supervisionSignup extends frontControllerApplication
 			-- Settings
 			CREATE TABLE IF NOT EXISTS `settings` (
 			  `id` int(11) NOT NULL COMMENT 'Automatic key (ignored)' PRIMARY KEY,
+			  `supervisorsMessage` VARCHAR(255) NULL DEFAULT NULL COMMENT 'Message (if any) to supervisors to appear on the supervision creation screen',
 			  `additionalSupervisors` text COLLATE utf8mb4_unicode_ci COMMENT 'Additional supervisors (usernames, one per line)',
 			  `academicYearStartsMonth` INT(2) NOT NULL DEFAULT '8' COMMENT '\'Current\' year starts on month'
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='Settings';
@@ -576,6 +577,12 @@ class supervisionSignup extends frontControllerApplication
 			'display' => 'template',
 			'displayTemplate' => $this->formTemplate ($timeslotsHtml),
 		));
+		
+		# Show message to supervisors if set
+		if ($this->settings['supervisorsMessage']) {
+			$form->heading ('', "\n<p class=\"warning\">" . htmlspecialchars ($this->settings['supervisorsMessage']) . '</p>');
+		}
+		
 		$form->dataBinding (array (
 			'database' => $this->settings['database'],
 			'table' => $this->settings['table'],
@@ -865,6 +872,11 @@ class supervisionSignup extends frontControllerApplication
 			{[[PROBLEMS]]}
 			
 			<table class=\"lines setdetails\">
+				
+				" . ($this->settings['supervisorsMessage'] ? "<tr>
+					<td colspan=\"2\">{_heading1}</td>
+				</tr>
+				" : '') . "
 				
 				<tr>
 					<td colspan=\"2\"><h3>Supervision details</h3></td>
@@ -1770,6 +1782,7 @@ class supervisionSignup extends frontControllerApplication
 		# Define overrides
 		$dataBindingSettingsOverrides = array (
 			'attributes' => array (
+				'supervisorsMessage' => array ('cols' => 50, ),
 				'additionalSupervisors' => array (
 					'type' => 'select',
 					'multiple' => true,
