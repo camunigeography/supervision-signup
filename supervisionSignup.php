@@ -446,6 +446,7 @@ class supervisionSignup extends frontControllerApplication
 		$sinenomineExtraSettings = array (
 			'submitButtonPosition' => 'bottom',
 			'int1ToCheckbox' => true,
+			'fieldFiltering' => false,
 		);
 		
 		# Delegate to the standard function for editing
