@@ -30,6 +30,7 @@ class supervisionSignup extends frontControllerApplication
 			'organisationDescription' => 'the Department',
 			'timeslotsWeeksAhead' => 14,
 			'morningFirstHour' => 8,	// First hour that is in the morning; e.g. if set to 8, staff-entered time '8' would mean 8am rather than 8pm, and '7' would mean 7pm
+			'enableSecondSupervisor' => true,
 		);
 		
 		# Return the defaults
@@ -581,12 +582,16 @@ class supervisionSignup extends frontControllerApplication
 			$form->heading ('', "\n<p class=\"warning\">" . htmlspecialchars ($this->settings['supervisorsMessage']) . '</p>');
 		}
 		
+		$exclude = array ('id', 'supervisor', 'supervisorName', 'supervisor2Name', 'courseName');	// Fixed data fields, handled below
+		if (!$this->settings['enableSecondSupervisor']) {
+			$exclude[] = 'supervisor2';
+		}
 		$form->dataBinding (array (
 			'database' => $this->settings['database'],
 			'table' => $this->settings['table'],
 			'data' => $supervision,
 			'intelligence' => true,
-			'exclude' => array ('id', 'supervisor', 'supervisorName', 'supervisor2Name', 'courseName'),		// Fixed data fields, handled below
+			'exclude' => $exclude,
 			'attributes' => array (
 				'courseId' => array ('type' => 'select', 'values' => $courses, ),
 				'title' => array ('regexp' => '[a-z]+', ),	// Prevent ALL UPPER CASE text
@@ -905,11 +910,11 @@ class supervisionSignup extends frontControllerApplication
 					<td>Description (optional):<br /><br />(NB: Web addresses will automatically become links.)</td>
 					<td>{descriptionHtml}</td>
 				</tr>
-				<tr>
+				" . ($this->settings['enableSecondSupervisor'] ? "<tr>
 					<td>2nd supervisor (if applicable) - username</td>
 					<td>{supervisor2}</td>
 				</tr>
-				
+				" : '') . "
 				<tr>
 					<td colspan=\"2\"><h3>Supervision format</h3></td>
 				</tr>
