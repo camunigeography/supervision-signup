@@ -31,6 +31,7 @@ class supervisionSignup extends frontControllerApplication
 			'timeslotsWeeksAhead' => 14,
 			'morningFirstHour' => 8,	// First hour that is in the morning; e.g. if set to 8, staff-entered time '8' would mean 8am rather than 8pm, and '7' would mean 7pm
 			'enableSecondSupervisor' => true,
+			'enableDescription' => true,
 		);
 		
 		# Return the defaults
@@ -586,6 +587,9 @@ class supervisionSignup extends frontControllerApplication
 		if (!$this->settings['enableSecondSupervisor']) {
 			$exclude[] = 'supervisor2';
 		}
+		if (!$this->settings['enableDescription']) {
+			$exclude[] = 'descriptionHtml';
+		}
 		$form->dataBinding (array (
 			'database' => $this->settings['database'],
 			'table' => $this->settings['table'],
@@ -906,10 +910,11 @@ class supervisionSignup extends frontControllerApplication
 					<td>Supervision title: *</td>
 					<td>{title}</td>
 				</tr>
-				<tr>
+				" . ($this->settings['enableDescription'] ? "<tr>
 					<td>Description (optional):<br /><br />(NB: Web addresses will automatically become links.)</td>
 					<td>{descriptionHtml}</td>
 				</tr>
+				" : '') . "
 				" . ($this->settings['enableSecondSupervisor'] ? "<tr>
 					<td>2nd supervisor (if applicable) - username</td>
 					<td>{supervisor2}</td>
