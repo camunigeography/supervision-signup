@@ -33,6 +33,7 @@ class supervisionSignup extends frontControllerApplication
 			'enableSecondSupervisor' => true,
 			'enableDescription' => true,
 			'showSupervisorName' => true,
+			'allowMultipleSignups' => false,
 		);
 		
 		# Return the defaults
@@ -1307,7 +1308,7 @@ class supervisionSignup extends frontControllerApplication
 						}
 					} else {
 						if ($showButton && !$userSlotPassed) {
-							$label = ($userSignup ? 'Change to here' : 'Sign up');
+							$label = ($userSignup && !$this->settings['allowMultipleSignups'] ? 'Change to here' : 'Sign up');
 							$html .= "<input type=\"submit\" name=\"timeslot[{$indexValue}]\" value=\"{$label}\" />";		// See multiple button solution using [] at: http://stackoverflow.com/a/34915274/180733
 							$showButton = false;	// Only first in row show be clickable, so they fill up from the left
 						} else {
@@ -1581,8 +1582,10 @@ class supervisionSignup extends frontControllerApplication
 			'userId' => $userId,
 		);
 		
-		# Clear any existing entry for this user
-		$this->databaseConnection->delete ($this->settings['database'], 'signups', $entry);
+		# Clear any existing entry for this user, unless multiple signups are enabled
+		if (!$this->settings['allowMultipleSignups']) {
+			$this->databaseConnection->delete ($this->settings['database'], 'signups', $entry);
+		}
 		
 		# Add attributes
 		$entry['userName'] = $userName;
