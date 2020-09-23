@@ -30,6 +30,9 @@
 
 #supervisionsignup div.courses {margin-top: 2em;}
 
+/* Copying */
+#autocopy {float: right; width: 10em; border: 1px solid #eee; border-radius: 10px; padding: 4px 8px; margin-bottom: 10px; font-size: 0.94em; line-height: 1.4em;}
+
 
 /* Print styes; those properties prefixed with _ are buggy in Firefox so have been disabled */
 @media print {

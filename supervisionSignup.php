@@ -1,8 +1,6 @@
 <?php
 
 # Class to create a simple supervision signup system
-
-
 require_once ('frontControllerApplication.php');
 class supervisionSignup extends frontControllerApplication
 {
@@ -803,14 +801,14 @@ class supervisionSignup extends frontControllerApplication
 	private function timeslotsHtml ($allDays, $fieldnamePrefix, $dateTextFormat, &$timeslotsFields = array ())
 	{
 		# Start the table
-		$html  = "\n\t\t\t\t\t\t" . '<table class="border">';
+		$html  = "\n\t\t\t\t\t\t" . '<table class="timeslots border">';
 		
 		# Add the header row
 		$html .= "\n\t\t\t\t\t\t\t" . '<tr>';
 		$html .= "\n\t\t\t\t\t\t\t\t" . '<td></td>';
 		$days = array ('Monday', 'Tuesday', 'Wednesday','Thursday','Friday', 'Saturday', 'Sunday');
-		foreach ($days as $day) {
-			$html .= "\n\t\t\t\t\t\t\t\t" . '<th class="' . strtolower ($day) . '">' . $day . '</th>';
+		foreach ($days as $index => $day) {
+			$html .= "\n\t\t\t\t\t\t\t\t" . '<th class="' . strtolower ($day) . ($index <= 4 ? ' weekday' : '') . '">' . $day . '</th>';
 		}
 		$html .= "\n\t\t\t\t\t\t\t" . '</tr>';
 		
@@ -823,12 +821,14 @@ class supervisionSignup extends frontControllerApplication
 			$html .= "\n\t\t\t\t\t\t\t\t" . '<td class="comment">Start times, e.g. :<br /><br /><span class="small">11<br />12<br />1.30</span></td>';
 			
 			# Add each day, saving the fieldname
+			$index = 0;
 			foreach ($daysOfWeek as $dayUnixtime => $dayYmd) {
-				$html .= "\n\t\t\t\t\t\t\t\t" . '<td class="' . strtolower (date ('l', $dayUnixtime)) . '">';
+				$html .= "\n\t\t\t\t\t\t\t\t" . '<td class="' . strtolower (date ('l', $dayUnixtime)) . ($index <= 4 ? ' weekday' : '') . '">';
 				$html .= date ($dateTextFormat, $dayUnixtime) . ':<br />';
 				$timeslotsFields[$dayUnixtime] = $fieldnamePrefix . $dayYmd;
 				$html .= '{' . $timeslotsFields[$dayUnixtime] . '}';
 				$html .= '</td>';
+				$index++;
 			}
 			$html .= "\n\t\t\t\t\t\t\t" . '</tr>';
 		}
@@ -868,6 +868,18 @@ class supervisionSignup extends frontControllerApplication
 	{
 		# Assemble the page template
 		$html = "
+			
+			<script type=\"text/javascript\">
+				$(document).ready(function() {
+					$('#autocopy').click (function (e) {
+						if (confirm ('Are you sure? This will replace any existing text in each Monday-Friday box.')) {
+							var value = $('table.timeslots textarea:first').val ();
+							$('table.timeslots td.weekday textarea').val (value);
+							e.preventDefault ();
+						}
+					});
+				});
+			</script>
 			
 			{[[PROBLEMS]]}
 			
@@ -917,6 +929,7 @@ class supervisionSignup extends frontControllerApplication
 				<tr>
 					<td colspan=\"2\">
 						<h3>Timeslots</h3>
+						<p><a href=\"#\" id=\"autocopy\">Copy first box to each weekday&hellip;</a></p>
 						<p><img src=\"/images/icons/information.png\" class=\"icon\" /> Enter each start time, one per line, on the relevant days, as per the example at the start of each line:</p>
 						{$timeslotsHtml}
 					</td>
