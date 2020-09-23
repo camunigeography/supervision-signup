@@ -32,6 +32,7 @@ class supervisionSignup extends frontControllerApplication
 			'morningFirstHour' => 8,	// First hour that is in the morning; e.g. if set to 8, staff-entered time '8' would mean 8am rather than 8pm, and '7' would mean 7pm
 			'enableSecondSupervisor' => true,
 			'enableDescription' => true,
+			'showSupervisorName' => true,
 		);
 		
 		# Return the defaults
@@ -246,7 +247,7 @@ class supervisionSignup extends frontControllerApplication
 		$html .= "\n<h2>Sign up to a supervision</h2>";
 		if ($supervisions) {
 			$html .= "\n<p>You can sign up to the following supervisions online:</p>";
-			$html .= $this->supervisionsList ($supervisions);
+			$html .= $this->supervisionsList ($supervisions, $this->settings['showSupervisorName']);
 		} else {
 			$html .= "\n<p>There are no supervisions available to sign up to yet, for the current academic year.</p>";
 		}
@@ -1191,12 +1192,14 @@ class supervisionSignup extends frontControllerApplication
 		$html .= "\n\tYear group: <strong>" . htmlspecialchars ($supervision['yearGroup']) . '</strong><br />';
 		$html .= "\n\tCourse: <strong>" . htmlspecialchars ($supervision['courseName']) . '</strong>';
 		$html .= "\n</p>";
-		$html .= "\n<p>With: ";
-		$html .= '<strong>' . htmlspecialchars ($supervision['supervisorName']) . ' &lt;' . $supervision['supervisor'] . '&gt;' . '</strong>';
-		if ($supervision['supervisor2'] && $supervision['supervisor2Name']) {
-			$html .= ' / <strong>' . htmlspecialchars ($supervision['supervisor2Name']) . ' &lt;' . $supervision['supervisor2'] . '&gt;' . '</strong>';
+		if ($this->settings['showSupervisorName']) {
+			$html .= "\n<p>With: ";
+			$html .= '<strong>' . htmlspecialchars ($supervision['supervisorName']) . ' &lt;' . $supervision['supervisor'] . '&gt;' . '</strong>';
+			if ($supervision['supervisor2'] && $supervision['supervisor2Name']) {
+				$html .= ' / <strong>' . htmlspecialchars ($supervision['supervisor2Name']) . ' &lt;' . $supervision['supervisor2'] . '&gt;' . '</strong>';
+			}
+			$html .= '</p>';
 		}
-		$html .= '</p>';
 		if ($supervision['descriptionHtml']) {
 			$html .= "\n<h4>Description:</h4>";
 			$html .= "\n<div class=\"graybox\">";
