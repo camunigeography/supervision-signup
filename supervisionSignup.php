@@ -1828,6 +1828,7 @@ class supervisionSignup extends frontControllerApplication
 					'output' => array ('processing' => 'compiled'),
 					'description' => 'Type a name or username to get a username;<br />One person per line only.',
 				),
+				'yearGroups' => array ('cols' => 50, 'description' => 'Do not delete/amend any entry currently in use.'),
 			),
 		);
 		
