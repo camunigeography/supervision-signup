@@ -34,6 +34,10 @@ class supervisionSignup extends frontControllerApplication
 			'enableDescription' => true,
 			'showSupervisorName' => true,
 			'allowMultipleSignups' => false,
+			'label' => 'supervision',
+			'labelPlural' => 'supervisions',
+			'containerLabel' => 'course',
+			'containerLabelPlural' => 'courses',
 		);
 		
 		# Return the defaults
@@ -49,39 +53,39 @@ class supervisionSignup extends frontControllerApplication
 			'supervision' => array (
 				'description' => false,
 				'url' => '',
-				'tab' => 'Sign up to a supervision',
+				'tab' => "Sign up to a {$this->settings['label']}",
 				'icon' => 'pencil',
 			),
 			'my' => array (
-				'description' => 'My supervisions',
+				'description' => "My {$this->settings['labelPlural']}",
 				'url' => 'my/',
-				'tab' => 'My supervisions',
+				'tab' => "My {$this->settings['labelPlural']}",
 				'icon' => 'asterisk_orange',
 				'enableIf' => $this->userIsStaff,
 			),
 			'aboutical' => array (
-				'description' => 'My supervisions - iCal',
+				'description' => "My {$this->settings['labelPlural']} - iCal",
 				'url' => 'my/ical.html',
 				'usetab' => 'my',
 				'enableIf' => $this->userIsStaff,
 			),
 			'ical' => array (
-				'description' => 'My supervisions - iCal',
+				'description' => "My {$this->settings['labelPlural']} - iCal",
 				'url' => 'my/supervisions.ics',
 				'export' => true,
 				'authentication' => false,
 			),
 			'add' => array (
-				'description' => 'Create a new supervision',
+				'description' => "Create a new signup sheet",
 				'url' => 'add/',
-				'tab' => 'Create a new supervision',
+				'tab' => 'Create a new signup sheet',
 				'icon' => 'add',
 				'enableIf' => $this->userIsStaff,
 			),
 			'courses' => array (
-				'description' => 'Courses',
+				'description' => ucfirst ($this->settings['containerLabelPlural']),
 				'url' => 'courses/',
-				'tab' => 'Courses',
+				'tab' => ucfirst ($this->settings['containerLabelPlural']),
 				'icon' => 'page_white_stack',
 				'administrator' => true,
 			),
@@ -246,22 +250,22 @@ class supervisionSignup extends frontControllerApplication
 		$supervisions = $this->getSupervisions ($this->userYeargroup);
 		
 		# List of supervisions
-		$html .= "\n<h2>Sign up to a supervision</h2>";
+		$html .= "\n<h2>Sign up to a {$this->settings['label']}</h2>";
 		if ($supervisions) {
-			$html .= "\n<p>You can sign up to the following supervisions online:</p>";
+			$html .= "\n<p>You can sign up to the following {$this->settings['labelPlural']} online:</p>";
 			$html .= $this->supervisionsList ($supervisions, $this->settings['showSupervisorName']);
 		} else {
-			$html .= "\n<p>There are no supervisions available to sign up to yet, for the current academic year.</p>";
+			$html .= "\n<p>There are no {$this->settings['labelPlural']} available to sign up to yet, for the current academic year.</p>";
 		}
 		
 		# Give links for staff
 		if ($this->userIsStaff) {
 			$html .= "\n<br />";
-			$html .= "\n<h2>Create supervision signup sheet</h2>";
-			$html .= "\n<p>As a member of staff, you can <a href=\"{$this->baseUrl}/add/\" class=\"actions\"><img src=\"/images/icons/add.png\" alt=\"Add\" border=\"0\" /> Create a supervision signup sheet</a>.</p>";
+			$html .= "\n<h2>Create {$this->settings['label']} signup sheet</h2>";
+			$html .= "\n<p>As a member of staff, you can <a href=\"{$this->baseUrl}/add/\" class=\"actions\"><img src=\"/images/icons/add.png\" alt=\"Add\" border=\"0\" /> Create a {$this->settings['label']} signup sheet</a>.</p>";
 			$html .= "\n<br />";
-			$html .= "\n<h2>My supervisions</h2>";
-			$html .= "\n<p>As a member of staff, you can <a href=\"{$this->baseUrl}/my/\" class=\"actions\"><img src=\"/images/icons/asterisk_orange.png\" alt=\"Add\" border=\"0\" /> View supervisions you are running</a>.</p>";
+			$html .= "\n<h2>My {$this->settings['labelPlural']}</h2>";
+			$html .= "\n<p>As a member of staff, you can <a href=\"{$this->baseUrl}/my/\" class=\"actions\"><img src=\"/images/icons/asterisk_orange.png\" alt=\"Add\" border=\"0\" /> View {$this->settings['labelPlural']} you have set up</a>.</p>";
 		}
 		
 		# Return the HTML
@@ -317,7 +321,7 @@ class supervisionSignup extends frontControllerApplication
 	}
 	
 	
-	# Function to create a new supervision
+	# Function to create a new signup sheet
 	public function add ()
 	{
 		# Start the HTML
@@ -343,12 +347,12 @@ class supervisionSignup extends frontControllerApplication
 		# List the supervisions for this user
 		if ($supervisionsSupervising) {
 			$html = "\n" . "<p><a href=\"{$this->baseUrl}/my/ical.html\">" . '<img src="/images/icons/extras/ical.gif" alt="iCal" title="iCal output - subscribe for your calendar" class="right" /></a></p>';
-			$html .= "\n<p>You are running the supervisions listed below.</p>";
-			$html .= "\n<p>You can view the student signups, or edit/delete a supervision, on each page.</p>";
+			$html .= "\n<p>You are running the {$this->settings['labelPlural']} listed below.</p>";
+			$html .= "\n<p>You can view the student signups, or edit/delete a signup sheet, on each page.</p>";
 			$html .= $this->supervisionsList ($supervisionsSupervising, false);
 		} else {
 			$html .= "\n<p>There are none.</p>";
-			$html .= "\n<p>You can <a href=\"{$this->baseUrl}/add/\">create a new supervision signup sheet</a>.</p>";
+			$html .= "\n<p>You can <a href=\"{$this->baseUrl}/add/\">create a new {$this->settings['label']} signup sheet</a>.</p>";
 		}
 		
 		# Return the HTML
@@ -437,8 +441,8 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Add link to import
 		$html .= "\n" . '<div class="graybox courses">';
-		$html .= "\n<h3>Add courses for new academic year</h3>";
-		$html .= "\n<ul class=\"actions left\">\n<li><a href=\"{$this->baseUrl}/courses/import/\"><img src=\"/images/icons/add.png\" alt=\"Add\" border=\"0\" /> Import new courses</a>\n</li>\n</ul>";
+		$html .= "\n<h3>Add {$this->settings['containerLabelPlural']} for new academic year</h3>";
+		$html .= "\n<ul class=\"actions left\">\n<li><a href=\"{$this->baseUrl}/courses/import/\"><img src=\"/images/icons/add.png\" alt=\"Add\" border=\"0\" /> Import new {$this->settings['containerLabelPlural']}</a>\n</li>\n</ul>";
 		$html .= "\n" . '</div>';
 		
 		# Get the databinding attributes
@@ -456,8 +460,8 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Delegate to the standard function for editing
 		$html .= "\n" . '<div class="graybox courses">';
-		$html .= "\n<h3>Existing course data</h3>";
-		$html .= "\n<p>Here you can correct existing course entries. However, you should not delete old entries, as they will be attached to existing supervisions.</p>";
+		$html .= "\n<h3>Existing {$this->settings['containerLabel']} data</h3>";
+		$html .= "\n<p>Here you can correct existing {$this->settings['containerLabel']} entries. However, you should not delete old entries, as they will be attached to existing {$this->settings['labelPlural']}.</p>";
 		$html .= $this->editingTable ('courses', $dataBindingAttributes, 'ultimateform', false, $sinenomineExtraSettings);
 		$html .= "\n" . '</div>';
 		
@@ -470,7 +474,7 @@ class supervisionSignup extends frontControllerApplication
 	public function importcourses ()
 	{
 		# Start the HTML
-		$html = "\n<p>Here you can import course data.</p>";
+		$html = "\n<p>Here you can import {$this->settings['containerLabel']} data.</p>";
 		
 		# Define the required headers
 		$expectedHeaders = $this->databaseConnection->getFieldnames ($this->settings['database'], 'courses', false, false, $excludeAuto = true);
@@ -548,7 +552,7 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Get the courses
 		if (!$courses = $this->getCourses ()) {
-			$html  = "\n<p>The list of courses available for the current year has not yet been loaded, so it is not yet possible to create a new supervision.</p>";
+			$html  = "\n<p>The list of {$this->settings['containerLabelPlural']} available for the current year has not yet been loaded, so it is not yet possible to create a new signup sheet.</p>";
 			$html .= "\n<p>Please <a href=\"{$this->baseUrl}/feedback.html\">contact us</a> to have this updated.</p>";
 			echo $html;
 			return;
@@ -903,14 +907,14 @@ class supervisionSignup extends frontControllerApplication
 				" : '') . "
 				
 				<tr>
-					<td colspan=\"2\"><h3>Supervision details</h3></td>
+					<td colspan=\"2\"><h3>Main details</h3></td>
 				</tr>
 				<tr>
-					<td>Course: *</td>
+					<td>" . ucfirst ($this->settings['containerLabel']) . ": *</td>
 					<td>{courseId}</td>
 				</tr>
 				<tr>
-					<td>Supervision title: *</td>
+					<td>Title: *</td>
 					<td>{title}</td>
 				</tr>
 				" . ($this->settings['enableDescription'] ? "<tr>
@@ -924,14 +928,14 @@ class supervisionSignup extends frontControllerApplication
 				</tr>
 				" : '') . "
 				<tr>
-					<td colspan=\"2\"><h3>Supervision format</h3></td>
+					<td colspan=\"2\"><h3>Booking settings</h3></td>
 				</tr>
 				<tr>
 					<td>Maximum students per timeslot: *</td>
 					<td>{studentsPerTimeslot}</td>
 				</tr>
 				<tr>
-					<td>Location(s): *</td>
+					<td>Location details: *</td>
 					<td>{location}</td>
 				</tr>
 				<tr>
@@ -1104,7 +1108,7 @@ class supervisionSignup extends frontControllerApplication
 		}
 		
 		# Add title
-		$html .= "\n<h2>Sign up to a supervision</h2>";
+		$html .= "\n<h2>Sign up to a {$this->settings['label']}</h2>";
 		
 		# Show the supervision
 		$html .= $this->showSupervision ($supervision);
@@ -1192,7 +1196,7 @@ class supervisionSignup extends frontControllerApplication
 		$html .= $icalHtml;
 		$html .= "\n<p>";
 		$html .= "\n\tYear group: <strong>" . htmlspecialchars ($supervision['yearGroup']) . '</strong><br />';
-		$html .= "\n\tCourse: <strong>" . htmlspecialchars ($supervision['courseName']) . '</strong>';
+		$html .= "\n\t" . ucfirst ($this->settings['containerLabel']) . ': <strong>' . htmlspecialchars ($supervision['courseName']) . '</strong>';
 		$html .= "\n</p>";
 		if ($this->settings['showSupervisorName']) {
 			$html .= "\n<p>With: ";
@@ -1203,7 +1207,7 @@ class supervisionSignup extends frontControllerApplication
 			$html .= '</p>';
 		}
 		if ($supervision['descriptionHtml']) {
-			$html .= "\n<h4>Description:</h4>";
+			//$html .= "\n<h4>Description:</h4>";
 			$html .= "\n<div class=\"graybox\">";
 			$html .= "\n" . application::makeClickableLinks ($supervision['descriptionHtml']);
 			$html .= "\n</div>";
