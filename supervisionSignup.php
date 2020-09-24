@@ -14,7 +14,7 @@ class supervisionSignup extends frontControllerApplication
 			'databaseStrictWhere' => true,
 			'database' => 'supervisions',
 			'table' => 'supervisions',
-			'settingsTableExplodeTextarea' => array ('additionalSupervisors'),
+			'settingsTableExplodeTextarea' => array ('additionalSupervisors', 'yearGroups'),
 			'tabUlClass' => 'tabsflat',
 			'useCamUniLookup' => true,
 			'emailDomain' => 'cam.ac.uk',
@@ -26,7 +26,7 @@ class supervisionSignup extends frontControllerApplication
 			'authentication' => true,
 			'lengths' => array (15 => '15 minutes', 30 => '30 minutes', 45 => '45 minutes', 60 => '1 hour', 90 => 'Hour and a half', 120 => 'Two hours', ),
 			'lengthDefault' => 60,
-			'yearGroups' => array ('Part IA', 'Part IB', 'Part II'),
+			'yearGroups' => false,		// Set on settings page, e.g. Part IA, Part IB, Part II
 			'organisationDescription' => 'the Department',
 			'timeslotsWeeksAhead' => 14,
 			'morningFirstHour' => 8,	// First hour that is in the morning; e.g. if set to 8, staff-entered time '8' would mean 8am rather than 8pm, and '7' would mean 7pm
@@ -121,7 +121,8 @@ class supervisionSignup extends frontControllerApplication
 			  `id` int(11) NOT NULL COMMENT 'Automatic key (ignored)' PRIMARY KEY,
 			  `supervisorsMessage` VARCHAR(255) NULL DEFAULT NULL COMMENT 'Message (if any) to supervisors to appear on the supervision creation screen',
 			  `additionalSupervisors` text COLLATE utf8mb4_unicode_ci COMMENT 'Additional supervisors (usernames, one per line)',
-			  `academicYearStartsMonth` INT(2) NOT NULL DEFAULT '8' COMMENT '\'Current\' year starts on month'
+			  `academicYearStartsMonth` INT(2) NOT NULL DEFAULT '8' COMMENT '\'Current\' year starts on month',
+			  `yearGroups` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Year groups'
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='Settings';
 			INSERT INTO settings (id) VALUES (1);
 			
