@@ -34,6 +34,7 @@ class supervisionSignup extends frontControllerApplication
 			'enableDescription' => true,
 			'showSupervisorName' => true,
 			'allowMultipleSignups' => false,
+			'privilegedUserDescription' => 'member of staff',
 			'label' => 'supervision',
 			'labelPlural' => 'supervisions',
 			'containerLabel' => 'course',
@@ -262,10 +263,10 @@ class supervisionSignup extends frontControllerApplication
 		if ($this->userIsStaff) {
 			$html .= "\n<br />";
 			$html .= "\n<h2>Create {$this->settings['label']} signup sheet</h2>";
-			$html .= "\n<p>As a member of staff, you can <a href=\"{$this->baseUrl}/add/\" class=\"actions\"><img src=\"/images/icons/add.png\" alt=\"Add\" border=\"0\" /> Create a {$this->settings['label']} signup sheet</a>.</p>";
+			$html .= "\n<p>As a {$this->settings['privilegedUserDescription']}, you can <a href=\"{$this->baseUrl}/add/\" class=\"actions\"><img src=\"/images/icons/add.png\" alt=\"Add\" border=\"0\" /> Create a {$this->settings['label']} signup sheet</a>.</p>";
 			$html .= "\n<br />";
 			$html .= "\n<h2>My {$this->settings['labelPlural']}</h2>";
-			$html .= "\n<p>As a member of staff, you can <a href=\"{$this->baseUrl}/my/\" class=\"actions\"><img src=\"/images/icons/asterisk_orange.png\" alt=\"Add\" border=\"0\" /> View {$this->settings['labelPlural']} you have set up</a>.</p>";
+			$html .= "\n<p>As a {$this->settings['privilegedUserDescription']}, you can <a href=\"{$this->baseUrl}/my/\" class=\"actions\"><img src=\"/images/icons/asterisk_orange.png\" alt=\"Add\" border=\"0\" /> View {$this->settings['labelPlural']} you have set up</a>.</p>";
 		}
 		
 		# Return the HTML
