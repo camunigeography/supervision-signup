@@ -1076,7 +1076,7 @@ class supervisionSignup extends frontControllerApplication
 		}
 		
 		# Determine editing rights
-		$userHasEditRights = (($supervision['supervisor'] == $this->user) || ($supervision['supervisor2'] && ($supervision['supervisor2'] == $this->user)));
+		$userHasEditRights = ($this->userIsAdministrator || ($supervision['supervisor'] == $this->user) || ($supervision['supervisor2'] && ($supervision['supervisor2'] == $this->user)));
 		
 		# Enable editing by the user
 		if ($this->userIsStaff) {
