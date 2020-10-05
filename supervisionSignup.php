@@ -39,6 +39,7 @@ class supervisionSignup extends frontControllerApplication
 			'labelPlural' => 'supervisions',
 			'containerLabel' => 'course',
 			'containerLabelPlural' => 'courses',
+			'homepageMessageHtml' => false,
 		);
 		
 		# Return the defaults
@@ -124,6 +125,7 @@ class supervisionSignup extends frontControllerApplication
 			-- Settings
 			CREATE TABLE IF NOT EXISTS `settings` (
 			  `id` int(11) NOT NULL COMMENT 'Automatic key (ignored)' PRIMARY KEY,
+			  `homepageMessageHtml` TEXT NULL COMMENT 'Homepage message (if any)',
 			  `supervisorsMessage` VARCHAR(255) NULL DEFAULT NULL COMMENT 'Message (if any) to supervisors to appear on the supervision creation screen',
 			  `additionalSupervisors` text COLLATE utf8mb4_unicode_ci COMMENT 'Additional supervisors (usernames, one per line)',
 			  `academicYearStartsMonth` INT(2) NOT NULL DEFAULT '8' COMMENT '\'Current\' year starts on month',
@@ -249,6 +251,13 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Get the supervisions
 		$supervisions = $this->getSupervisions ($this->userYeargroup);
+		
+		# Special message if present
+		if ($this->settings['homepageMessageHtml']) {
+			$html .= "\n" . '<div class="graybox">';
+			$html .= $this->settings['homepageMessageHtml'];
+			$html .= "\n</div>";
+		}
 		
 		# List of supervisions
 		$html .= "\n<h2>Sign up to a {$this->settings['label']}</h2>";
@@ -1817,6 +1826,7 @@ class supervisionSignup extends frontControllerApplication
 		# Define overrides
 		$dataBindingSettingsOverrides = array (
 			'attributes' => array (
+				'homepageMessageHtml' => array ('editorToolbarSet' => 'BasicLongerFormat', 'config.width' => 400, 'config.height' => 150, ),
 				'supervisorsMessage' => array ('cols' => 50, ),
 				'additionalSupervisors' => array (
 					'type' => 'select',
