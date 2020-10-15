@@ -34,6 +34,7 @@ class supervisionSignup extends frontControllerApplication
 			'enableDescription' => true,
 			'showSupervisorName' => true,
 			'allowMultipleSignups' => false,
+			'allowSameDayBookings' => false,
 			'privilegedUserDescription' => 'member of staff',
 			'label' => 'supervision',
 			'labelPlural' => 'supervisions',
@@ -1287,10 +1288,15 @@ class supervisionSignup extends frontControllerApplication
 		$html .= "\n\n\t<table class=\"lines\">";
 		$userSlotPassed = false;
 		foreach ($timeslotsByDate as $date => $timeslotsForDate) {
-			$editable = ($date > $today);
 			$totalThisDate = count ($timeslotsForDate);
 			$first = true;
 			foreach ($timeslotsForDate as $id => $timeFormatted) {
+				if ($this->settings['allowSameDayBookings']) {
+					$endTime = strtotime ($supervision['timeslots'][$id]) + ($supervision['length'] * 60);
+					$editable = ($endTime > time ());	// I.e. hasn't yet ended
+				} else {
+					$editable = ($date > $today);
+				}
 				$indexValue = $supervision['timeslots'][$id];
 				$html .= "\n\t\t<tr" . ($editable ? '' : ' class="uneditable"') . '>';
 				if ($first) {
