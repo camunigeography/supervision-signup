@@ -1319,7 +1319,7 @@ class supervisionSignup extends frontControllerApplication
 						$html .= "<div class=\"timeslot " . ($signup['userId'] == $this->user ? 'me' : 'taken') . "\">{$removeHtml}<p>{$signup['userName']}<br /><span>{$signup['userId']}</span></p></div>";
 						if ($signup['userId'] == $this->user) {
 							$showButton = false;
-							if (!$editable) {$userSlotPassed = true;}
+							if (!$editable && !$this->settings['allowMultipleSignups']) {$userSlotPassed = true;}
 						}
 					} else {
 						if ($showButton && !$userSlotPassed) {
