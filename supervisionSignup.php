@@ -1278,7 +1278,7 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Surround the word part after the abbreviations with spans, e.g. Jan<span>uary</span>
 		foreach ($abbreviations as $datePeriod => $datePeriodAbbreviated) {
-			$abbreviations[$datePeriod] = preg_replace ("/^({$datePeriodAbbreviated})(.+)$/", '$1<span class="abbreviation">$2</span>', $datePeriod);
+			$abbreviations[$datePeriod] = preg_replace ("/^({$datePeriodAbbreviated})(.+)$/", '\1<span class="abbreviation">\2</span>', $datePeriod);
 		}
 		
 		# Create the timeslot buttons
