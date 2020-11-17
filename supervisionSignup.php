@@ -35,6 +35,7 @@ class supervisionSignup extends frontControllerApplication
 			'showSupervisorName' => true,
 			'allowMultipleSignups' => false,
 			'allowSameDayBookings' => false,
+			'hidePastDays' => false,
 			'privilegedUserDescription' => 'member of staff',
 			'label' => 'supervision',
 			'labelPlural' => 'supervisions',
@@ -1288,6 +1289,14 @@ class supervisionSignup extends frontControllerApplication
 		$html .= "\n\n\t<table class=\"lines\">";
 		$userSlotPassed = false;
 		foreach ($timeslotsByDate as $date => $timeslotsForDate) {
+			
+			# If required, hide days that have now passed
+			if ($this->settings['hidePastDays']) {
+				if ($date < $today) {
+					continue;
+				}
+			}
+			
 			$totalThisDate = count ($timeslotsForDate);
 			$first = true;
 			foreach ($timeslotsForDate as $id => $timeFormatted) {
