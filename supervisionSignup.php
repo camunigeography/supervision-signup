@@ -1240,7 +1240,7 @@ class supervisionSignup extends frontControllerApplication
 			$html .= "\n<p>Where: <strong>{$supervision['locationType']}</strong></p>";
 		}
 		$html .= "\n<div class=\"graybox\">";
-		$html .= "\n" . nl2br (application::makeClickableLinks ($supervision['location']));
+		$html .= "\n<p>" . nl2br (application::makeClickableLinks ($supervision['location'])) . '</p>';
 		$html .= "\n</div>";
 		$html .= "\n<br />";
 		$html .= "\n<h3 id=\"timeslots\">Time slots</h3>";
