@@ -32,6 +32,7 @@ class supervisionSignup extends frontControllerApplication
 			'morningFirstHour' => 8,	// First hour that is in the morning; e.g. if set to 8, staff-entered time '8' would mean 8am rather than 8pm, and '7' would mean 7pm
 			'enableSecondSupervisor' => true,
 			'enableDescription' => true,
+			'enableLocationType' => true,
 			'showSupervisorName' => true,
 			'allowMultipleSignups' => false,
 			'allowSameDayBookings' => false,
@@ -147,6 +148,7 @@ class supervisionSignup extends frontControllerApplication
 			  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Supervision title',
 			  `descriptionHtml` TEXT CHARACTER SET utf8 COLLATE utf8mb4_unicode_ci NULL COMMENT 'Description',
 			  `studentsPerTimeslot` ENUM('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15') CHARACTER SET utf8 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '3' COMMENT 'Maximum students per timeslot',
+			  `locationType` ENUM('In-person','Online','Both in-person and online') NULL COMMENT 'Where?',
 			  `location` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Location(s)',
 			  `length` int(11) NOT NULL COMMENT 'Length of time',
 			  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Automatic timestamp',
@@ -609,6 +611,9 @@ class supervisionSignup extends frontControllerApplication
 		if (!$this->settings['enableDescription']) {
 			$exclude[] = 'descriptionHtml';
 		}
+		if (!$this->settings['enableLocationType']) {
+			$exclude[] = 'locationType';
+		}
 		$form->dataBinding (array (
 			'database' => $this->settings['database'],
 			'table' => $this->settings['table'],
@@ -619,6 +624,7 @@ class supervisionSignup extends frontControllerApplication
 				'courseId' => array ('type' => 'select', 'values' => $courses, ),
 				'title' => array ('regexp' => '[a-z]+', ),	// Prevent ALL UPPER CASE text
 				'supervisor2'  => ($this->settings['usersAutocomplete'] ? array ('autocomplete' => $this->settings['usersAutocomplete'], 'autocompleteOptions' => array ('delay' => 0), ) : array ()),
+				'locationType' => array ('type' => 'radiobuttons', 'required' => true, ),	// Field is NULL but required->true set so that field starts empty
 				'length' => array ('type' => 'select', 'values' => $this->settings['lengths'], 'default' => ($supervision ? $supervision['length'] : $this->settings['lengthDefault']), ),
 			),
 		));
@@ -946,6 +952,11 @@ class supervisionSignup extends frontControllerApplication
 					<td>Maximum students per timeslot: *</td>
 					<td>{studentsPerTimeslot}</td>
 				</tr>
+				" . ($this->settings['enableLocationType'] ? "<tr>
+					<td>Where: *</td>
+					<td>{locationType}</td>
+				</tr>
+				" : '') . "
 				<tr>
 					<td>Location details: *</td>
 					<td>{location}</td>
@@ -1225,6 +1236,9 @@ class supervisionSignup extends frontControllerApplication
 			$html .= "\n</div>";
 		}
 		$html .= "\n<h4>Location:</h4>";
+		if ($supervision['locationType']) {
+			$html .= "\n<p>Where: <strong>{$supervision['locationType']}</strong></p>";
+		}
 		$html .= "\n<div class=\"graybox\">";
 		$html .= "\n" . nl2br (application::makeClickableLinks ($supervision['location']));
 		$html .= "\n</div>";
