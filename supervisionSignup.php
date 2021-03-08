@@ -1161,6 +1161,8 @@ class supervisionSignup extends frontControllerApplication
 		if ($emails) {
 			$html .= "\n<p><em>As e-mails (for e-mailing):</em></p>";
 			$html .= "\n<p>" . implode (', ', $emails) . '</p>';
+			$html .= "\n<p><em>As e-mails (for e-mailing with Outlook):</em></p>";
+			$html .= "\n<p>" . implode ('; ', $emails) . '</p>';
 			$html .= "\n<p><em>As usernames (for CamCORS):</em></p>";
 			$html .= "\n<p>" . implode ('<br />', $usernames) . '</p>';
 		} else {
