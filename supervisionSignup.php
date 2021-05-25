@@ -14,7 +14,7 @@ class supervisionSignup extends frontControllerApplication
 			'databaseStrictWhere' => true,
 			'database' => 'supervisions',
 			'table' => 'supervisions',
-			'settingsTableExplodeTextarea' => array ('additionalSupervisors', 'yearGroups'),
+			'settingsTableExplodeTextarea' => array ('additionalSupervisors', 'yearGroups', 'lengths'),
 			'tabUlClass' => 'tabsflat',
 			'useCamUniLookup' => true,
 			'emailDomain' => 'cam.ac.uk',
@@ -24,7 +24,6 @@ class supervisionSignup extends frontControllerApplication
 			'userNameCallback' => false,						// Callback function; useful if a better name source than Lookup (which tends only to have initials for forenames) is available
 			'usersAutocomplete' => false,
 			'authentication' => true,
-			'lengths' => array (15 => '15 minutes', 30 => '30 minutes', 45 => '45 minutes', 60 => '1 hour', 90 => 'Hour and a half', 120 => 'Two hours', ),
 			'lengthDefault' => 60,
 			'yearGroups' => false,		// Set on settings page, e.g. Part IA, Part IB, Part II
 			'organisationDescription' => 'the Department',
@@ -131,9 +130,10 @@ class supervisionSignup extends frontControllerApplication
 			  `additionalSupervisors` text COLLATE utf8mb4_unicode_ci COMMENT 'Additional supervisors (usernames, one per line)',
 			  `academicYearStartsMonth` INT(2) NOT NULL DEFAULT '8' COMMENT '\'Current\' year starts on month',
 			  `yearGroups` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Year groups (one per line)',
-			  `timeslotsWeeksAhead` INT NOT NULL DEFAULT '14' COMMENT 'Number of weeks ahead to show in slot-setting interface'
+			  `timeslotsWeeksAhead` INT NOT NULL DEFAULT '14' COMMENT 'Number of weeks ahead to show in slot-setting interface',
+			  `lengths` TEXT NOT NULL COMMENT 'Time lengths available, in minutes (one per line)'
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Settings';
-			INSERT INTO settings (id, yearGroups) VALUES (1, 'First year');
+			INSERT INTO settings (id, yearGroups, lengths) VALUES (1, 'First year', '15\n30\n45\n60\n90\n120');
 			
 			-- Supervisions
 			CREATE TABLE `supervisions` (
@@ -217,6 +217,9 @@ class supervisionSignup extends frontControllerApplication
 		# Load required libraries
 		require_once ('timedate.php');
 		
+		# Parse out the lengths to add labels, e.g. array (30 => '30 minutes', 60 => '1 hour', 120 => '2 hours')
+		$this->settings['lengths'] = $this->parseLengths ($this->settings['lengths']);
+		
 		# Current academic year for today's date
 		$this->currentAcademicYear = timedate::academicYear ($this->settings['academicYearStartsMonth'], true, true);
 		
@@ -242,6 +245,21 @@ class supervisionSignup extends frontControllerApplication
 			}
 		}
 		
+	}
+	
+	
+	# Function to parse out the lengths to add labels, e.g. array (30 => '30 minutes', 60 => '1 hour', 120 => '2 hours')
+	private function parseLengths ($lengthValues)
+	{
+		# Convert each
+		$lengths = array ();
+		foreach ($lengthValues as $length) {
+			$label = ($length < 60 ? "{$length} minutes" : round (($length / 60), 1) . ($length == 60 ? ' hour' : ' hours'));
+			$lengths[$length] = $label;
+		}
+		
+		# Return the list
+		return $lengths;
 	}
 	
 	
@@ -1869,6 +1887,7 @@ class supervisionSignup extends frontControllerApplication
 					'description' => 'Type a name or username to get a username;<br />One person per line only.',
 				),
 				'yearGroups' => array ('cols' => 50, 'description' => 'Do not delete/amend any entry currently in use.'),
+				'lengths' => array ('cols' => 10, 'description' => 'Do not delete any entry currently in use.'),
 			),
 		);
 		
