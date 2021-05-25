@@ -28,7 +28,6 @@ class supervisionSignup extends frontControllerApplication
 			'lengthDefault' => 60,
 			'yearGroups' => false,		// Set on settings page, e.g. Part IA, Part IB, Part II
 			'organisationDescription' => 'the Department',
-			'timeslotsWeeksAhead' => 14,
 			'morningFirstHour' => 8,	// First hour that is in the morning; e.g. if set to 8, staff-entered time '8' would mean 8am rather than 8pm, and '7' would mean 7pm
 			'enableSecondSupervisor' => true,
 			'enableDescription' => true,
@@ -131,7 +130,8 @@ class supervisionSignup extends frontControllerApplication
 			  `supervisorsMessage` VARCHAR(255) NULL DEFAULT NULL COMMENT 'Message (if any) to supervisors to appear on the supervision creation screen',
 			  `additionalSupervisors` text COLLATE utf8mb4_unicode_ci COMMENT 'Additional supervisors (usernames, one per line)',
 			  `academicYearStartsMonth` INT(2) NOT NULL DEFAULT '8' COMMENT '\'Current\' year starts on month',
-			  `yearGroups` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Year groups (one per line)'
+			  `yearGroups` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Year groups (one per line)',
+			  `timeslotsWeeksAhead` INT NOT NULL DEFAULT '14' COMMENT 'Number of weeks ahead to show in slot-setting interface'
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='Settings';
 			INSERT INTO settings (id) VALUES (1);
 			
