@@ -451,11 +451,13 @@ class supervisionSignup extends frontControllerApplication
 		# Start the HTML
 		$html = '';
 		
-		# Add link to import
-		$html .= "\n" . '<div class="graybox courses">';
-		$html .= "\n<h3>Add {$this->settings['containerLabelPlural']} for new academic year</h3>";
-		$html .= "\n<ul class=\"actions left\">\n<li><a href=\"{$this->baseUrl}/courses/import/\"><img src=\"/images/icons/add.png\" alt=\"Add\" border=\"0\" /> Import new {$this->settings['containerLabelPlural']}</a>\n</li>\n</ul>";
-		$html .= "\n" . '</div>';
+		# Add link to import, if not using the record editor
+		if (!isSet ($_GET['record'])) {
+			$html .= "\n" . '<div class="graybox courses">';
+			$html .= "\n<h3>Add {$this->settings['containerLabelPlural']} for new academic year</h3>";
+			$html .= "\n<ul class=\"actions left\">\n<li><a href=\"{$this->baseUrl}/courses/import/\"><img src=\"/images/icons/add.png\" alt=\"Add\" border=\"0\" /> Import new {$this->settings['containerLabelPlural']}</a>\n</li>\n</ul>";
+			$html .= "\n" . '</div>';
+		}
 		
 		# Get the databinding attributes
 		$dataBindingAttributes = array (
