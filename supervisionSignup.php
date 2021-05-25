@@ -131,7 +131,7 @@ class supervisionSignup extends frontControllerApplication
 			  `supervisorsMessage` VARCHAR(255) NULL DEFAULT NULL COMMENT 'Message (if any) to supervisors to appear on the supervision creation screen',
 			  `additionalSupervisors` text COLLATE utf8mb4_unicode_ci COMMENT 'Additional supervisors (usernames, one per line)',
 			  `academicYearStartsMonth` INT(2) NOT NULL DEFAULT '8' COMMENT '\'Current\' year starts on month',
-			  `yearGroups` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Year groups'
+			  `yearGroups` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Year groups (one per line)'
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='Settings';
 			INSERT INTO settings (id) VALUES (1);
 			
@@ -459,7 +459,7 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Get the databinding attributes
 		$dataBindingAttributes = array (
-			'yearGroup' => array ('type' => 'select', 'values' => $this->settings['yearGroups'], ),		// NB: Strings must match response from userYeargroupCallback
+			'yearGroup' => array ('type' => 'select', 'values' => $this->settings['yearGroups'], 'description' => "You can add new year groups on the <a href=\"{$this->baseUrl}/settings.html#form_yearGroups\">settings page</a>.", ),		// NB: Strings must match response from userYeargroupCallback
 			'ordering' => array ('type' => 'select', 'values' => range (1, 9), ),
 		);
 		
