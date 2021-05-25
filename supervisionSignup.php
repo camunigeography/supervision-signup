@@ -121,7 +121,7 @@ class supervisionSignup extends frontControllerApplication
 			  `username` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Username' PRIMARY KEY,
 			  `active` enum('','Yes','No') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Yes' COMMENT 'Currently active?',
 			  `privilege` enum('Administrator','Restricted administrator') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Administrator' COMMENT 'Administrator level'
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='System administrators';
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='System administrators';
 			
 			-- Settings
 			CREATE TABLE IF NOT EXISTS `settings` (
@@ -132,7 +132,7 @@ class supervisionSignup extends frontControllerApplication
 			  `academicYearStartsMonth` INT(2) NOT NULL DEFAULT '8' COMMENT '\'Current\' year starts on month',
 			  `yearGroups` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Year groups (one per line)',
 			  `timeslotsWeeksAhead` INT NOT NULL DEFAULT '14' COMMENT 'Number of weeks ahead to show in slot-setting interface'
-			) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='Settings';
+			) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Settings';
 			INSERT INTO settings (id) VALUES (1);
 			
 			-- Supervisions
@@ -152,7 +152,7 @@ class supervisionSignup extends frontControllerApplication
 			  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Automatic timestamp',
 			  `updatedAt` datetime NOT NULL COMMENT 'Updated at',
 			  PRIMARY KEY (`id`)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='Table of supervisions';
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table of supervisions';
 			
 			-- Timeslots
 			CREATE TABLE `timeslots` (
@@ -160,7 +160,7 @@ class supervisionSignup extends frontControllerApplication
 			  `supervisionId` INT(11) NOT NULL COMMENT 'Supervision ID',
 			  `startTime` datetime NOT NULL COMMENT 'Start datetime',
 			  PRIMARY KEY (`id`)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='Table of timeslots';
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table of timeslots';
 			
 			-- Signups
 			CREATE TABLE `signups` (
@@ -170,7 +170,7 @@ class supervisionSignup extends frontControllerApplication
 			  `userName` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'User name',
 			  `startTime` datetime NOT NULL COMMENT 'Start datetime',
 			  PRIMARY KEY (`id`)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='Table of timeslots';
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table of timeslots';
 			
 			-- Courses
 			CREATE TABLE `courses` (
@@ -181,7 +181,7 @@ class supervisionSignup extends frontControllerApplication
 			  `academicYear` VARCHAR(7) NOT NULL COMMENT 'Academic year',
 			  `ordering` INT(1) NULL DEFAULT '5' COMMENT 'Ordering (1=first, 9=last)' AFTER `available`,
 			  PRIMARY KEY (`id`)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='Courses';
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Courses';
 			
 			-- Users
 			CREATE TABLE `users` (
@@ -189,7 +189,7 @@ class supervisionSignup extends frontControllerApplication
 			  `token` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Token',
 			  PRIMARY KEY (`id`),
 			  UNIQUE KEY (`token`)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8mb4_unicode_ci COMMENT='Table of users';
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table of users';
 		";
 	}
 	
