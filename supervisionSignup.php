@@ -573,14 +573,14 @@ class supervisionSignup extends frontControllerApplication
 		}
 		
 		# Create the timeslots, using the Mondays from the start of the week for the current date (for a new supervision) or the creation date (editing an existing one)
-		$allDays = $this->calculateTimeslotDates ($supervision);
+		$allDays = $this->calculateTimeslotDates ($supervision, $editMode);
 		
 		# Compile the timeslots template HTML, and obtain the timeslot fields created
 		$fieldnamePrefix = 'timeslots_';
 		$dateTextFormat = 'D jS M';
 		$timeslotsHtml = $this->timeslotsHtml ($allDays, $fieldnamePrefix, $dateTextFormat, $timeslotsFields /* returned by reference */);
 		
-		# If editing, parse existing timeslots to the textarea format; clone mode only clones properties, not timeslots
+		# If editing, parse existing timeslots to the textarea format
 		$timeslotsDefaults = $this->parseExistingTimeslots (($editMode ? $supervision : array ()));
 		
 		# Databind a form
@@ -804,10 +804,11 @@ class supervisionSignup extends frontControllerApplication
 	
 	
 	# Function to determine the timeslots based on a start time
-	private function calculateTimeslotDates ($supervision)
+	private function calculateTimeslotDates ($supervision, $editMode)
 	{
 		# Start from either today or, if there is a supervision being edited, the creation date
-		$timestamp = ($supervision ? strtotime ($supervision['createdAt']) : false);
+		# NB This checks for edit mode explicitly, rather than for $supervision having data, as cloning will have data but should have a fresh set of dates
+		$timestamp = ($editMode ? strtotime ($supervision['createdAt']) : false);
 		
 		# Get the Mondays from the start timestamp
 		$mondaysUnixtime = timedate::getMondays ($this->settings['timeslotsWeeksAhead'], false, true, $timestamp);
@@ -1429,14 +1430,23 @@ class supervisionSignup extends frontControllerApplication
 	}
 	
 	
-	# Function to clone a supervision
+	# Function to clone a supervision; this clones the details but not the timeslots
 	private function cloneSupervision ($supervision)
 	{
-		# Remove the ID
+		# Remove the ID and timestamps
 		unset ($supervision['id']);
+		unset ($supervision['createdAt']);
+		unset ($supervision['updatedAt']);
+		
+		# Remove the timeslots
+		unset ($supervision['timeslots']);
+		unset ($supervision['signupsByTimeslot']);
+		
+		# Add note
+		$html = "\n<p>On this page, you can copy the details of an existing entry. However, this will not copy timeslots, which you can enter freshly below.</p>";
 		
 		# Run the form with the details supplied
-		$html = $this->supervisionForm ($supervision);
+		$html .= $this->supervisionForm ($supervision);
 		
 		# Return the HTML
 		return $html;
