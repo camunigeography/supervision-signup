@@ -133,7 +133,7 @@ class supervisionSignup extends frontControllerApplication
 			  `yearGroups` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Year groups (one per line)',
 			  `timeslotsWeeksAhead` INT NOT NULL DEFAULT '14' COMMENT 'Number of weeks ahead to show in slot-setting interface'
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Settings';
-			INSERT INTO settings (id) VALUES (1);
+			INSERT INTO settings (id, yearGroups) VALUES (1, 'First year');
 			
 			-- Supervisions
 			CREATE TABLE `supervisions` (
