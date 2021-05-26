@@ -131,7 +131,8 @@ class supervisionSignup extends frontControllerApplication
 			  `academicYearStartsMonth` INT(2) NOT NULL DEFAULT '8' COMMENT '\'Current\' year starts on month',
 			  `yearGroups` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Year groups (one per line)',
 			  `timeslotsWeeksAhead` INT NOT NULL DEFAULT '14' COMMENT 'Number of weeks ahead to show in slot-setting interface',
-			  `lengths` TEXT NOT NULL COMMENT 'Time lengths available, in minutes (one per line)'
+			  `lengths` TEXT NOT NULL COMMENT 'Time lengths available, in minutes (one per line)',
+			  `hideFinished` TINYINT NULL DEFAULT NULL COMMENT 'Hide finished entries from main listing, for ordinary users?'
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Settings';
 			INSERT INTO settings (id, yearGroups, lengths) VALUES (1, 'First year', '15\n30\n45\n60\n90\n120');
 			
@@ -324,6 +325,7 @@ class supervisionSignup extends frontControllerApplication
 				$key = "<h4>{$courseDescription}:</h4>";
 				$list = array ();
 				foreach ($supervisions as $id => $supervision) {
+					if ($this->settings['hideFinished'] && !$this->userIsAdministrator && $supervision['hasFinished']) {continue;}	// If enabled, skip finished
 					$list[$id]  = "<a href=\"{$supervision['href']}\"" . ($supervision['hasFinished'] ? ' class="finished"' : '') . '>';
 					$list[$id] .= htmlspecialchars ($supervision['title']);
 					if ($showSupervisor) {
