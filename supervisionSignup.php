@@ -586,8 +586,7 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Get the courses
 		if (!$courses = $this->getCourses ()) {
-			$html  = "\n<p>The list of {$this->settings['containerLabelPlural']} available for the current year has not yet been loaded, so it is not yet possible to create a new signup sheet.</p>";
-			$html .= "\n<p>Please <a href=\"{$this->baseUrl}/feedback.html\">contact us</a> to have this updated.</p>";
+			$html  = "\n<p>The <a href=\"{$this->baseUrl}/courses/\">list of {$this->settings['containerLabelPlural']}</a> available for the current year has not yet been loaded, so it is not yet possible to create a new signup sheet.</p>";
 			echo $html;
 			return;
 		}
