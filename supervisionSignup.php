@@ -474,7 +474,7 @@ class supervisionSignup extends frontControllerApplication
 		# Add link to import, if not using the record editor
 		if (!isSet ($_GET['record'])) {
 			$html .= "\n" . '<div class="graybox courses">';
-			$html .= "\n<h3>Add {$this->settings['containerLabelPlural']} for new academic year</h3>";
+			$html .= "\n<h3>Import {$this->settings['containerLabelPlural']} for new academic year</h3>";
 			$html .= "\n<ul class=\"actions left\">\n<li><a href=\"{$this->baseUrl}/courses/import/\"><img src=\"/images/icons/add.png\" alt=\"Add\" border=\"0\" /> Import new {$this->settings['containerLabelPlural']}</a>\n</li>\n</ul>";
 			$html .= "\n" . '</div>';
 		}
@@ -494,7 +494,7 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Delegate to the standard function for editing
 		$html .= "\n" . '<div class="graybox courses">';
-		$html .= "\n<h3>Existing {$this->settings['containerLabel']} data</h3>";
+		$html .= "\n<h3>Edit {$this->settings['containerLabel']} data</h3>";
 		$html .= "\n<p>Here you can correct existing {$this->settings['containerLabel']} entries. However, you should not delete old entries, as they will be attached to existing {$this->settings['labelPlural']}.</p>";
 		$html .= $this->editingTable ('courses', $dataBindingAttributes, 'ultimateform', false, $sinenomineExtraSettings);
 		$html .= "\n" . '</div>';
