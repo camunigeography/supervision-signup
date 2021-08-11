@@ -82,7 +82,7 @@ class supervisionSignup extends frontControllerApplication
 				'url' => 'add/',
 				'tab' => 'Create a new signup sheet',
 				'icon' => 'add',
-				'enableIf' => $this->userIsStaff,
+				'enableIf' => ($this->userIsStaff || $this->userIsAdministrator),
 			),
 			'courses' => array (
 				'description' => ucfirst ($this->settings['containerLabelPlural']),
