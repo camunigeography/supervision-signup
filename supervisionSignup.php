@@ -483,6 +483,7 @@ class supervisionSignup extends frontControllerApplication
 		$dataBindingAttributes = array (
 			'yearGroup' => array ('type' => 'select', 'values' => $this->settings['yearGroups'], 'description' => "You can add new year groups on the <a href=\"{$this->baseUrl}/settings.html#form_yearGroups\">settings page</a>.", ),		// NB: Strings must match response from userYeargroupCallback
 			'ordering' => array ('type' => 'select', 'values' => range (1, 9), ),
+			'academicYear' => array ('title' => 'Academic year, e.g. ' . (date ('Y') - 1) . '-' . date ('y'), ),
 		);
 		
 		# Define general sinenomine settings
