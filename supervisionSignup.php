@@ -147,7 +147,7 @@ class supervisionSignup extends frontControllerApplication
 			  `courseName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Course name',
 			  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Supervision title',
 			  `descriptionHtml` TEXT CHARACTER SET utf8 COLLATE utf8mb4_unicode_ci NULL COMMENT 'Description',
-			  `studentsPerTimeslot` ENUM('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15') CHARACTER SET utf8 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '3' COMMENT 'Maximum students per timeslot',
+			  `studentsPerTimeslot` ENUM('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30') CHARACTER SET utf8 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '3' COMMENT 'Maximum students per timeslot',
 			  `location` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Location(s)',
 			  `length` int(11) NOT NULL COMMENT 'Length of time',
 			  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Automatic timestamp',
