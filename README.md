@@ -35,7 +35,7 @@ Dependencies
 Author
 ------
 
-Martin Lucas-Smith, Department of Geography, 2016.
+Martin Lucas-Smith, Department of Geography, 2016-2021.
 
 
 License
