@@ -1265,8 +1265,11 @@ class supervisionSignup extends frontControllerApplication
 					return $html;
 				}
 				
+				# Determine the URL to redirect to
+				$refreshUrl = $_SERVER['_PAGE_URL'] . '#timeslot' . strtotime ($startTime);
+				
 				# Refresh the page
-				$html .= application::sendHeader ('refresh', false, $redirectMessage = true);
+				$html .= application::sendHeader (302, $refreshUrl, $redirectMessage = true);
 				return $html;
 			}
 		}
@@ -1282,8 +1285,11 @@ class supervisionSignup extends frontControllerApplication
 						return $html;
 					}
 					
+					# Determine the URL to redirect to
+					$refreshUrl = $_SERVER['_PAGE_URL'] . '#timeslot' . strtotime ($startTime);
+					
 					# Refresh the page
-					$html .= application::sendHeader ('refresh', false, $redirectMessage = true);
+					$html .= application::sendHeader (302, $refreshUrl, $redirectMessage = true);
 					return $html;
 				}
 			}
@@ -1332,7 +1338,8 @@ class supervisionSignup extends frontControllerApplication
 					$editable = ($date > $today);
 				}
 				$indexValue = $supervision['timeslots'][$id];
-				$html .= "\n\t\t<tr" . ($editable ? '' : ' class="uneditable"') . '>';
+				$unixTimestamp = strtotime ($supervision['timeslots'][$id]);
+				$html .= "\n\t\t<tr" . ($editable ? '' : ' class="uneditable"') . ' id="timeslot' . $unixTimestamp . '">';
 				if ($first) {
 					$date = nl2br (date ("l,\njS F Y", strtotime ($date . ' 12:00:00')));
 					$html .= "\n\t\t\t<td class=\"date\" rowspan=\"{$totalThisDate}\">" . strtr ($date, $abbreviations) . ":</h5>";
