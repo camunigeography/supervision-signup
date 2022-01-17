@@ -276,6 +276,9 @@ class supervisionSignup extends frontControllerApplication
 		# Special message if present
 		if ($this->settings['homepageMessageHtml']) {
 			$html .= "\n" . '<div class="graybox">';
+			if ($this->userIsAdministrator) {
+				$html .= "\n<p class=\"actions right\"><a href=\"{$this->baseUrl}/settings.html\"><img src=\"/images/icons/pencil.png\" alt=\"\"> Edit introduction</a></p>";
+			}
 			$html .= $this->settings['homepageMessageHtml'];
 			$html .= "\n</div>";
 		}
