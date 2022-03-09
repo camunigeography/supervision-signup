@@ -117,9 +117,9 @@ class supervisionSignup extends frontControllerApplication
 			
 			-- Administrators
 			CREATE TABLE IF NOT EXISTS `administrators` (
-			  `username` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Username' PRIMARY KEY,
-			  `active` enum('','Yes','No') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Yes' COMMENT 'Currently active?',
-			  `privilege` enum('Administrator','Restricted administrator') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Administrator' COMMENT 'Administrator level'
+			  `username` varchar(255) NOT NULL COMMENT 'Username' PRIMARY KEY,
+			  `active` enum('','Yes','No') NOT NULL DEFAULT 'Yes' COMMENT 'Currently active?',
+			  `privilege` enum('Administrator','Restricted administrator') NOT NULL DEFAULT 'Administrator' COMMENT 'Administrator level'
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='System administrators';
 			
 			-- Settings
@@ -127,9 +127,9 @@ class supervisionSignup extends frontControllerApplication
 			  `id` int(11) NOT NULL COMMENT 'Automatic key (ignored)' PRIMARY KEY,
 			  `homepageMessageHtml` TEXT NULL COMMENT 'Homepage message (if any)',
 			  `supervisorsMessage` VARCHAR(255) NULL DEFAULT NULL COMMENT 'Message (if any) to supervisors to appear on the supervision creation screen',
-			  `additionalSupervisors` text COLLATE utf8mb4_unicode_ci COMMENT 'Additional supervisors (usernames, one per line)',
+			  `additionalSupervisors` text COMMENT 'Additional supervisors (usernames, one per line)',
 			  `academicYearStartsMonth` INT(2) NOT NULL DEFAULT '8' COMMENT '\'Current\' year starts on month',
-			  `yearGroups` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Year groups (one per line)',
+			  `yearGroups` text NOT NULL COMMENT 'Year groups (one per line)',
 			  `timeslotsWeeksAhead` INT NOT NULL DEFAULT '14' COMMENT 'Number of weeks ahead to show in slot-setting interface',
 			  `lengths` TEXT NOT NULL COMMENT 'Time lengths available, in minutes (one per line)',
 			  `hideFinished` TINYINT NULL DEFAULT NULL COMMENT 'Hide finished entries from main listing, for ordinary users?'
@@ -139,16 +139,16 @@ class supervisionSignup extends frontControllerApplication
 			-- Supervisions
 			CREATE TABLE `supervisions` (
 			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Supervision ID #',
-			  `supervisor` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Supervisor username',
-			  `supervisorName` VARCHAR(255) COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT 'Supervisor name',
-			  `supervisor2` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Second supervisor (if applicable) - username',
-			  `supervisor2Name` VARCHAR(255) COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT 'Second supervisor (if applicable) - name',
+			  `supervisor` varchar(20) NOT NULL COMMENT 'Supervisor username',
+			  `supervisorName` VARCHAR(255) NULL DEFAULT NULL COMMENT 'Supervisor name',
+			  `supervisor2` varchar(20) NOT NULL COMMENT 'Second supervisor (if applicable) - username',
+			  `supervisor2Name` VARCHAR(255) NULL DEFAULT NULL COMMENT 'Second supervisor (if applicable) - name',
 			  `courseId` int(11) NOT NULL COMMENT 'Course',
-			  `courseName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Course name',
-			  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Supervision title',
-			  `descriptionHtml` TEXT CHARACTER SET utf8 COLLATE utf8mb4_unicode_ci NULL COMMENT 'Description',
-			  `studentsPerTimeslot` ENUM('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30') CHARACTER SET utf8 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '3' COMMENT 'Maximum students per timeslot',
-			  `location` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Location(s)',
+			  `courseName` varchar(255) NOT NULL COMMENT 'Course name',
+			  `title` varchar(255) NOT NULL COMMENT 'Supervision title',
+			  `descriptionHtml` TEXT CHARACTER SET utf8 NULL COMMENT 'Description',
+			  `studentsPerTimeslot` ENUM('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30') CHARACTER SET utf8 NOT NULL DEFAULT '3' COMMENT 'Maximum students per timeslot',
+			  `location` text NOT NULL COMMENT 'Location(s)',
 			  `length` int(11) NOT NULL COMMENT 'Length of time',
 			  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Automatic timestamp',
 			  `updatedAt` datetime NOT NULL COMMENT 'Updated at',
@@ -167,18 +167,18 @@ class supervisionSignup extends frontControllerApplication
 			CREATE TABLE `signups` (
 			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Automatic key',
 			  `supervisionId` int(11) NOT NULL COMMENT 'Supervision ID',
-			  `userId` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'User ID',
-			  `userName` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'User name',
+			  `userId` varchar(50) NOT NULL COMMENT 'User ID',
+			  `userName` varchar(255) DEFAULT NULL COMMENT 'User name',
 			  `startTime` datetime NOT NULL COMMENT 'Start datetime',
 			  PRIMARY KEY (`id`)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table of timeslots';
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table of signups';
 			
 			-- Courses
 			CREATE TABLE `courses` (
 			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Automatic key',
-			  `yearGroup` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Year group',
-			  `courseNumber` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Course number',
-			  `courseName` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Course name',
+			  `yearGroup` varchar(255) NOT NULL COMMENT 'Year group',
+			  `courseNumber` varchar(255) DEFAULT NULL COMMENT 'Course number',
+			  `courseName` varchar(255) NOT NULL COMMENT 'Course name',
 			  `academicYear` VARCHAR(7) NOT NULL COMMENT 'Academic year',
 			  `ordering` INT(1) NULL DEFAULT '5' COMMENT 'Ordering (1=first, 9=last)' AFTER `available`,
 			  PRIMARY KEY (`id`)
@@ -186,8 +186,8 @@ class supervisionSignup extends frontControllerApplication
 			
 			-- Users
 			CREATE TABLE `users` (
-			  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'User ID',
-			  `token` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Token',
+			  `id` varchar(255) NOT NULL COMMENT 'User ID',
+			  `token` varchar(16) NOT NULL COMMENT 'Token',
 			  PRIMARY KEY (`id`),
 			  UNIQUE KEY (`token`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table of users';
