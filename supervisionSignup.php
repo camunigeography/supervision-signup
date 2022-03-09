@@ -1344,8 +1344,8 @@ class supervisionSignup extends frontControllerApplication
 				$unixTimestamp = strtotime ($supervision['timeslots'][$id]);
 				$html .= "\n\t\t<tr" . ($editable ? '' : ' class="uneditable"') . ' id="timeslot' . $unixTimestamp . '">';
 				if ($first) {
-					$date = nl2br (date ("l,\njS F Y", strtotime ($date . ' 12:00:00')));
-					$html .= "\n\t\t\t<td class=\"date\" rowspan=\"{$totalThisDate}\">" . strtr ($date, $abbreviations) . ":</h5>";
+					$dateFormatted = nl2br (date ("l,\njS F Y", strtotime ($date . ' 12:00:00')));
+					$html .= "\n\t\t\t<td class=\"date\" rowspan=\"{$totalThisDate}\">" . strtr ($dateFormatted, $abbreviations) . ":</h5>";
 					$first = false;
 				} else {
 					$html .= "\n\t\t\t";
