@@ -132,7 +132,8 @@ class supervisionSignup extends frontControllerApplication
 			  `yearGroups` text NOT NULL COMMENT 'Year groups (one per line)',
 			  `timeslotsWeeksAhead` INT NOT NULL DEFAULT '14' COMMENT 'Number of weeks ahead to show in slot-setting interface',
 			  `lengths` TEXT NOT NULL COMMENT 'Time lengths available, in minutes (one per line)',
-			  `hideFinished` TINYINT NULL DEFAULT NULL COMMENT 'Hide finished entries from main listing, for ordinary users?'
+			  `hideFinished` TINYINT NULL DEFAULT NULL COMMENT 'Hide finished entries from main listing, for ordinary users?',
+			  `onCreateNotifyEmail` VARCHAR(255) NULL COMMENT 'E-mail address to cc upon creation of a signup sheet'
 			) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Settings';
 			INSERT INTO settings (id, yearGroups, lengths) VALUES (1, 'First year', '15\n30\n45\n60\n90\n120');
 			
@@ -798,6 +799,9 @@ class supervisionSignup extends frontControllerApplication
 				$message .= "\n\nDon't forget that you need to e-mail the relevant students to tell them about the {$this->settings['label']} signup sheet and give them this link.";
 				$message .= "\n\nPlease note that you will not receive any further e-mails about this {$this->settings['label']} signup sheet.";
 				$extraHeaders  = 'From: Webserver <' . $this->settings['webmaster'] . '>';
+				if ($this->settings['onCreateNotifyEmail']) {
+					$extraHeaders .= "\r\n" . 'Cc: ' . $this->settings['onCreateNotifyEmail'];
+				}
 				// $extraHeaders .= "\r\n" . 'Bcc: ' . $this->settings['administratorEmail'];
 				application::utf8Mail ($to, $subject, wordwrap ($message), $extraHeaders);
 			}
