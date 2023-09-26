@@ -799,8 +799,15 @@ class supervisionSignup extends frontControllerApplication
 				$message .= "\n\nDon't forget that you need to e-mail the relevant students to tell them about the {$this->settings['label']} signup sheet and give them this link.";
 				$message .= "\n\nPlease note that you will not receive any further e-mails about this {$this->settings['label']} signup sheet.";
 				$extraHeaders  = 'From: Webserver <' . $this->settings['webmaster'] . '>';
+				$cc = array ();
+				if ($result['supervisor2']) {
+					$cc[] = $result['supervisor2'] . '@' . $this->settings['emailDomain'];
+				}
 				if ($this->settings['onCreateNotifyEmail']) {
-					$extraHeaders .= "\r\n" . 'Cc: ' . $this->settings['onCreateNotifyEmail'];
+					$cc[] = $this->settings['onCreateNotifyEmail'];
+				}
+				if ($cc) {
+					$extraHeaders .= "\r\n" . 'Cc: ' . implode (', ', $cc);
 				}
 				// $extraHeaders .= "\r\n" . 'Bcc: ' . $this->settings['administratorEmail'];
 				application::utf8Mail ($to, $subject, wordwrap ($message), $extraHeaders);
