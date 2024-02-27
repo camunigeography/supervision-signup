@@ -35,8 +35,7 @@
 	
 	# Remove auth for iCal
 	<LocationMatch ^$applicationBaseUrl/(my)/supervisions.ics$>
-		Satisfy Any
-		Allow from all
+		Require all granted
 	</LocationMatch>
 	
 </Macro>
