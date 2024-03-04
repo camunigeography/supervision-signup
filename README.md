@@ -35,11 +35,11 @@ Dependencies
 Author
 ------
 
-Martin Lucas-Smith, Department of Geography, 2016-2021.
+Martin Lucas-Smith, Department of Geography, 2016-24.
 
 
 License
 -------
 
-GPL2.
+GPL3.
 
