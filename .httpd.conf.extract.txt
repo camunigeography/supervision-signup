@@ -4,14 +4,10 @@
 #   
 #   # Assessments
 #   Include /path/to/supervision-signup/.httpd.conf.extract.txt
-#   Use MacroSupervisionSignup "/supervisions" "/path/to/repo" "Supervision signup" "/path/to/supervision-signup/:/path/to/php/libraries/"
+#   Use MacroSupervisionSignup "/supervisions" "/path/to/repo" "Supervision signup"
 
 
-<Macro MacroSupervisionSignup $applicationBaseUrl $repoPath $description $includePath>
-	
-	<Location $applicationBaseUrl>
-		php_value include_path "$includePath"
-	</Location>
+<Macro MacroSupervisionSignup $applicationBaseUrl $repoPath $description>
 	
 	Use MacroFrontControllerApplication "$applicationBaseUrl/" "$description"
 	

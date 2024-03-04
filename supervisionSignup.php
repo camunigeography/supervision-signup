@@ -1,7 +1,6 @@
 <?php
 
 # Class to create a simple supervision signup system
-require_once ('frontControllerApplication.php');
 class supervisionSignup extends frontControllerApplication
 {
 	# Function to assign defaults additional to the general application defaults
@@ -216,9 +215,6 @@ class supervisionSignup extends frontControllerApplication
 	# Additional initialisation
 	public function main ()
 	{
-		# Load required libraries
-		require_once ('timedate.php');
-		
 		# Parse out the lengths to add labels, e.g. array (30 => '30 minutes', 60 => '1 hour', 120 => '2 hours')
 		$this->settings['lengths'] = $this->parseLengths ($this->settings['lengths']);
 		
@@ -434,7 +430,6 @@ class supervisionSignup extends frontControllerApplication
 		$icsUrl = "{$this->baseUrl}/my/supervisions.ics?token={$token}";
 		
 		# Delegate to iCal class
-		require_once ('ical.php');
 		$ical = new ical ();
 		$html = $ical->instructionsLink ($icsUrl);
 		
@@ -535,7 +530,6 @@ class supervisionSignup extends frontControllerApplication
 		));
 		
 		# Do checks on the pasted data
-		require_once ('csv.php');
 		if ($unfinalisedData = $form->getUnfinalisedData ()) {
 			if ($unfinalisedData['data']) {
 				
@@ -1827,7 +1821,6 @@ class supervisionSignup extends frontControllerApplication
 	private function serveICal ($events)
 	{
 		# Delegate to iCal class
-		require_once ('ical.php');
 		$ical = new ical ();
 		$title = (count ($events) == 1 ? 'Supervision' : 'Supervisions');
 		$output = $ical->create ($events, $title, 'ac.uk.cam.geog', 'Supervisions');

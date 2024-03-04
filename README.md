@@ -24,11 +24,6 @@ Usage
 Dependencies
 ------------
 
-* [application.php application support library](http://download.geog.cam.ac.uk/projects/application/)
-* [database.php database wrapper library](http://download.geog.cam.ac.uk/projects/database/)
-* [frontControllerApplication.php front controller application implementation library](http://download.geog.cam.ac.uk/projects/frontcontrollerapplication/)
-* [timedate.php Time/date utility library](http://download.geog.cam.ac.uk/projects/timedate/)
-* [ultimateForm.php form library](http://download.geog.cam.ac.uk/projects/ultimateform/)
 * [FamFamFam Silk Icons set](http://www.famfamfam.com/lab/icons/silk/)
 
 

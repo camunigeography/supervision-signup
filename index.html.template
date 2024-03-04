@@ -29,7 +29,7 @@ function userNameCallback ($username)
 }
 
 # Run the application with the specified settings
-require_once ('supervision-signup/supervisionSignup.php');
+require_once ('vendor/autoload.php');
 new supervisionSignup ($settings);
 
 ?>
