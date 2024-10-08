@@ -322,7 +322,9 @@ class supervisionSignup extends frontControllerApplication
 			
 			# Show each course
 			foreach ($supervisionsByCourse as $courseDescription => $supervisions) {
-				$key = "<h4>{$courseDescription}:</h4>";
+				$oneSupervision = application::array_first_value ($supervisions);
+				$courseMoniker = $oneSupervision['courseMoniker'];
+				$key = "<h4><a id=\"{$courseMoniker}\" href=\"#{$courseMoniker}\">#</a> {$courseDescription}:</h4>";
 				$list = array ();
 				foreach ($supervisions as $id => $supervision) {
 					if ($this->settings['hideFinished'] && !$this->userIsAdministrator && $supervision['hasFinished']) {continue;}	// If enabled, skip finished
@@ -518,7 +520,7 @@ class supervisionSignup extends frontControllerApplication
 			'formCompleteText' => false,
 			'display' => 'paragraphs',
 		));
-		$form->heading ('p', "To add the data, prepare a spreadsheet like this example, which you should then paste in below. It must contain the following headers in the first row (as per <a href=\"{$this->baseUrl}/courses/\">existing examples</a>):<br />" . '<tt><strong>' . implode ('</tt></strong>, <strong><tt>', $expectedHeaders) . '</strong></tt>');
+		$form->heading ('p', "To add the data, prepare a spreadsheet like this example, which you should then paste in below. There must be no blank cells. It must contain the following headers in the first row (as per <a href=\"{$this->baseUrl}/courses/\">existing examples</a>):<br />" . '<tt><strong>' . implode ('</tt></strong>, <strong><tt>', $expectedHeaders) . '</strong></tt>.');
 		$form->heading ('p', "<strong>Example:</strong><br /><img src=\"{$this->baseUrl}/images/import.png\" alt=\"Import example\" border=\"0\" width=\"600\" />");
 		$form->textarea (array (
 			'name'			=> 'data',
@@ -1567,6 +1569,7 @@ class supervisionSignup extends frontControllerApplication
 				courseId,
 				courses.yearGroup,
 				courses.courseNumber,
+				REGEXP_REPLACE(LOWER(IF(courses.courseNumber IS NULL or courses.courseNumber = '', courses.courseName, CONCAT(courses.yearGroup, courses.courseNumber))), '[^\\\\p{Alnum}]', '') AS courseMoniker,
 				courses.courseName,
 				DATE(MIN(timeslots.startTime)) AS dateFrom,
 				DATE(MAX(timeslots.startTime)) AS dateUntil,
