@@ -1368,7 +1368,7 @@ class supervisionSignup extends frontControllerApplication
 					if ($slotTaken) {
 						$signup = $supervision['signupsByTimeslot'][$startTime][$i];
 						$removeHtml = '';
-						if ($editable) {
+						if ($editable || $this->userIsAdministrator) {	// Allow admins to remove even if passed, e.g. to release due to a slot that has had to be cancelled on the day
 							if ($signup['userId'] == $this->user || $this->userIsAdministrator) {
 								$removeHtml = '<div class="delete"><input type="submit" name="delete[' . $indexValue . ',' . $signup['userId'] . ']" value="" onclick="return confirm(\'Are you sure?\');"></div>';	// See: http://stackoverflow.com/a/1193338/180733
 							}
