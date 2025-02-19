@@ -1249,7 +1249,8 @@ class supervisionSignup extends frontControllerApplication
 		sort ($usernames);
 		
 		# Compile the HTML
-		$html  = "\n<h3>Students signed up</h3>";
+		$total = count ($emails);
+		$html  = "\n<h3>Students signed up ({$total})</h3>";
 		$html .= "\n<p>This list, available only to you as the supervisor, shows the list of those currently signed up, as e-mails and usernames, as per the list above:</p>";
 		$html .= "\n<div class=\"graybox\">";
 		if ($emails) {
