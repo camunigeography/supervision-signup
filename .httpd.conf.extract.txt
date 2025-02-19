@@ -12,6 +12,8 @@
 	Use MacroFrontControllerApplication "$applicationBaseUrl/" "$description"
 	
 	RewriteEngine on
+	RewriteRule ^$applicationBaseUrl/year/([0-9]{4}-[0-9]{2})/$ $applicationBaseUrl/index.html?action=home&academicyear=$1 [L]
+	RewriteRule ^$applicationBaseUrl/year/([0-9]{4}-[0-9]{2})$ $applicationBaseUrl/year/$1-$2/ [L,R]
 	RewriteRule ^$applicationBaseUrl/(add|my|statistics)/$ $applicationBaseUrl/index.html?action=$1 [L]
 	RewriteRule ^$applicationBaseUrl/(add|my|statistics)$ $applicationBaseUrl/$1/ [R]
 	RewriteRule ^$applicationBaseUrl/my/supervisions.ics$ $applicationBaseUrl/index.html?action=ical [L,QSA]

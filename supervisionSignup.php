@@ -267,6 +267,24 @@ class supervisionSignup extends frontControllerApplication
 		# Start the HTML
 		$html = '';
 		
+		# If the user is staff, allow listing of previous years
+		if ($this->userIsStaff || $this->userIsAdministrator) {
+			
+			# Set the selected year
+			$years = $this->getAvailableYears ();
+			$currentAcademicYear = $this->currentAcademicYear;
+			if (isSet ($_GET['academicyear'])) {
+				if (!strlen ($_GET['academicyear']) || !in_array ($_GET['academicyear'], $years)) {
+					$this->page404 ();
+					return false;
+				}
+				$this->currentAcademicYear = $_GET['academicyear'];
+			}
+			
+			# Show a droplist of years
+			$html .= $this->yearsDroplist ($years, $this->currentAcademicYear, $currentAcademicYear);
+		}
+		
 		# Get the supervisions
 		$supervisions = $this->getSupervisions ($this->userYeargroup);
 		
@@ -301,6 +319,49 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Return the HTML
 		echo $html;
+	}
+	
+	
+	# Function to get the list of available years in the data
+	private function getAvailableYears ($yearsBack = 5)
+	{
+		# Get the data
+		$query = "SELECT
+			DISTINCT academicYear
+			FROM courses
+			WHERE (SUBSTR(academicYear, 1, 4) >= (YEAR(CURDATE()) - {$yearsBack}))
+			ORDER BY academicYear
+		;";
+		$years = $this->databaseConnection->getPairs ($query);
+		
+		# Ensure the current academic year is present
+		$years = array_unique (array_merge ($years, array ($this->currentAcademicYear)));
+		sort ($years);
+		
+		# Return the list
+		return ($years);
+	}
+	
+	
+	# Function to create a droplist of years
+	private function yearsDroplist ($years, $defaultYear, $currentYear)
+	{
+		# Create the list of URLs
+		$urls = array ();
+		foreach ($years as $year) {
+			$url = $this->baseUrl . ($year != $currentYear ? '/year/' . $year : '') . '/';
+			$urls[$url] = $year;
+		}
+		
+		# Get the selected value
+		$yearUrls = array_flip ($urls);
+		$selected = $yearUrls[$defaultYear];
+		
+		# Create the droplist, which includes the redirection processor
+		$html = application::htmlJumplist ($urls, $selected, '', 'jumplist', 0, 'jumplist right', $introductoryText = 'Show listing for year:');
+		
+		# Return the HTML
+		return $html;
 	}
 	
 	
