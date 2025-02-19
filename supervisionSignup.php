@@ -1359,8 +1359,12 @@ class supervisionSignup extends frontControllerApplication
 				}
 				$html .= "\n\t\t\t<td class=\"time\">{$timeFormatted}:</td>";
 				$startTime = $supervision['timeslots'][$id];
+				
+				# Determine whether to show the button
 				$showButton = true;
 				if (!$editable) {$showButton = false;}
+				
+				# Create the cell
 				$html .= "\n\t\t\t<td>";
 				for ($i = 0; $i < $supervision['studentsPerTimeslot']; $i++) {
 					$html .= "\n\t\t\t\t";
@@ -1892,8 +1896,14 @@ class supervisionSignup extends frontControllerApplication
 		# Define overrides
 		$dataBindingSettingsOverrides = array (
 			'attributes' => array (
-				'homepageMessageHtml' => array ('editorToolbarSet' => 'BasicLongerFormat', 'config.width' => 400, 'config.height' => 150, ),
-				'supervisorsMessage' => array ('cols' => 50, ),
+				'homepageMessageHtml' => array (
+					'editorToolbarSet' => 'BasicLongerFormat',
+					'config.width' => 400,
+					'config.height' => 150,
+				),
+				'supervisorsMessage' => array (
+					'cols' => 50,
+				),
 				'additionalSupervisors' => array (
 					'type' => 'select',
 					'multiple' => true,
@@ -1905,8 +1915,14 @@ class supervisionSignup extends frontControllerApplication
 					'output' => array ('processing' => 'compiled'),
 					'description' => 'Type a name or username to get a username;<br />One person per line only.',
 				),
-				'yearGroups' => array ('cols' => 50, 'description' => 'Do not delete/amend any entry currently in use.'),
-				'lengths' => array ('cols' => 10, 'description' => 'Do not delete any entry currently in use.'),
+				'yearGroups' => array (
+					'cols' => 50,
+					'description' => 'Do not delete/amend any entry currently in use.',
+				),
+				'lengths' => array (
+					'cols' => 10,
+					'description' => 'Do not delete any entry currently in use.',
+				),
 			),
 		);
 		
