@@ -701,7 +701,7 @@ class supervisionSignup extends frontControllerApplication
 			'attributes' => array (
 				'courseId' => array ('type' => 'select', 'values' => $courses, ),
 				'title' => array ('regexp' => '[a-z]+', ),	// Prevent ALL UPPER CASE text
-				'supervisor2'  => ($this->settings['usersAutocomplete'] ? array ('autocomplete' => $this->settings['usersAutocomplete'], 'autocompleteOptions' => array ('delay' => 0), ) : array ()),
+				'supervisor2'  => array_merge (($this->settings['usersAutocomplete'] ? array ('autocomplete' => $this->settings['usersAutocomplete'], 'autocompleteOptions' => array ('delay' => 0), ) : array ()), array ('regexp' => '^[a-z][a-z0-9]{1,7}$', )),
 				'length' => array ('type' => 'select', 'values' => $this->settings['lengths'], 'default' => ($supervision ? $supervision['length'] : $this->settings['lengthDefault']), ),
 			),
 		));
