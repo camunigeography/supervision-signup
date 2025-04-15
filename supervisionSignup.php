@@ -439,14 +439,16 @@ class supervisionSignup extends frontControllerApplication
 		# Get the supervisions
 		$supervisionsSupervising = $this->getSupervisions (false, $this->user);
 		
+		# Add iCal feed button, even if no supervisions at present
+		$html = "\n" . "<p><a href=\"{$this->baseUrl}/my/ical.html\">" . '<img src="/images/icons/extras/ical.gif" alt="iCal" title="iCal output - subscribe for your calendar" class="right" /></a></p>';
+		
 		# List the supervisions for this user
 		if ($supervisionsSupervising) {
-			$html = "\n" . "<p><a href=\"{$this->baseUrl}/my/ical.html\">" . '<img src="/images/icons/extras/ical.gif" alt="iCal" title="iCal output - subscribe for your calendar" class="right" /></a></p>';
 			$html .= "\n<p>You are running the {$this->settings['labelPlural']} listed below.</p>";
 			$html .= "\n<p>You can view the student signups, or edit/delete a signup sheet, on each page.</p>";
 			$html .= $this->supervisionsList ($supervisionsSupervising, false);
 		} else {
-			$html .= "\n<p>There are none.</p>";
+			$html .= "\n<p>There are none at present.</p>";
 			$html .= "\n<p>You can <a href=\"{$this->baseUrl}/add/\">create a new {$this->settings['label']} signup sheet</a>.</p>";
 		}
 		
