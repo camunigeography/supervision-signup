@@ -1510,7 +1510,7 @@ class supervisionSignup extends frontControllerApplication
 		$html = '';
 		
 		# Obtain confirmation from the user
-		$message = '<strong>Are you sure you want to delete this supervision below? The data cannot be retrieved later.</strong>';
+		$message = '<strong>Are you sure you want to delete this signup sheet below? The data cannot be retrieved later.</strong>';
 		$confirmation = 'Yes, delete';
 		if ($this->areYouSure ($message, $confirmation, $html)) {
 			
