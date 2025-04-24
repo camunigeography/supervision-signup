@@ -62,13 +62,13 @@ class supervisionSignup extends frontControllerApplication
 				'url' => 'my/',
 				'tab' => "My {$this->settings['labelPlural']}",
 				'icon' => 'asterisk_orange',
-				'enableIf' => $this->userIsStaff,
+				'enableIf' => ($this->userIsStaff || $this->userIsAdministrator),
 			),
 			'aboutical' => array (
 				'description' => "My {$this->settings['labelPlural']} - iCal",
 				'url' => 'my/ical.html',
 				'usetab' => 'my',
-				'enableIf' => $this->userIsStaff,
+				'enableIf' => ($this->userIsStaff || $this->userIsAdministrator),
 			),
 			'ical' => array (
 				'description' => "My {$this->settings['labelPlural']} - iCal",
