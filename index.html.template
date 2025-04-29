@@ -4,25 +4,25 @@
 $settings = array (
 	'username' => 'the_username',
 	'password' => 'the_password',
-	'userIsStaffCallback' => 'userIsStaffCallback',
-	'userYeargroupCallback' => 'userYeargroupCallback',
-	'userNameCallback' => 'userNameCallback',
+	'userCanSuperviseCallback' => 'userCanSupervise',
+	'userYeargroupCallback' => 'userYeargroup',
+	'userNameCallback' => 'userName',
 );
 
-# Callback function to determine if the user is a member of staff; this function will only be called if a user is signed in
-function userIsStaffCallback ($username)
+# Callback function to determine if the user can supervise (e.g. staff/PhD); this function will only be called if a user is signed in
+function userCanSupervise ($username)
 {
 	// Function returning bool true or false
 }
 
 # Callback function to get the yeargroup of a user; this function will only be called if a user is signed in
-function userYeargroupCallback ($username)
+function userYeargroup ($username)
 {
 	// Function returning bool true or false
 }
 
 # Callback function to get the full name of a user
-function userNameCallback ($username)
+function userName ($username)
 {
 	// Function returning string, e.g. 'Jane Smith'
 }

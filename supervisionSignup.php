@@ -18,7 +18,7 @@ class supervisionSignup extends frontControllerApplication
 			'useCamUniLookup' => true,
 			'emailDomain' => 'cam.ac.uk',
 			'administrators' => true,
-			'userIsStaffCallback' => 'userIsStaffCallback',		// Callback function
+			'userCanSuperviseCallback' => 'userCanSuperviseCallback',		// Callback function
 			'userYeargroupCallback' => 'userYeargroupCallback',	// Callback function
 			'userNameCallback' => false,						// Callback function; useful if a better name source than Lookup (which tends only to have initials for forenames) is available
 			'usersAutocomplete' => false,
@@ -62,13 +62,13 @@ class supervisionSignup extends frontControllerApplication
 				'url' => 'my/',
 				'tab' => "My {$this->settings['labelPlural']}",
 				'icon' => 'asterisk_orange',
-				'enableIf' => ($this->userIsStaff || $this->userIsAdministrator),
+				'enableIf' => ($this->userCanSupervise || $this->userIsAdministrator),
 			),
 			'aboutical' => array (
 				'description' => "My {$this->settings['labelPlural']} - iCal",
 				'url' => 'my/ical.html',
 				'usetab' => 'my',
-				'enableIf' => ($this->userIsStaff || $this->userIsAdministrator),
+				'enableIf' => ($this->userCanSupervise || $this->userIsAdministrator),
 			),
 			'ical' => array (
 				'description' => "My {$this->settings['labelPlural']} - iCal",
@@ -81,7 +81,7 @@ class supervisionSignup extends frontControllerApplication
 				'url' => 'add/',
 				'tab' => 'Create a new signup sheet',
 				'icon' => 'add',
-				'enableIf' => ($this->userIsStaff || $this->userIsAdministrator),
+				'enableIf' => ($this->userCanSupervise || $this->userIsAdministrator),
 			),
 			'courses' => array (
 				'description' => ucfirst ($this->settings['containerLabelPlural']),
@@ -199,13 +199,13 @@ class supervisionSignup extends frontControllerApplication
 	public function mainPreActions ()
 	{
 		# Determine if the user is staff from the callback function
-		$userIsStaffCallbackFunction = $this->settings['userIsStaffCallback'];
-		$this->userIsStaff = ($this->user ? $userIsStaffCallbackFunction ($this->user) : false);
+		$userCanSuperviseCallbackFunction = $this->settings['userCanSuperviseCallback'];
+		$this->userCanSupervise = ($this->user ? $userCanSuperviseCallbackFunction ($this->user) : false);
 		
 		# Also enable additional staff users set in the database
 		if ($this->user) {
 			if (in_array ($this->user, $this->settings['additionalSupervisors'])) {
-				$this->userIsStaff = true;
+				$this->userCanSupervise = true;
 			}
 		}
 		
@@ -234,7 +234,7 @@ class supervisionSignup extends frontControllerApplication
 		$this->userYeargroup = ($this->user ? $userYeargroupCallbackFunction ($this->user) : false);
 		
 		# Ensure the user is current student or staff (or admin)
-		if (!$this->userYeargroup && !$this->userIsStaff && !$this->userIsAdministrator) {
+		if (!$this->userYeargroup && !$this->userCanSupervise && !$this->userIsAdministrator) {
 			if (!in_array ($this->action, array ('feedback', 'ical'))) {		// Unless on feedback page or iCal output
 				$html  = "\n<p>This system is only available to current students and staff of " . htmlspecialchars ($this->settings['organisationDescription']) . '.</p>';
 				$html .= "\n<p>If you think you should have access, please <a href=\"{$this->baseUrl}/feedback.html\">contact us</a>.</p>";
@@ -268,7 +268,7 @@ class supervisionSignup extends frontControllerApplication
 		$html = '';
 		
 		# If the user is staff, allow listing of previous years
-		if ($this->userIsStaff || $this->userIsAdministrator) {
+		if ($this->userCanSupervise || $this->userIsAdministrator) {
 			
 			# Set the selected year
 			$years = $this->getAvailableYears ();
@@ -308,7 +308,7 @@ class supervisionSignup extends frontControllerApplication
 		}
 		
 		# Give links for staff
-		if ($this->userIsStaff) {
+		if ($this->userCanSupervise) {
 			$html .= "\n<br />";
 			$html .= "\n<h2>Create {$this->settings['label']} signup sheet</h2>";
 			$html .= "\n<p>As a {$this->settings['privilegedUserDescription']}, you can <a href=\"{$this->baseUrl}/add/\" class=\"actions\"><img src=\"/images/icons/add.png\" alt=\"Add\" border=\"0\" /> Create a {$this->settings['label']} signup sheet</a>.</p>";
@@ -1166,7 +1166,7 @@ class supervisionSignup extends frontControllerApplication
 		}
 		
 		# If the user is a student, require a match on yeargroup, for privacy reasons
-		if (!$this->userIsStaff && !$this->userIsAdministrator) {
+		if (!$this->userCanSupervise && !$this->userIsAdministrator) {
 			if ($supervision['yearGroup'] != $this->userYeargroup) {
 				$this->page404 ();
 				return;
@@ -1177,7 +1177,7 @@ class supervisionSignup extends frontControllerApplication
 		$userHasEditRights = ($this->userIsAdministrator || ($supervision['supervisor'] == $this->user) || ($supervision['supervisor2'] && ($supervision['supervisor2'] == $this->user)));
 		
 		# Enable editing by the user
-		if ($this->userIsStaff || $this->userIsAdministrator) {
+		if ($this->userCanSupervise || $this->userIsAdministrator) {
 			
 			# Determine if editing is requested
 			$editingActions = array ();
