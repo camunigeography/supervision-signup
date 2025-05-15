@@ -21,7 +21,7 @@ function userYeargroup ($username)
 	// Function returning bool true or false
 }
 
-# Callback function to get the full name of a user
+# Callback function to get the full name of a user; this function will only be called if a user is present
 function userName ($username)
 {
 	// Function returning string, e.g. 'Jane Smith'
