@@ -5,12 +5,12 @@
     "license": "GPL-3.0-only",
     "minimum-stability": "stable",
     "require": {
-        "libpurecontent/frontcontrollerapplication": "^1.13.7",
-        "libpurecontent/timedate": "^1.3",
+        "libpurecontent/frontcontrollerapplication": "^1.14",
+        "libpurecontent/timedate": "^1.4",
         "libpurecontent/ical": "^1.1",
-        "libpurecontent/csv": "^1.5",
+        "libpurecontent/csv": "^1.6",
         "libpurecontent/application": "^1.9",
-        "libpurecontent/ultimateform": "^1.29"
+        "libpurecontent/ultimateform": "^1.31"
     },
     "autoload": {
         "files": ["supervisionSignup.php"]
