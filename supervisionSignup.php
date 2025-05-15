@@ -223,9 +223,11 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Determine the full name of a user via callback if specified
 		if ($this->settings['userNameCallback']) {
-			$userNameCallback = $this->settings['userNameCallback'];
-			if ($userName = $userNameCallback ($this->user)) {
-				$this->userName = $userName;
+			if ($this->user) {
+				$userNameCallback = $this->settings['userNameCallback'];
+				if ($userName = $userNameCallback ($this->user)) {
+					$this->userName = $userName;
+				}
 			}
 		}
 		
