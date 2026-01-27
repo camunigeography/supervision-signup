@@ -303,7 +303,11 @@ class supervisionSignup extends frontControllerApplication
 		# List of supervisions
 		$html .= "\n<h2>Sign up to a {$this->settings['label']}</h2>";
 		if ($supervisions) {
-			$html .= "\n<p>You can sign up to the following {$this->settings['labelPlural']} online:</p>";
+			$do = 'sign up to';
+			if ($this->userCanSupervise || $this->userIsAdministrator) {
+				$do = 'view';
+			}
+			$html .= "\n<p>You can {$do} the following {$this->settings['labelPlural']}:</p>";
 			$html .= $this->supervisionsList ($supervisions, $this->settings['showSupervisorName']);
 		} else {
 			$html .= "\n<p>There are no {$this->settings['labelPlural']} available to sign up to yet, for the current academic year.</p>";
