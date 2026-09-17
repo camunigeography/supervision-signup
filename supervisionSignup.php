@@ -1,8 +1,17 @@
 <?php
 
+#!# Need to enable an admin to be able to change the supervisor (username and name)
+
+
 # Class to create a simple supervision signup system
 class supervisionSignup extends frontControllerApplication
 {
+	# Class properties
+	private $userCanSupervise;
+	private $currentAcademicYear;
+	private $userYeargroup;
+	
+	
 	# Function to assign defaults additional to the general application defaults
 	public function defaults ()
 	{
