@@ -1489,9 +1489,8 @@ class supervisionSignup extends frontControllerApplication
 		# Get days, e.g. Monday => Mon, Tuesday => Tue
 		$days = array ();
 		for ($i = 0; $i < 7; $i++) {
-			$timestamp = strtotime ("+{$i} days", strtotime ('next Monday'));	// Any Monday
-			$dayName = strftime ('%A', $timestamp);	// Locale-aware version of date()
-			$dayAbbreviated = strftime ('%a', $timestamp);
+			$dayName = jddayofweek ($i, 1);
+			$dayAbbreviated = jddayofweek($i, 2);
 			$days[$dayName] = $dayAbbreviated;
 		}
 		
