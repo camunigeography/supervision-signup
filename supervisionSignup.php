@@ -18,6 +18,7 @@ class supervisionSignup extends frontControllerApplication
 		# Specify available arguments as defaults or as NULL (to represent a required argument)
 		$defaults = array (
 			'applicationName' => 'Supervision signup',
+			'echoOutputDirectly' => false,
 			'div' => strtolower (__CLASS__),
 			'databaseStrictWhere' => true,
 			'database' => 'supervisions',
@@ -222,7 +223,7 @@ class supervisionSignup extends frontControllerApplication
 	
 	
 	# Additional initialisation
-	public function main ()
+	public function main (&$html = '')
 	{
 		# Parse out the lengths to add labels, e.g. array (30 => '30 minutes', 60 => '1 hour', 120 => '2 hours')
 		$this->settings['lengths'] = $this->parseLengths ($this->settings['lengths']);
@@ -249,7 +250,6 @@ class supervisionSignup extends frontControllerApplication
 			if (!in_array ($this->action, array ('feedback', 'ical'))) {		// Unless on feedback page or iCal output
 				$html  = "\n<p>This system is only available to current students and staff of " . htmlspecialchars ($this->settings['organisationDescription']) . '.</p>';
 				$html .= "\n<p>If you think you should have access, please <a href=\"{$this->baseUrl}/feedback.html\">contact us</a>.</p>";
-				echo $html;
 				return false;
 			}
 		}
@@ -286,8 +286,8 @@ class supervisionSignup extends frontControllerApplication
 			$currentAcademicYear = $this->currentAcademicYear;
 			if (isSet ($_GET['academicyear'])) {
 				if (!strlen ($_GET['academicyear']) || !in_array ($_GET['academicyear'], $years)) {
-					$this->page404 ();
-					return false;
+					$html = $this->page404 ();
+					return $html;
 				}
 				$this->currentAcademicYear = $_GET['academicyear'];
 			}
@@ -333,7 +333,7 @@ class supervisionSignup extends frontControllerApplication
 		}
 		
 		# Return the HTML
-		echo $html;
+		return $html;
 	}
 	
 	
@@ -441,7 +441,7 @@ class supervisionSignup extends frontControllerApplication
 		$html .= $this->supervisionForm ();
 		
 		# Return the HTML
-		echo $html;
+		return $html;
 	}
 	
 	
@@ -468,7 +468,7 @@ class supervisionSignup extends frontControllerApplication
 		}
 		
 		# Return the HTML
-		echo $html;
+		return $html;
 	}
 	
 	
@@ -514,7 +514,7 @@ class supervisionSignup extends frontControllerApplication
 		$html = $ical->instructionsLink ($icsUrl);
 		
 		# Return the HTML
-		echo $html;
+		return $html;
 	}
 	
 	
@@ -524,16 +524,14 @@ class supervisionSignup extends frontControllerApplication
 		# Ensure that a token has been supplied, or end
 		if (!isSet ($_GET['token']) || !strlen ($_GET['token'])) {
 			application::sendHeader (401);
-			echo "\n<p>ERROR: No token was supplied.</p>";
-			return false;
+			return $html = "\n<p>ERROR: No token was supplied.</p>";
 		}
 		
 		# Look up the user from the token, or end
 		if (!$userId = $this->getUserFromToken ($_GET['token'])) {
 			sleep (1);
 			application::sendHeader (403);
-			echo "\n<p>ERROR: Invalid token.</p>";
-			return false;
+			return $html = "\n<p>ERROR: Invalid token.</p>";
 		}
 		
 		# Get the supervisions
@@ -579,8 +577,8 @@ class supervisionSignup extends frontControllerApplication
 		$html .= $this->editingTable ('courses', $dataBindingAttributes, 'ultimateform', false, $sinenomineExtraSettings);
 		$html .= "\n" . '</div>';
 		
-		# Show the HTML
-		echo $html;
+		# Return the HTML
+		return $html;
 	}
 	
 	
@@ -633,8 +631,7 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Process the form or end
 		if (!$result = $form->process ($html)) {
-			echo $html;
-			return false;
+			return $html;
 		}
 		
 		# Convert the data into a CSV structure
@@ -642,18 +639,18 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Insert the data
 		if (!$result = $this->databaseConnection->insertMany ($this->settings['database'], 'courses', $data)) {
-			echo "\n<p class=\"warning\">Error:</p>";
-			application::dumpData ($this->databaseConnection->error ());
-			return false;
+			$html  = "\n<p class=\"warning\">Error:</p>";
+			$html .= application::dumpData ($this->databaseConnection->error (), false, $return = true);
+			return $html;
 		}
 		
 		# Confirm success<br>
-		echo "\n<div class=\"graybox\">";
-		echo "\n\t<p class=\"success\">{$this->tick} The courses have been successfully imported. They can now be viewed or edited on the <a href=\"{$this->baseUrl}/courses/\">courses list page</a>.</p>";
-		echo "\n</div>";
+		$html  = "\n<div class=\"graybox\">";
+		$html .= "\n\t<p class=\"success\">{$this->tick} The courses have been successfully imported. They can now be viewed or edited on the <a href=\"{$this->baseUrl}/courses/\">courses list page</a>.</p>";
+		$html .= "\n</div>";
 		
 		# Return the HTML
-		echo $html;
+		return $html;
 	}
 	
 	
@@ -665,9 +662,8 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Get the courses
 		if (!$courses = $this->getCourses ()) {
-			$html  = "\n<p>The <a href=\"{$this->baseUrl}/courses/\">list of {$this->settings['containerLabelPlural']}</a> available for the current year has not yet been loaded, so it is not yet possible to create a new signup sheet.</p>";
-			echo $html;
-			return;
+			$html = "\n<p>The <a href=\"{$this->baseUrl}/courses/\">list of {$this->settings['containerLabelPlural']}</a> available for the current year has not yet been loaded, so it is not yet possible to create a new signup sheet.</p>";
+			return $html;
 		}
 		
 		# Create the timeslots, using the Mondays from the start of the week for the current date (for a new supervision) or the creation date (editing an existing one)
@@ -1170,21 +1166,21 @@ class supervisionSignup extends frontControllerApplication
 		
 		# Ensure the ID is present
 		if (!$id) {
-			$this->page404 ();
-			return;
+			$html = $this->page404 ();
+			return $html;
 		}
 		
 		# Obtain this supervision or end
 		if (!$supervision = $this->getSupervision ($id)) {
-			$this->page404 ();
-			return;
+			$html = $this->page404 ();
+			return $html;
 		}
 		
 		# If the user is a student, require a match on yeargroup, for privacy reasons
 		if (!$this->userCanSupervise && !$this->userIsAdministrator) {
 			if ($supervision['yearGroup'] != $this->userYeargroup) {
-				$this->page404 ();
-				return;
+				$html = $this->page404 ();
+				return $html;
 			}
 		}
 		
@@ -1208,16 +1204,15 @@ class supervisionSignup extends frontControllerApplication
 				
 				# Validate action and rights
 				if (!isSet ($editingActions[$do])) {
-					$this->page404 ();
-					return false;
+					$html = $this->page404 ();
+					return $html;
 				}
 				
 				# Perform editing action, restarting the HTML
 				$function = $do . 'Supervision';	// e.g. editSupervision
 				$html  = "\n<h2>{$editingActions[$do]}</h2>";
 				$html .= $this->{$function} ($supervision);
-				echo $html;
-				return true;
+				return $html;
 			}
 			
 			# Show the edit and delete buttons
@@ -1241,8 +1236,8 @@ class supervisionSignup extends frontControllerApplication
 			$html .= $this->listSignedupUsers ($supervision['signupsByTimeslot']);
 		}
 		
-		# Show the HTML
-		echo $html;
+		# Return the HTML
+		return $html;
 	}
 	
 	
@@ -1964,7 +1959,7 @@ class supervisionSignup extends frontControllerApplication
 		$html .= application::htmlUl ($supervisors, 0, NULL, true, $sanitise = true);
 		
 		# Return the HTML
-		echo $html;
+		return $html;
 	}
 	
 	

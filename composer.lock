@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "adc9ab0aa7fce05d7fb1d1ab53cc0ed1",
+    "content-hash": "9e1c207c0ed7f7ce7f1e628e0a2277b7",
     "packages": [
         {
             "name": "camunigeography/camunidata",
@@ -120,16 +120,16 @@
         },
         {
             "name": "libpurecontent/application",
-            "version": "v1.9.11",
+            "version": "v1.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libpurecontent/application.git",
-                "reference": "96e4202dcf20deb4ee32014ddb93bb4e65cd5f23"
+                "reference": "01ad5c32e4391471d1d3f92b1c38321546659ce4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libpurecontent/application/zipball/96e4202dcf20deb4ee32014ddb93bb4e65cd5f23",
-                "reference": "96e4202dcf20deb4ee32014ddb93bb4e65cd5f23",
+                "url": "https://api.github.com/repos/libpurecontent/application/zipball/01ad5c32e4391471d1d3f92b1c38321546659ce4",
+                "reference": "01ad5c32e4391471d1d3f92b1c38321546659ce4",
                 "shasum": ""
             },
             "require": {
@@ -154,9 +154,9 @@
             "description": "PHP library application within the pureContent library suite",
             "support": {
                 "issues": "https://github.com/libpurecontent/application/issues",
-                "source": "https://github.com/libpurecontent/application/tree/v1.9.11"
+                "source": "https://github.com/libpurecontent/application/tree/v1.10.0"
             },
-            "time": "2026-06-29T13:51:57+00:00"
+            "time": "2026-09-22T16:59:14+00:00"
         },
         {
             "name": "libpurecontent/csv",
@@ -201,16 +201,16 @@
         },
         {
             "name": "libpurecontent/database",
-            "version": "v4.2.7",
+            "version": "v4.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libpurecontent/database.git",
-                "reference": "ae3f509d62dbf2656f84bda5c1f232a1631f68f8"
+                "reference": "d512625703688252c9d5c7940b6140b6b20786a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libpurecontent/database/zipball/ae3f509d62dbf2656f84bda5c1f232a1631f68f8",
-                "reference": "ae3f509d62dbf2656f84bda5c1f232a1631f68f8",
+                "url": "https://api.github.com/repos/libpurecontent/database/zipball/d512625703688252c9d5c7940b6140b6b20786a9",
+                "reference": "d512625703688252c9d5c7940b6140b6b20786a9",
                 "shasum": ""
             },
             "require": {
@@ -236,9 +236,9 @@
             "description": "PHP library database within the pureContent library suite",
             "support": {
                 "issues": "https://github.com/libpurecontent/database/issues",
-                "source": "https://github.com/libpurecontent/database/tree/v4.2.7"
+                "source": "https://github.com/libpurecontent/database/tree/v4.3.1"
             },
-            "time": "2026-05-14T02:18:05+00:00"
+            "time": "2026-09-12T01:57:01+00:00"
         },
         {
             "name": "libpurecontent/directories",
@@ -282,24 +282,24 @@
         },
         {
             "name": "libpurecontent/frontcontrollerapplication",
-            "version": "v1.14.8",
+            "version": "v1.19.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libpurecontent/frontcontrollerapplication.git",
-                "reference": "26262461c8d199e396013314cc6a495729a4a420"
+                "reference": "1271a73c6fc834ccfe86f5da9b64ddb2fff2a204"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libpurecontent/frontcontrollerapplication/zipball/26262461c8d199e396013314cc6a495729a4a420",
-                "reference": "26262461c8d199e396013314cc6a495729a4a420",
+                "url": "https://api.github.com/repos/libpurecontent/frontcontrollerapplication/zipball/1271a73c6fc834ccfe86f5da9b64ddb2fff2a204",
+                "reference": "1271a73c6fc834ccfe86f5da9b64ddb2fff2a204",
                 "shasum": ""
             },
             "require": {
                 "camunigeography/camunidata": "^2.1",
-                "libpurecontent/application": "^1.9",
-                "libpurecontent/database": "^4.2",
+                "libpurecontent/application": "^1.10",
+                "libpurecontent/database": "^4.3",
                 "libpurecontent/directories": "^1.4",
-                "libpurecontent/sinenomine": "^1.1",
+                "libpurecontent/sinenomine": "^1.2",
                 "libpurecontent/ultimateform": "^1.31",
                 "libpurecontent/useraccount": "^1.12",
                 "smarty/smarty": "^5.8"
@@ -322,9 +322,9 @@
             "description": "PHP library frontControllerApplication within the pureContent library suite",
             "support": {
                 "issues": "https://github.com/libpurecontent/frontcontrollerapplication/issues",
-                "source": "https://github.com/libpurecontent/frontcontrollerapplication/tree/v1.14.8"
+                "source": "https://github.com/libpurecontent/frontcontrollerapplication/tree/v1.19.1"
             },
-            "time": "2026-07-15T19:03:28+00:00"
+            "time": "2026-09-22T17:02:33+00:00"
         },
         {
             "name": "libpurecontent/ical",
@@ -443,21 +443,21 @@
         },
         {
             "name": "libpurecontent/sinenomine",
-            "version": "v1.1.7",
+            "version": "v1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libpurecontent/sinenomine.git",
-                "reference": "0c72f79d08c701c93aeb7207ff4dc59392aebcec"
+                "reference": "b01c80af7265c5af0e14fdf81ce7e8ca129f7f7e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libpurecontent/sinenomine/zipball/0c72f79d08c701c93aeb7207ff4dc59392aebcec",
-                "reference": "0c72f79d08c701c93aeb7207ff4dc59392aebcec",
+                "url": "https://api.github.com/repos/libpurecontent/sinenomine/zipball/b01c80af7265c5af0e14fdf81ce7e8ca129f7f7e",
+                "reference": "b01c80af7265c5af0e14fdf81ce7e8ca129f7f7e",
                 "shasum": ""
             },
             "require": {
                 "libpurecontent/application": "^1.9",
-                "libpurecontent/database": "^4.2",
+                "libpurecontent/database": "^4.3",
                 "libpurecontent/pagination": "^1.1",
                 "libpurecontent/timedate": "^1.4",
                 "libpurecontent/ultimateform": "^1.31"
@@ -481,22 +481,22 @@
             "description": "PHP library sinenomine within the pureContent library suite",
             "support": {
                 "issues": "https://github.com/libpurecontent/sinenomine/issues",
-                "source": "https://github.com/libpurecontent/sinenomine/tree/v1.1.7"
+                "source": "https://github.com/libpurecontent/sinenomine/tree/v1.2.1"
             },
-            "time": "2026-04-09T16:19:26+00:00"
+            "time": "2026-09-16T10:07:47+00:00"
         },
         {
             "name": "libpurecontent/timedate",
-            "version": "v1.4.1",
+            "version": "v1.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libpurecontent/timedate.git",
-                "reference": "a7da0b3ad68a5b8ce7556b3051cfcb7628b87535"
+                "reference": "b956f58f408fc1308d3398e266a6a9ff8626f9b1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libpurecontent/timedate/zipball/a7da0b3ad68a5b8ce7556b3051cfcb7628b87535",
-                "reference": "a7da0b3ad68a5b8ce7556b3051cfcb7628b87535",
+                "url": "https://api.github.com/repos/libpurecontent/timedate/zipball/b956f58f408fc1308d3398e266a6a9ff8626f9b1",
+                "reference": "b956f58f408fc1308d3398e266a6a9ff8626f9b1",
                 "shasum": ""
             },
             "type": "library",
@@ -517,22 +517,22 @@
             "description": "PHP library timedate within the pureContent library suite",
             "support": {
                 "issues": "https://github.com/libpurecontent/timedate/issues",
-                "source": "https://github.com/libpurecontent/timedate/tree/v1.4.1"
+                "source": "https://github.com/libpurecontent/timedate/tree/v1.4.2"
             },
-            "time": "2025-01-21T16:31:43+00:00"
+            "time": "2026-09-21T14:29:17+00:00"
         },
         {
             "name": "libpurecontent/ultimateform",
-            "version": "v1.31.14",
+            "version": "v1.31.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libpurecontent/ultimateform.git",
-                "reference": "6e936ee3a95edb75496b8a222cdc7dcdeefa9deb"
+                "reference": "09aa4ed869e47caf3b172169074804e2784f18ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libpurecontent/ultimateform/zipball/6e936ee3a95edb75496b8a222cdc7dcdeefa9deb",
-                "reference": "6e936ee3a95edb75496b8a222cdc7dcdeefa9deb",
+                "url": "https://api.github.com/repos/libpurecontent/ultimateform/zipball/09aa4ed869e47caf3b172169074804e2784f18ce",
+                "reference": "09aa4ed869e47caf3b172169074804e2784f18ce",
                 "shasum": ""
             },
             "require": {
@@ -558,22 +558,22 @@
             "description": "PHP library ultimateForm within the pureContent library suite",
             "support": {
                 "issues": "https://github.com/libpurecontent/ultimateform/issues",
-                "source": "https://github.com/libpurecontent/ultimateform/tree/v1.31.14"
+                "source": "https://github.com/libpurecontent/ultimateform/tree/v1.31.22"
             },
-            "time": "2026-07-15T14:31:12+00:00"
+            "time": "2026-09-17T20:22:18+00:00"
         },
         {
             "name": "libpurecontent/useraccount",
-            "version": "v1.12.1",
+            "version": "v1.12.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/libpurecontent/useraccount.git",
-                "reference": "7212c226896b14789ebb6adfa382caf3fadd6a17"
+                "reference": "4ac16c49a4fbe888d568d69f3b0ba28a9cceb837"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/libpurecontent/useraccount/zipball/7212c226896b14789ebb6adfa382caf3fadd6a17",
-                "reference": "7212c226896b14789ebb6adfa382caf3fadd6a17",
+                "url": "https://api.github.com/repos/libpurecontent/useraccount/zipball/4ac16c49a4fbe888d568d69f3b0ba28a9cceb837",
+                "reference": "4ac16c49a4fbe888d568d69f3b0ba28a9cceb837",
                 "shasum": ""
             },
             "require": {
@@ -599,9 +599,9 @@
             "description": "PHP library userAccount within the pureContent library suite",
             "support": {
                 "issues": "https://github.com/libpurecontent/useraccount/issues",
-                "source": "https://github.com/libpurecontent/useraccount/tree/v1.12.1"
+                "source": "https://github.com/libpurecontent/useraccount/tree/v1.12.2"
             },
-            "time": "2026-07-07T19:15:10+00:00"
+            "time": "2026-09-19T23:00:44+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
@@ -1016,16 +1016,16 @@
         },
         {
             "name": "phpoffice/phpspreadsheet",
-            "version": "5.9.0",
+            "version": "5.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "05e99ebf61238a70227b4d9cc02d0030d34f6339"
+                "reference": "eb18727acf6b1f4cc67145a52ab04f9fd4c28d53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/05e99ebf61238a70227b4d9cc02d0030d34f6339",
-                "reference": "05e99ebf61238a70227b4d9cc02d0030d34f6339",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/eb18727acf6b1f4cc67145a52ab04f9fd4c28d53",
+                "reference": "eb18727acf6b1f4cc67145a52ab04f9fd4c28d53",
                 "shasum": ""
             },
             "require": {
@@ -1054,6 +1054,7 @@
                 "dealerdirect/phpcodesniffer-composer-installer": "dev-main",
                 "dompdf/dompdf": "^2.0 || ^3.0",
                 "ext-intl": "*",
+                "ext-openssl": "*",
                 "friendsofphp/php-cs-fixer": "^3.2",
                 "mitoteam/jpgraph": "^10.5",
                 "mpdf/mpdf": "^8.1.1",
@@ -1063,11 +1064,12 @@
                 "phpstan/phpstan-phpunit": "^1.0 || ^2.0",
                 "phpunit/phpunit": "^10.5 || ^11.0",
                 "squizlabs/php_codesniffer": "^3.7",
-                "tecnickcom/tcpdf": "^6.5"
+                "tecnickcom/tcpdf": ">=6.8.0 <7.0.0"
             },
             "suggest": {
                 "dompdf/dompdf": "Option for rendering PDF with PDF Writer",
                 "ext-intl": "PHP Internationalization Functions, required for NumberFormat Wizard and StringHelper::setLocale()",
+                "ext-openssl": "Handline Agile-encrypted Xlsx spreadsheets",
                 "mitoteam/jpgraph": "Option for rendering charts, or including charts with PDF or HTML Writers",
                 "mpdf/mpdf": "Option for rendering PDF with PDF Writer",
                 "tecnickcom/tcpdf": "Option for rendering PDF with PDF Writer"
@@ -1119,9 +1121,9 @@
             ],
             "support": {
                 "issues": "https://github.com/PHPOffice/PhpSpreadsheet/issues",
-                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/5.9.0"
+                "source": "https://github.com/PHPOffice/PhpSpreadsheet/tree/5.10.0"
             },
-            "time": "2026-07-12T19:17:39+00:00"
+            "time": "2026-09-17T03:54:50+00:00"
         },
         {
             "name": "psr/simple-cache",

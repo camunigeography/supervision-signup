@@ -29,6 +29,7 @@ function userName ($username)
 
 # Run the application with the specified settings
 require_once ('vendor/autoload.php');
-new supervisionSignup ($settings);
+$supervisionSignup = new supervisionSignup ($settings);
+echo $html = $supervisionSignup->getHtml ();
 
 ?>
