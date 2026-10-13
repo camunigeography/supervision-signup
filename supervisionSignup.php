@@ -49,6 +49,8 @@ class supervisionSignup extends frontControllerApplication
 			'containerLabel' => 'course',
 			'containerLabelPlural' => 'courses',
 			'homepageMessageHtml' => false,
+			'richtextEditorAreaCSS' => '',
+			'richtextEditorConfig.bodyClass' => false,
 		);
 		
 		# Return the defaults
@@ -684,6 +686,8 @@ class supervisionSignup extends frontControllerApplication
 			'formCompleteText' => false,
 			'databaseConnection' => $this->databaseConnection,
 			'richtextEditorToolbarSet' => 'BasicNoLinks',
+			'richtextEditorAreaCSS' => $this->settings['richtextEditorAreaCSS'],
+			'richtextEditorConfig.bodyClass' => $this->settings['richtextEditorConfig.bodyClass'],
 			'richtextWidth' => 650,
 			'richtextHeight' => 250,
 			'cols' => 80,
